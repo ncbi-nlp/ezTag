@@ -1,7 +1,6 @@
-# ezTag
+# ezTag: http://eztag.bioqrator.org
 ## Tagging biomedical concepts via interactive learning
 
-http://eztag.bioqrator.org
 
 ezTag is a web-based concept tagging tool that allows users to manually annotate text with biomedical concepts, use annotated data to train models, and use trained models to tag text automatically. Because ezTag is interactive, the automatically tagged text can then be refined manually to create new annotated data for training an improved model.
 
