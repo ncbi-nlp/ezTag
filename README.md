@@ -1,24 +1,21 @@
-# README
+# ezTag
+## Tagging biomedical concepts via interactive learning
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+http://eztag.bioqrator.org
 
-Things you may want to cover:
+ezTag is a web-based concept tagging tool that allows users to manually annotate text with biomedical concepts, use annotated data to train models, and use trained models to tag text automatically. Because ezTag is interactive, the automatically tagged text can then be refined manually to create new annotated data for training an improved model.
 
-* Ruby version
 
-* System dependencies
+In ezTag, users can upload documents in [BioC](http://bioc.sourceforge.net/) format, including [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) abstracts and [PubMed Central])(https://www.ncbi.nlm.nih.gov/pmc) full-text articles. Biomedical concepts (biomedical named entities and their concept IDs) can then be annotated with one of several automated tools:
 
-* Configuration
+- State-of-the-art entity tagging tools such as [TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone), [GNormPlus](https://www.ncbi.nlm.nih.gov/bionlp/Tools/gnormplus) and [tmVar](https://www.ncbi.nlm.nih.gov/bionlp/Tools/tmvar)
+- Our string match algorithm, using a user-provided lexicon
 
-* Database creation
+- Customized tagging models ([TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone)) trained on a set of annotated documents (i.e. a collection).
 
-* Database initialization
+Basic workflow (without interactive learning):
 
-* How to run the test suite
+![alt text](http://eztag.bioqrator.org/assets/overview-daa76057d297fe255a07a368d215cdf4547223b93dae32c61ea9e2327000b08e.jpg "ezTag basic workflow")
 
-* Services (job queues, cache servers, search engines, etc.)
+The blue boxes in the figure indicate the steps users should follow to navigate to the specified function.
 
-* Deployment instructions
-
-* ...
