@@ -11,10 +11,3 @@ In ezTag, users can upload documents in [BioC](http://bioc.sourceforge.net/) for
 - Our string match algorithm, using a user-provided lexicon
 
 - Customized tagging models ([TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone)) trained on a set of annotated documents (i.e. a collection).
-
-Basic workflow (without interactive learning):
-
-![alt text](http://eztag.bioqrator.org/assets/overview-daa76057d297fe255a07a368d215cdf4547223b93dae32c61ea9e2327000b08e.jpg "ezTag basic workflow")
-
-The blue boxes in the figure indicate the steps users should follow to navigate to the specified function.
-
