@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="ezTag" />
+    <meta name="keywords" content="ezTag" />
+
+    <title>ezTag</title>
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+    <script src="https://use.fontawesome.com/3666a64f0a.js"></script>
+    <script>
+      toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": false,
+        "positionClass": "toast-bottom-full-width",
+        "preventDuplicates": true,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "2500",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+    </script>
+  </head>
+
+  <body class="<%=params[:controller]%>-<%=params[:action]%>" data-no-turbolink>
+    <nav class="ui fixed menu inverted navbar" id="main-nav">
+      <div class="ui container clearing">
+        <%= link_to root_path, class:"brand item" do %>
+          <i class="icon tags"></i>
+          ezTag
+        <% end %>
+        <%= link_to "Collections", collections_path, class: "item #{'active' if @top_menu == 'collections'}" %>
+        <%= link_to "Lexicons", lexicon_groups_path, class: "item #{'active' if @top_menu == 'lexicons'}" %>
+        <%= link_to "Models", models_path, class: "item #{'active' if @top_menu == 'models'}" %>
+        <%= link_to "#", onclick: "window.open('https://sites.google.com/view/eztaghelp/', 'eztag_help', 'width=850,height=800,menubar=no,location=no,scrollbars=yes,toolbar=no,status=no,resizable=yes');return false;", class: "item" do %>
+              Tutorial
+            <% end %>
+        <div class="right floated menu">
+          <% if @current_user.present? %>
+            <%= link_to "/users/#{@current_user.id}", class: "item" do %>
+              <i class="icon user"></i> ID: 
+              <%= @current_user.session_tail %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </nav> <!-- end nav -->
+    <% if params[:controller] == "home" && params[:action] == "index" %>
+      <div class='hero'>
+        <h1 class="ui header">
+          ezTag<br>
+          <div class="sub header">
+            Tagging biomedical concepts via interactive learning<br>
+            </span>
+          </div>
+        </h1>
+      </div>
+    <% end %>
+    <div class='main-container'>
+      <div class="ui main container">
+        <% if params[:controller] != "documents" || params[:action] != "show" %>
+          <%= semantic_breadcrumbs %>
+          <%= semantic_flash %>
+        <% end %>
+        <%= yield %>
+      </div>
+    </div>
+    <% if params[:controller] != "documents" || params[:action] != "show" %>
+      <div class="footer" id="main-footer">
+        <div class="ui container">
+          Copyright © 2017 ezTag
+        </div>
+      </div> 
+    <% end %>
+    <script>
+    $(function() {
+      $('.message .close').on('click', function() {
+        $(this).closest('.message').slideUp();
+      });
+      setTimeout(function() {
+        $('.main.container > .ui.message .close').click();
+      }, 3000);
+      $('.ui.dropdown').dropdown();
+      $(".need-popup").popup({inline: true});
+    });
+    </script>
+</body>
+</html>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111986512-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111986512-1');
+</script>
+
+

@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  collection: one
+  tagger: MyString
+  task_type: 
+  pre_trained_model: MyString
+  status: MyString
+  model_url: MyString
+  xml_url: MyString
+  begin_at: 2016-11-24 18:54:49
+  end_at: 2016-11-24 18:54:49
+
+two:
+  user: two
+  collection: two
+  tagger: MyString
+  task_type: 
+  pre_trained_model: MyString
+  status: MyString
+  model_url: MyString
+  xml_url: MyString
+  begin_at: 2016-11-24 18:54:49
+  end_at: 2016-11-24 18:54:49

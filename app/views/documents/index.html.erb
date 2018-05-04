@@ -1,0 +1,99 @@
+<%= render partial: "/collections/collection_header"%>
+<%= render partial: "/collections/collection_buttons" %> 
+<%= render partial: "/collections/collection_tab" %>
+<div class="ui bottom attached active tab segment">
+  <div class="page-info">
+    Total <b><%=@documents.total_count %></b> documents
+  </div>
+
+  <% if @documents.empty? %>
+    <div class="ui message info">
+      This collection is empty. Please upload documents by clicking the Add Documents button below.
+    </div>
+  <% else %>
+    <table class="ui table table-bordered celled">
+      <thead>
+        <tr>
+          <th>Doc ID</th>
+          <th>Title</th>
+          <th>Annotations</th>
+          <!--<th>BioC Key</th>-->
+          <th>
+            <% 
+            if @collection.task_available? 
+              popup_title = "Mark when annotation is done. The documents that are marked will be used for training TaggerOne"
+            else
+              popup_title = "This feature is unavailable while the collection is being processed"
+            end
+            %>
+            <div class='need-popup' title='<%=popup_title%>'>
+              <div class="ui simple dropdown <%='disabled' if !@collection.task_available? %>">
+                Complete <i class="dropdown icon" style='margin-left:0;'></i>
+                <div class="menu" >
+                  <div class='item'>
+                    <%=link_to 'Check All', done_all_collection_path(@collection, value: true), method: :post, data: { confirm: 'Are you sure for checking all documents?' } %>
+                  </div>
+                  <div class='item'>
+                    <%=link_to 'Uncheck All', done_all_collection_path(@collection, value: false), method: :post, data: { confirm: 'Are you sure for unchecking all documents?' } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </th>
+          <th>Last Update</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @documents.each do |document| %>
+          <tr>
+            <td><%= link_to document.did, document %></td>
+            <td class="ellipsis w400"><%=document.title %></td>
+            <td><%= document.annotations_count %></td>
+            <!--<td><%= document.key %></td>-->
+            <td style='text-align:center;' class='done-checker'>
+              <div class="ui checkbox">
+                <input type="checkbox" name="example" <%='checked' if document.done %> data-id='<%=document.id%>' <%='disabled' if !@collection.task_available? %>>
+                <div class="ui centered mini inline loader"></div>
+              </div>
+            </td>
+            <td><%= time_ago_in_words(document.updated_at) %> ago</td>
+            <td class="center aligned">
+              <%= link_to document, class: "ui blue button small #{'disabled' if @collection.busy?}" do %>
+                <i class="icon write"></i> Edit
+              <% end %>
+              <div class="ui top right pointing dropdown button small icon <%='disabled' if @collection.busy? %>">
+                <i class="setting icon"></i>
+                <div class="menu">
+                  <div class="item">
+                    <%= link_to 'Delete All Annotations', delete_all_annotations_document_path(document), method: :post, data: { confirm: 'Are you sure?' } %>
+                  </div>
+                  <div class="item">
+                    <%= link_to 'Delete Document', document, method: :delete, data: { confirm: 'Are you sure?' } %>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  <div class="ui center aligned grid">
+    <div class="row">
+      <%= paginate @documents %>
+    </div>
+  </div>
+  <%= link_to new_collection_document_path(@collection), class: "ui button primary" do %>
+    <i class="icon upload"></i>
+    Add Documents
+  <% end %>
+
+</div>
+
+<script>
+$(function() {
+  setInterval(updateCollectionStatus, 10000);
+});
+</script>
+

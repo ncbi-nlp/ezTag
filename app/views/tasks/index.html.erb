@@ -1,0 +1,83 @@
+<%= render partial: "/collections/collection_header"%>
+<%= render partial: "/collections/collection_buttons" %>
+<%= render partial: "/collections/collection_tab" %>
+<div class="ui bottom attached active tab segment">
+  <% if @tasks.empty? %>
+    <div class="ui message info">
+      No jobs that are processing or complete. All tasks you have submitted would appear here.
+    </div>
+  <% else %>
+    <table class="ui table table-bordered celled">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Lexicon</th>
+          <th>Model</th>
+          <th>Log</th>
+        </tr>
+      </thead>
+      <tbody class="task-list">
+        <%= render partial: "index_partial" %>
+      </tbody>
+    </table>
+    <ul class='footnote'>
+      Submitted jobs are running in background. You can safely go to another menu and do other tasks.
+      <p>
+        <li>
+          FYI, it takes 2-5 minutes for training TaggerOne on the sample training set.
+        </li>
+        <li>
+          Collection with the status, 'Requested' or 'Processing': All features in the collection are disabled except for document viewing and download.
+        </li>
+        <li>
+          Collection with the status, 'Ready' or 'Finished': All features in the collection are enabled.
+        </li>
+      </p>
+  </ul>
+
+  <% end %>
+</div>
+<br>
+<style>
+  .task-list tr {
+    color: #aaa;
+  }
+  .task-list tr a {
+    color: #acccec;
+  }
+  .task-list tr a:hover {
+    color: #acccec;
+  }
+  .task-list tr:first-child {
+    color: #000;
+  }
+  .task-list tr:first-child a {
+    color: #4183C4;
+  }
+  .task-list tr:first-child a:hover {
+    color: #1e70bf;
+  }
+</style>
+<script>
+function changeToLocalTime() {
+  $(".local-time").each(function() {
+    var e = $(this);
+    var utc = moment.utc(parseInt(e.text(), 10) * 1000);
+    e.text(utc.toDate());
+  });
+}
+
+function updateViews() {
+  updateCollectionStatus();
+  $(".task-list").load('<%= partial_collection_tasks_path(@collection)%>', function() {
+    changeToLocalTime();
+  });
+}
+
+$(function() {
+  changeToLocalTime();
+  updateViews();
+  setInterval(updateViews, 10000);
+});
+</script>

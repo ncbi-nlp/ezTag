@@ -1,0 +1,197 @@
+$red: #db2828;
+$orange: #f2711c;
+$yellow: #fbbd08;
+$olive: #b5cc18;
+$greeen: #21ba45;
+$teal: #00b5ad;
+$purple: #a333c8;
+$blue: #2185d0;
+$violet: #6435c9;
+$pink: #e03997;
+$brown: #a5673f;
+$grey: #767676;
+$black: #1b1c1d;
+$link-color: #DC1644;
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_self
+ */
+
+
+@import "semantic-ui";
+@import "home";
+@import "documents";
+@import "uploadfile";
+@import "toastr";
+@import "range";
+@import "collections";
+@import url('https://fonts.googleapis.com/css?family=Lato|Noto+Serif:700|Raleway:200');
+
+body {
+}
+
+.main-container {
+  background-color: #fff;
+  padding-top: 1px;
+  padding-bottom: 2em;
+}
+.ui.dropdown.right-menu .menu {
+  left: auto;
+  right: 0;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &.w80 {max-width: 80px; }
+  &.w100 {max-width: 100px; }
+  &.w300 {max-width: 300px; }
+  &.w400 {max-width: 400px; }
+  &.w500 {max-width: 500px; }
+  &.w600 {max-width: 600px; }
+}
+
+.ui.main.container {
+  margin-top: 60px;
+}
+.ui.fixed.menu {
+  background-color: rgba(15, 59, 93, 0.71);  
+} 
+
+.documents-show {
+  .ui.toggle.checkbox input ~ .box:before, .ui.toggle.checkbox input ~ label:before {
+    background-color: #888 !important;
+  }
+  .ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #00B5AD !important;
+  }
+
+
+  .navbar .container {
+    width: 100%;
+  }
+  .main.container {
+    padding: 1em 0 0 0;
+    background-color: #fff;
+    margin-top: 73px;
+    background: #eee;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .ui.breadcrumb {
+    display: none;
+  }
+
+  .fixed-buttons {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    padding: 0.5em;
+    background: #666;
+    width: 100%;
+    z-index:1000;
+    color: #fff;
+    vertical-align: middle;
+    .document-done-checker {
+      .ui.toggle.checkbox .box, .ui.toggle.checkbox label {
+        padding-left: 4rem;
+        color: #888 !important;
+      }
+      .ui.toggle.checkbox input:checked ~ label, .ui.toggle.checkbox input:checked ~ label {
+        color: #fff !important;
+      }
+      float: right;
+      z-index: 9999;
+      display: inline-block;
+      min-height: 1em;
+      vertical-align: top;
+      margin: 0em 0.25em 0em 0em;
+      padding: 0.4em 1em;
+      text-transform: none;
+      text-shadow: none;
+      font-weight: bold;
+      line-height: 1em;
+      font-style: normal;
+      text-align: center;
+      text-decoration: none;
+    }
+    .annotation-toggles {
+      z-index: 9999;
+      float: right;
+    }
+  }
+}
+
+.home-body {
+  .superscript {
+    vertical-align:super;
+    font-size:.5em;
+  }
+}
+
+.footer {
+  border-top: 1px solid #eee;
+  color: #aaa;
+  margin-top: 1em;
+  padding: 1em 0;
+  a {
+    color: #bbb;
+  }
+}
+
+.ref {
+  padding-left: 1.5em;
+  li {
+    line-height: 200%;
+  }
+}
+.sample-download {
+  margin-top: -1em; margin-bottom: 2em; display: block; width: 100%; text-align: right;
+}
+
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+
+}
+
+/* Tablet / iPad Portrait */
+@media only screen and (max-width: 991px) {
+  td.ellipsis {
+    &.w300 {max-width: 150px; }
+    &.w400 {max-width: 200px; }
+    &.w500 {max-width: 250px; }
+    &.w600 {max-width: 300px; }
+  }
+}
+
+.ui.buttons .disabled.button, .ui.disabled.button, .ui.button:disabled, .ui.disabled.button:hover, .ui.disabled.active.button {
+  background-color: #666;
+  color: white;
+  opacity: 0.2 !important;
+}
+
+@media only screen and (min-width: 768px) {
+  .ui.selection.dropdown .menu {
+      max-height: 18.7rem;
+  }  
+}
+
+@media only screen and (min-width: 992px) {
+  .ui.selection.dropdown .menu {
+      max-height: 18.7rem;
+  }
+}

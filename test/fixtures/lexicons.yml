@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ltype: MyString
+  lexicon_id: MyString
+  name: MyString
+  collection: one
+
+two:
+  ltype: MyString
+  lexicon_id: MyString
+  name: MyString
+  collection: two

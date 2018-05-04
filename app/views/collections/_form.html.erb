@@ -1,0 +1,28 @@
+<%= form_for(collection, html: {class: "ui form"}) do |f| %>
+  <% if collection.errors.any? %>
+    <div id="error_explanation" class="ui message red">
+      <div class="header"><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved:</div>
+
+      <ul class="list">
+      <% collection.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field required">
+    <%= f.label :name %>
+    <%= f.text_field :name, placeholder: "Please enter a name of the collection. A collection is the basic unit for concept tagging and training" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :note %>
+    <%= f.text_field :note, placeholder: "Please add a note for a more detailed description" %>
+  </div>
+
+  <div class="actions">
+    <%= link_to 'Back', collections_path, class: "ui button" %>
+    <%= f.submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

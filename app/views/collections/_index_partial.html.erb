@@ -1,0 +1,42 @@
+<% @collections.each do |collection| %>
+  <% 
+  documents_count = collection.documents.all.size
+  if documents_count != collection.documents_count 
+    Collection.reset_counters collection.id, :documents
+  end
+  %>
+  <tr>
+    <td><%=link_to collection.name, collection %></td>
+    <td><%= documents_count %></td>
+    <td><%= collection.annotations_count %></td>
+    <td><%= collection.status_with_icon %></td>
+    <td class="ellipsis w300"><%= collection.note %></td>
+    <td class="right aligned">
+      <%=link_to new_collection_task_path(collection, {task_type: 0}), class: "ui small button teal #{'disabled' unless collection.task_available?}" do %>
+        <i class="icon tag"></i>
+        <span class="computer only">Auto Annotate</span>
+      <% end %>
+      <%= link_to new_collection_task_path(collection, {task_type: 1}), class: "ui small button purple #{'disabled' if !collection.task_available? || !collection.has_annotations? }" do %>
+        <i class="icon wizard"></i>
+        Train
+      <% end %>
+      <%= link_to collection, class: "ui small button blue" do %>
+        <i class='icon table'></i> Show
+      <% end %>
+      <div class="ui top right pointing dropdown button small icon">
+        <i class="setting icon blue"></i>
+        <div class="menu">
+          <div class="item">
+            <%= link_to 'Edit Collection Name', edit_collection_path(collection) %>
+          </div>
+          <div class="item">
+            <%= link_to 'Delete All Annotations', delete_all_annotations_collection_path(collection, {from: "list"}), method: :post, data: { confirm: 'Are you sure?' } %>
+          </div>
+          <div class="item">
+            <%= link_to 'Delete Collection', collection, method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+<% end %>

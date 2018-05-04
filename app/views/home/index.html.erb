@@ -1,0 +1,103 @@
+<style>
+  h4 {font-weight: normal;}
+</style>
+<div class="ui left aligned">
+  <h4>ezTag is a web-based concept tagging tool that allows users to manually annotate text with biomedical concepts, use annotated data to train models, and use trained models to tag text automatically. Because ezTag is interactive, the automatically tagged text can then be refined manually to create new annotated data for training an improved model.</h4>
+  <h4>In ezTag, users can upload documents in <%= link_to "http://bioc.sourceforge.net" do %>BioC<% end %> format, including <%= link_to "https://www.ncbi.nlm.nih.gov/pubmed" do %>PubMed<% end %> abstracts and <%= link_to "https://www.ncbi.nlm.nih.gov/pmc" do %>PubMed Central<% end %> full-text articles. Biomedical concepts (biomedical named entities and their concept IDs) can then be annotated with one of several automated tools:
+    <ul>
+      <li>State-of-the-art entity tagging tools such as <%= link_to "https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone" do %>TaggerOne<% end %>, <%= link_to "https://www.ncbi.nlm.nih.gov/bionlp/Tools/gnormplus" do %>GNormPlus<% end %> and <%= link_to "https://www.ncbi.nlm.nih.gov/bionlp/Tools/tmvar" do %>tmVar<% end %></li>
+      <li>Our string match algorithm, using a user-provided lexicon</li>
+      <li>Customized tagging models (<%= link_to "https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone" do %>TaggerOne<% end %>) trained on a set of annotated documents (i.e. a collection).</li>
+    </ul>
+  </h4>
+  <h4>Basic workflow (without interactive learning):</h4>
+  <div class="content" style="text-align: center">
+    <%=image_tag "overview.jpg", class: "image", style: "margin:auto", width: 720 %>
+  </div>
+  <ul>
+    The blue boxes in the figure indicate the steps users should follow to navigate to the specified function.
+  </ul>
+  <h4>PLEASE READ THE <%= link_to "#", onclick: "window.open('https://sites.google.com/view/eztaghelp/', 'eztag_help', 'width=850,height=800,menubar=no,location=no,scrollbars=yes,toolbar=no,status=no,resizable=yes');return false;", class: "item" do %>TUTORIAL<% end %> FOR MORE DETAILS OR GO TO <%= link_to "COLLECTIONS", collections_path %> TO START ANNOTATING.</h4>
+</div>
+<div class="ui section divider"></div>
+<div class="ui large header">Main Features</div>
+<div class="ui hidden divider"></div>
+<div class="ui three column grid home-desc">
+  <div class="row">
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_entities.png" %>
+      <h3>Any entity type</h3>
+      <p>
+       ezTag supports a wide variety of entity types, not just common types (gene, chemical, disease names and sequence variants).
+      </p>
+    </div>
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_full_text.png" %>
+      <h3>Full-text articles</h3>
+      <p>
+        The ezTag interface supports any document in BioC format, including both PubMed abstracts and PubMed Central full-text articles.
+      </p> 
+    </div>
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_lexicon.png" %>
+      <h3>Custom lexicons</h3>
+      <p>
+        ezTag allows users to upload their own dictionaries for annotation with the string match algorithm and training our tagging module, TaggerOne.
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_interactive_learning.png" %>
+      <h3>Interactive learning</h3>
+      <p>
+        ezTag allows users to revise annotations made automatically rather than annotate completely manually, which may lead to better productivity.
+      </p>
+    </div>
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_manual_edit.png" %>
+      <h3>Manual annotation</h3>
+      <p>
+        ezTag provides a user-friendly interface for manual annotation.
+      </p>    
+    </div>
+    <div class="column">
+      <%=image_tag "icons/ezTag_icon_UI.png" %>
+      <h3>Programmatic APIs</h3>
+      <p>
+        Trained tagging models are also accessible through RESTful APIs for usage outside ezTag or large-scale application. 
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="ui piled segment" style='margin-top: 2em;'>
+  <h4 class="ui header">References</h4>
+  <ul class='ref'>
+    <li>
+      C.-H. Wei et al., <a href="https://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/PubTator/" target="_blank">PubTator: a Web-based text mining tool for assisting Biocuration</a>, Nucleic Acids Research, 41 (W1), W518-W522, 2013.
+    </li>
+    <li>
+      R. Leaman and Z. Lu, <a href="https://www.ncbi.nlm.nih.gov/research/bionlp/tools/taggerone/" target="_blank">TaggerOne: joint named entity recognition and normalization with semi-Markov Models</a>, Bioinformatics, 32(18), 2839-2846, 2016.
+    </li>
+  </ul>
+</div> -->
+<!-- 
+<div class="home-body">
+<div class="ui hidden divider"></div>
+<div class="ui left aligned piled padded segment">
+<h2 class="ui header">PubTator<span class="superscript">1</span> + TaggerOne<span class="superscript">2</span> + many more</h2>
+<div class="ui basic segment">
+<div class="ui middle aligned large list">
+<div class="item"><i class="check square icon"></i><div class="content">Annotate any entity types</div></div>
+<div class="item"><i class="check square icon"></i><div class="content">Annotate entities using custom lexicons</div></div>
+<div class="item"><i class="check square icon"></i><div class="content">Annotate entities manually</div></div>
+<div class="item"><i class="check square icon"></i><div class="content">Self-improvement via interactive learning</div></div>
+<div class="item"><i class="check square icon"></i><div class="content">Full-text article support and user-friendly interface</div></div>
+</div>
+</div>
+<div><span class="superscript">1</span>C.-H. Wei et al., <a href="https://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/PubTator/" target="_blank">PubTator: a Web-based text mining tool for assisting Biocuration</a>, Nucleic Acids Research, 41 (W1), W518-W522, 2013.</div>
+<div><span class="superscript">2</span>R. Leaman and Z. Lu, <a href="https://www.ncbi.nlm.nih.gov/research/bionlp/tools/taggerone/" target="_blank">TaggerOne: joint named entity recognition and normalization with semi-Markov Models</a>, Bioinformatics, 32(18), 2839-2846, 2016.</div>
+</div>
+<div class="ui hidden divider"></div>
+</div> -->

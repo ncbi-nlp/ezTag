@@ -1,0 +1,51 @@
+<h1 class="ui header">Lexicons</h1>
+
+<% if @lexicon_groups.blank? %>
+  <div class='ui icon info message'>
+    <i class="info circle icon"></i>
+    <div class='content'>
+      <div class="header">
+        Lexicons not Available. Try Sample Lexicon
+      </div>
+      <p>
+      You can import our sample lexicon by clicking the green button below. The sample lexicon was designed to be used with our sample collections.
+      </p>
+    </div>
+  </div>
+<% else %>
+  <table class="ui table table-bordered celled">
+    <thead>
+      <tr>
+        <th>Name (select a name to see/edit the lexicon)</th>
+        <th>Items</th>
+        <th colspan='2'></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @lexicon_groups.each do |lexicon_group| %>
+        <tr>
+          <td><%=link_to lexicon_group.name, lexicon_group_lexicons_path(lexicon_group) %></td>
+          <td><%= lexicon_group.lexicons_count %></td>
+          <td class="center aligned">
+            <%= link_to 'Edit Name', edit_lexicon_group_path(lexicon_group) %>
+          </td>
+          <td class="center aligned">
+            <%= link_to 'Delete', lexicon_group, method: :delete, data: { confirm: 'Are you sure?' } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="ui center aligned grid">
+    <div class="row">
+      <%= paginate @lexicon_groups %>
+    </div>
+  </div>
+<% end %>
+<br>
+
+<%= link_to 'New Lexicon', new_lexicon_group_path, class: "ui button primary"  %>
+<% unless @current_user.has_sample_lexicons? %>
+  <%= link_to 'Try Sample Lexicon', load_samples_lexicon_groups_path, class: 'ui button green', method: :post %>
+<% end %>

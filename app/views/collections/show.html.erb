@@ -1,0 +1,62 @@
+<%=render partial: "/collections/collection_header"%>
+<%=render partial: "/collections/collection_buttons" %> 
+<%=render partial: "/collections/collection_tab" %>
+<div class="ui bottom attached active tab segment">
+  <div class="page-info">
+    Total <b><%=@collection.documents_count %></b> documents
+  </div>
+
+  <% if @collection.documents.empty? %>
+    <div class="ui message info">
+      This collection is empty. Please upload documents by clicking the Add Documents button below.
+    </div>
+  <% else %>
+    <table class="ui table table-bordered celled sortable">
+      <thead>
+        <tr>
+          <th>Doc ID</th>
+          <th>Title</th>
+          <th>Annotations</th>
+          <!--<th>BioC Key</th>-->
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @collection.documents.each do |document| %>
+          <tr>
+            <td><%=link_to document.did, document %></td>
+            <td class="ellipsis w400"><%=document.title %></td>
+            <td><%=document.annotations_count %></td>
+            <!--<td><%=document.key %></td>-->
+            <td class="center aligned">
+              <%= link_to document, class: "ui blue button small" do %>
+                <i class="icon write"></i> Edit
+              <% end %>
+              <div class="ui top right pointing dropdown button small icon">
+                <i class="setting icon blue"></i>
+                <div class="menu">
+                  <div class="item">
+                    <%= link_to 'Delete', document, method: :delete, data: { confirm: 'Are you sure?' } %>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  <%= link_to new_collection_document_path(@collection), class: "ui button primary" do %>
+    <i class="icon upload"></i>
+    Add Documents
+  <% end %>
+</div>
+
+<script>
+$(function() {
+  $('table').tablesort();
+  setInterval(updateCollectionStatus, 10000);
+
+});
+</script>
+

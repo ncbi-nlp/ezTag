@@ -1,0 +1,57 @@
+<%-
+# logger.debug(p.text)
+ranges = [p.offset]
+max = p.offset + if ptext.nil? then 0 else ptext.size end
+p.annotations.each do |a|
+  next if a.locations.nil?
+  a.locations.each do |l|
+    n_pos = l.offset.to_i + l.length.to_i 
+    ranges << l.offset.to_i
+    ranges << n_pos if n_pos < max
+  end
+end
+ranges = ranges.uniq.sort
+
+ranges.each_with_index do |s_pos, index|
+  if index < ranges.size - 1
+    e_pos = ranges[index + 1]
+  else 
+    e_pos = max
+  end
+
+  a_selected = nil
+  ids = []
+  last_size = 9999999
+  p.annotations.each do |a|
+    next if a.locations.nil?
+    a.locations.each do |l|
+      size = l.length.to_i
+      ss = l.offset.to_i
+      ee = l.offset.to_i + size
+      if !(ee <= s_pos || e_pos <= ss)
+        if size < last_size
+          a_selected = a
+          last_size = size
+        end
+        ids << "AL_#{a.id}_#{l.offset}"
+      end
+    end
+  end
+  cls = []
+  entity_type = ""
+  concept_id = ""
+
+  unless a_selected.nil?
+    entity = EntityUtil.get_annotation_entity(a_selected)
+    cls_name = "A_#{entity[:type]}"
+    atype = @document.collection.entity_type(entity[:type])
+    if !entity[:type].blank? && !entity[:id].blank?
+      entity_type = entity[:type]
+      concept_id = entity[:id]
+    end
+    cls << cls_name
+  end
+  cls = cls.uniq
+  cls << "annotation" unless cls.blank?
+
+  -%><span data-type="<%=j entity_type%>" data-concept="<%=j concept_id%>" data-id="<%=j a_selected.id unless a_selected.nil? %>" class="phrase <%= cls.join(" ") %> <%=ids.join(' ') %>" data-offset="<%=s_pos%>"><%=ptext[s_pos - p.offset, e_pos - s_pos]%></span><%-end -%>

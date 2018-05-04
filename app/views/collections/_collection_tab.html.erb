@@ -1,0 +1,6 @@
+<div class="ui top attached tabular menu">
+  <div class="<%='active' if params[:controller] == 'documents' %> item need-popup" data-content="Documents that belong to this collection"> <%=link_to_unless params[:controller] == 'collections', "Documents", collection_documents_path(@collection) %>
+  </div>
+  <div class="<%='active' if params[:controller] == 'entity_types' %> item need-popup" data-content="Entity types (i.e. concepts) that appear in this collection"><%=link_to_unless params[:controller] == 'entity_types', "Entity Types", collection_entity_types_path(@collection)%></div>
+  <div class="<%='active' if params[:controller] == 'tasks' %> item need-popup" data-content="Tasks that are in process or complete"><%=link_to_unless params[:controller] == 'tasks', "Tasks", collection_tasks_path(@collection)%></div>
+</div>

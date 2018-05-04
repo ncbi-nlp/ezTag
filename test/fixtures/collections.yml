@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  name: MyString
+  documents_count: 
+  note: MyString
+  source: MyString
+  cdate: MyString
+  key: MyString
+  xml_url: MyString
+  mode_url: MyString
+
+two:
+  user: two
+  name: MyString
+  documents_count: 
+  note: MyString
+  source: MyString
+  cdate: MyString
+  key: MyString
+  xml_url: MyString
+  mode_url: MyString

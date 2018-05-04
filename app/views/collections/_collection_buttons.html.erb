@@ -1,0 +1,27 @@
+<div class="ui grid collection-buttons">
+  <div class="ten wide column">
+    <%=link_to new_collection_task_path(@collection, {task_type: 0}), class: "ui button task-buttons-annotate teal #{'disabled' unless @collection.task_available?}" do %>
+      <i class="icon tag"></i>
+      Auto Annotate
+    <% end %>
+    <%= link_to new_collection_task_path(@collection, {task_type: 1}), class: "ui button task-buttons-train purple #{'disabled' if !@collection.task_available? || !@collection.has_annotations?}" do %>
+      <i class="icon wizard"></i>
+      Train
+    <% end %>
+    <%= link_to download_collection_path(@collection), class: "ui button olive #{'disabled' if @collection.documents.empty?}" do %>
+      <i class="icon download"></i>
+      Download
+    <% end %>
+  </div>
+  <div class="six wide column right aligned">
+    <div class="ui icon button dropdown top right pointing <%='disabled' if @collection.busy? %>">
+      <i class="settings icon"></i>
+      <div class="menu">
+        <%= link_to 'Edit Collection Name', edit_collection_path(@collection), class: "item" %> 
+        <%= link_to 'Delete All Annotations', delete_all_annotations_collection_path(@collection), method: :post, data: { confirm: 'Are you sure?' }, class: "item" %> 
+        <%= link_to 'Delete All Documents', empty_collection_path(@collection), method: :post, data: { confirm: 'Are you sure?' }, class: "item"%>
+        <%= link_to 'Delete Collection', @collection, method: :delete, data: { confirm: 'Are you sure?' } , class: "item"%>
+      </div>
+    </div>
+  </div>
+</div>

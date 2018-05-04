@@ -1,0 +1,47 @@
+<% @document.bioc_doc.passages.each_with_index do |p, index| %>
+  <div class="ui basic segment passage" data-id="<%=index%>" id="passage-<%=index%>" data-offset="<%=p.offset%>">
+    <div class="ui top right attached label mini passage-sub-info">
+      offset: <%=p.offset%> - <%=p.offset + @document.get_psize(p)%>
+    </div>
+    <%=render partial: "infon", locals: {infons: p.infons, cls_name: "infon-#{index}"} %>
+    <a href="#" class="infon-btn ui top left attached label mini passage-sub-info" data-id="<%=index%>">
+      <%=p.infons["type"]%> <div class="detail">
+      <i class="icon info circle"></i><%=p.infons.size%></div>
+    </a>
+    <% case p.infons["type"] %>
+    <% when "ref" %>
+      <%=render partial: "ref", locals: {p: p, infons: p.infons, title: p.text} %>
+    <% when "front" %>
+      <% if p.text.blank? %>
+        <h1 class="<%=p.infons["type"]%>"><%-
+          p.sentences.each do |s|
+            -%><%=render partial: "text_fragment", locals: {p: s, ptext: s.text}%><%-
+          end
+          -%></h1>
+      <% else %>
+        <h1 class="<%=p.infons["type"]%>"><%=render partial: "text_fragment", locals: {p: p, ptext: p.text}%></h1>
+      <% end %>
+      <div class="ui message">
+        <%=render partial: "ref", locals: {infons: p.infons, title: nil} %>
+      </div>
+    <% else %>
+        <% if p.text.blank? %>
+          <div class="text <%=p.infons["type"]%>"><%-
+            p.sentences.each do |s|
+              -%><%=render partial: "text_fragment", locals: {p: s, ptext: s.text}%><%-
+            end
+            -%></div>
+        <% else %>
+          <div class="text <%=p.infons["type"]%>"><%=render partial: "text_fragment", locals: {p: p, ptext: p.text}%></div>
+        <% end %>
+    <% end %>
+  </div>
+<% end %>
+<style type="text/css">
+  <% @document.collection.entity_types.each do |e| %>
+    .A_<%=e.name%> {
+      background-color: <%=e.color%> !important;
+      color: #000 !important;
+    }
+  <% end %>
+</style>

@@ -1,0 +1,277 @@
+<%= render partial: "buttons" %>
+<div class="ui dimmer" id="documentSpinner">
+  <div class="ui text loader">Loading</div>
+</div>
+<%= render partial: "doc_info" %>
+<div class="document clearfix <%= 'outline' if @document.outline.size > 2 %>">
+  <div class="left-side pane">
+    <h4>Outline</h4>
+    <%= render partial: "outline", locals: {nodes: @document.outline} %>
+  </div>
+  <div class="main pane" id="main-document" data-url="<%=partial_document_path(@document) %>">
+    <%= render partial: "document_main" %>
+  </div>
+  <div class="ui right top right-side pane annotation-table" style="display: none">
+    <div id="defaultTypeSelector">
+      Default Type: 
+      <select type="text" name="type" class="ui normal" data-url="<%= collection_entity_types_path(@collection, format: :json) %>">
+        <% if @document.collection.entity_types.empty? %>
+          <option value="" class="nothing"></option>
+        <% else %>
+          <% @document.collection.entity_types.each do |e| %>
+            <% next if e.name.blank? %>
+            <option value="<%= e.name %>"><%=e.name %></option>
+          <% end %>
+        <% end %>
+        <option disabled class="divider">──────────</option>
+        <option value="" class="new">[ Add New Entity Type ]</option>
+      </select>
+      <a href="#" class="refresh-annotation-table button mini ui teal" title="Refresh Annotation Table">
+        <i class="icon refresh"></i>
+        Refresh
+      </a>
+    </div>
+    <table id="annotationTable" class="ui inverted celled grey selectable single line very compact small table unstackable">
+      <thead id="annotationHead"></thead>
+      <tbody id="annotationList"></tbody>
+    </table>
+  </div>
+</div>
+<%=render partial: "errors_modal" %>
+<div class="ui basic modal" id="demoModal">
+  <i class="close icon"></i>
+  <div class="header">Quick Demo for Manual Annotation</div>
+  <div class="content" style="text-align: center">
+    <%=image_tag "demo.gif", class: "image", style: "margin:auto", width: 800, height: 380 %>
+  </div>
+  <div class="actions">
+    <div class="ui red deny button">
+      <i class="icon ban"></i>
+      Do not show this demo again
+    </div>
+  </div>
+</div>
+<div class="ui small modal" id="rangeSelectModal">
+  <i class="close icon"></i>
+  <div class="header">
+    Select Text
+  </div>
+  <div class="content">
+    <div class="text ui message info" data-offset="6" data-length="26">abcdefghijklmnopqrstuvwxyz</div>
+    <div class="ui inverted segment grey" style="padding-bottom: 3em;">
+      <form class="ui form inverted">
+        <div class="two fields">
+          <div class="field">
+            <label>Offset</label>
+            <input type="number" id="loc_offset" readonly="readonly" class="readonly"  tabindex="-1">
+            <div class="ui range" id="left-range"></div>
+          </div>
+          <div class="field">
+            <label>Length</label>
+            <input type="number" id="loc_length" readonly="readonly" class="readonly"  tabindex="-1">
+            <div class="ui range" id="right-range"></div>
+          </div>
+        </div>
+        <div class="field">
+          <div id="slider"></div>
+        </div>
+      </form>
+    </div>
+    <div>
+      <h4>Selection Recommender: <small>Click a button below to choose a different text.</small></h4>
+      <table class="ui table table-stripped table-condensed table-hover recommends">
+        <thead>
+          <tr>
+            <th>Text</th>
+            <th>Offset</th>
+            <th>Length</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui button deny cancel">Cancel</div>
+    <div class="ui blue button ok action-button">Next <i class="angle right icon"></i></div>
+  </div>
+</div>
+
+<div class="ui small modal" id="annotationModal">
+  <i class="close icon"></i>
+  <div class="header">
+  </div>
+  <div class="content">
+    <div class="ui inverted dimmer">
+      <div class="ui text loader">Loading</div>
+    </div>
+    <%=form_tag(document_annotations_path(@document), method: "POST", class:"ui form") do %>
+      <div class="field show-for-add">
+        <label>Text</label>
+        <input type="text" name="text" readonly="" tabindex="-1" class="readonly">
+      </div>
+      <div class="field for-mention">
+        <label>Location</label>
+        <input type="text" name="offset" readonly="" tabindex="-1" class="readonly">
+      </div>
+      <input type="hidden" name="deleteMode">
+      <div class="field">
+        <label>Entity Type</label>
+        <select type="text" name="type" class="ui fluid normal dropdown <%="disabled" if @collection.busy? %>">
+          <% @document.collection.entity_types.each do |e| %>
+            <option value="<%= e.name %>"><%=e.name %></option>
+          <% end %>
+        </select>
+        <% unless @collection.busy? %>
+          <%=link_to "#", class: "add-new-entity" do %>
+            <i class="icon plus"></i> Add New Entity Type</a>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="field">
+        <label>Concept ID</label>
+        <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
+      </div>
+      <div class="ui checkbox for-mention hide-for-add">
+        <input type="checkbox" tabindex="0" name="mode" value="concept" <%="disabled" if @collection.busy? %>>
+        <label>Update all entities with the same concept ID</label>
+      </div>
+    <% end %>
+  </div>
+  <div class="actions">
+    <div class="ui button cancel">Cancel</div>
+    <div class="ui ok blue button show-for-add"><i class="icon plus"></i> Add New Mention</div>
+    <div class="ui blue button positive action-button hide-for-add"><i class="checkmark icon"></i> Update</div>
+    <div class="ui button top left pointing red dropdown delete-annotation action-button hide-for-add" style="float:left">
+      <i class="remove icon"></i> Delete
+      <div class="menu">
+        <div class="item" data-value="concept" data-text="delete concept">Delete all entities with the same concept ID</div>
+        <div class="item" data-value="mention" data-text="delete mention only">Delete this entity only</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/template" id="mentionHead">
+  <tr>
+    <th>Offset</th>
+    <th>Type</th>
+    <th>Concept ID</th>
+    <th>Text</th>
+  </tr>
+</script>
+<script type="text/template" id="conceptHead">
+  <tr>
+    <th>Type</th>
+    <th>Concept ID</th>
+    <th>Text</th>
+  </tr>
+</script>
+<script type="text/template" id="conceptViewTemplate1">
+  <tr data-id="{{id}}" data-passage="{{passage}}" data-offset="{{offset}}" class="concept annotation-tr">
+    <td rowspan="{{size}}" class="type">
+      <span class="type-text ellipsis w80">{{type}}</span>
+      <span class="type-edit"></span>
+    </td>
+    <td rowspan="{{size}}" class="concept">
+      <span class="concept-text ellipsis w100">{{concept}}</span>
+      <span class="concept-edit">
+        <input type="text" name="concept" value="{{concept}}">
+      </span>
+    </td>
+    <td class='td-annotation-text'><i class="icon search" title="edit"></i> {{{text}}}</td>
+  </tr>
+</script>
+<script type="text/template" id="conceptViewTemplate2">
+  <tr data-id="{{id}}" data-passage="{{passage}}" data-offset="{{offset}}" class="concept annotation-tr">
+    <td class='td-annotation-text'><i class="icon search" title="edit"></i> {{{text}}}</td>
+  </tr>
+</script>
+<script>
+setTimeout(function() {
+  $('.error-checker').addClass('loading');
+  $.getJSON("/documents/<%=@document.id%>/verify", function(data) {
+    $('.error-checker').removeClass('loading');
+    if (data.length > 0) {
+      $('.error-checker').addClass('error');
+      var items = _.map(data, function(str) {
+        return "<li>" + str + "</li>";
+      });
+      $('.error-modal .content ol').html(items.join('\n'));
+    } else {
+      /*$('.error-checker').addClass('no-error');*/
+    }
+  });
+}, 0);
+$('.btn-errors').click(function() {
+  $('.error-modal').modal('show');
+});
+
+$(function() {
+  <% 
+  flash.each do |type, message|
+    next if message.blank?
+    type = :success if type.to_sym == :notice
+    type = :error   if type.to_sym == :alert
+    next unless [:error, :info, :success, :warning].include?(type.to_sym)
+    %>
+    toastr.<%= type %>('<%= message%>');
+    <%
+  end
+  %>
+  $("#demoModal").modal({
+    onDeny: function() {
+      localStorage.setItem("DontShowDemo", "true");
+    }
+  });
+  if(localStorage.getItem("DontShowDemo") !== "true") {
+    $("#demoModal").modal("show");
+  }
+  $("#showDemoButton").click(function() {
+    $("#demoModal").modal("show");
+    localStorage.setItem("DontShowDemo", false);
+  });
+
+  $(".passage .annotation").click(function(e) {
+    var $e = $(e.currentTarget);
+    console.log($e.data('ids'));
+  });
+  
+  var doc = new BioC('<%=@document.id%>', {
+    root: '<%=root_path%>',
+    busy: <%=@collection.busy? %>,
+    annotations: [
+      <% 
+      p_offset = @document.bioc_doc.passages.map{|p, index| p.offset.to_i }
+      @document.bioc_doc.all_annotations.each do |a| 
+        entity = EntityUtil.get_annotation_entity(a)
+        text = a.text
+        a.locations.each do |l|
+          p_idx = 0
+          
+          while p_idx < p_offset.size - 1
+            break if p_offset[p_idx] > l.offset.to_i
+            p_idx += 1
+          end
+          p_idx -= 1 if p_idx > 0
+          %>
+          {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>"},
+          <%
+        end
+      end 
+      %>
+    ],
+    endpoints: {
+      annotations: "<%=document_annotations_path(@document) %>"
+    },
+    templates: {
+      head: $("#conceptHead").html(),
+      view1: Handlebars.compile($("#conceptViewTemplate1").html()),
+      view2: Handlebars.compile($("#conceptViewTemplate2").html())
+    }
+  });
+  $("#documentSpinner").removeClass("active");
+});
+</script>

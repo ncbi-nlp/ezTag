@@ -1,0 +1,34 @@
+<% if @current_user.blank? %>
+  <h1 class="ui header" style='color: #912D2B;'>
+    <i class="icon user"></i>
+    ID: <%= params[:session_str] %> does not exist
+  </h1>
+  <div class="ui message">
+    <p>
+      If you want to create a new session, please click the button below.
+    </p> 
+    <a href="/" class="ui primary button" rel="nofollow">Create New Session</a>
+  </div>
+<% else %>
+  <h1 class="ui header">
+    <i class="icon user"></i>
+    ID: <%= @current_user.session_str %>
+  </h1>
+
+  <div class="ui message info">
+    Please save the URL below. You can re-use this session with the URL.
+    <h3 style='padding: 1em;'>
+      <%=link_to request.original_url, request.original_url %>
+    </h3>
+  </div>
+
+  <%=form_tag("/users/sendmail", class: "ui form" ) do %>
+    <div class="inline field">
+      <input type="email" name="email" placeholder="Enter your email address" size="30">
+      <button class="ui button primary">
+        <i class="icon mail"></i>
+        Send me the URL above
+      </button>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,42 @@
+<%= form_for(document) do |f| %>
+  <% if document.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(document.errors.count, "error") %> prohibited this document from being saved:</h2>
+
+      <ul>
+      <% document.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :collection_id %>
+    <%= f.text_field :collection_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :did %>
+    <%= f.text_field :did %>
+  </div>
+
+  <div class="field">
+    <%= f.label :user_updated_at %>
+    <%= f.datetime_select :user_updated_at %>
+  </div>
+
+  <div class="field">
+    <%= f.label :tool_updated_at %>
+    <%= f.datetime_select :tool_updated_at %>
+  </div>
+
+  <div class="field">
+    <%= f.label :annotations_count %>
+    <%= f.text_field :annotations_count %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

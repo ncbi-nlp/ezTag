@@ -1,0 +1,46 @@
+<div class="fixed-buttons">
+  <%= link_to @document.collection, class: "ui button small" do %>
+    <i class="icon chevron left"></i> Back
+  <% end %>
+  <button class="ui button small doc-info-btn" type="button">
+    <i class="icon info circle"></i> BioC Info
+  </button>
+  <%= link_to "/documents/#{@document.id}.xml", class: 'ui button teal small', download: "#{@document.id}.xml" do %>
+    <i class='icon download'></i> Download
+  <% end %>
+  <a href="#" id="showDemoButton" class="ui button small">
+    <i class="icon question"></i>
+    Demo
+  </a>
+  <div class='error-checker'>
+    <div class='ui active small inverted inline loader'></div>
+    <button class="ui button small yellow btn-errors">
+      <i class='icon warning sign'></i> 
+      Error
+    </button>
+    <div class="ui button small green">
+      <i class='icon checkmark'></i> 
+      No error
+    </div>
+  </div>
+  <% if @collection.busy? %>
+    <div class="annotation-toggles"%>
+      <i class="icon warning sign"></i> Cannot modify
+      <div class='ui label yellow'><%=@collection.status_with_icon %></div>
+    </div>
+  <% else %>
+    <div class="document-done-checker done-checker need-popup" title="Toggle this on when annotation is complete">
+      <div class="ui checkbox toggle">
+        <input type="checkbox" name="example" data-id='<%=@document.id%>' <%='checked' if @document.done %> <%='disabled' if !@collection.task_available? %>>
+        <label>Complete</label>
+      </div>
+    </div>
+  <% end %>
+</div>
+<script>
+  $('.atype-check').change(function(e) {
+    var $e = $(e.currentTarget);
+    var type = $e.closest('.item').data('type');
+    $('.main.pane').toggleClass(type + '-enabled', $e.prop('checked'));
+  });
+</script>

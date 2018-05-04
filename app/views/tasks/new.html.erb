@@ -1,0 +1,55 @@
+<h1 class="ui dividing header">
+  <% if @task.task_type == 1%>
+    Train on Annotated Text
+  <% else %>
+    Annotate with a Lexicon or a Tagging Model
+  <% end %>  
+</h1>
+<% if @target_document.size == 0 || (@task.task_type == 1 && !@collection.has_annotations_on_done_documents?) %>
+  <div class="ui icon error message">
+    <i class="warning sign icon"></i>
+    <div class="content">
+      <div class="header">
+        <% if @task.task_type == 1 %>
+          No Documents Available for Training
+        <% else %>
+          No Documents Available for Auto Annotate
+        <% end %>
+      </div>
+      <p>
+        <% if @task.task_type == 1 %>
+          <% if @target_document.size == 0 %>
+            Nothing has been marked as "Complete". Only the documents that are marked as "Complete" will be used for training.
+            <br>
+            You can mark/unmark "Complete" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
+          <% elsif !@collection.has_annotations_on_done_documents? %>
+            There are no annotations in the completed documents (i.e. documents marked as "Complete").
+          <% end %>
+        <% else %>
+          All documents are marked as "Complete". Only the documents that are not marked as "Complete" will be auto-annotated.
+          <br>
+          You can mark/unmark "Complete" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
+        <% end %>
+      </p>
+    </div>
+  </div>
+  <div class="actions">
+    <%= link_to 'Back', "#", onclick: "history.back(); return false;", class: "ui button" %>
+  </div>
+<% else %>
+  <div class="ui icon info message">
+    <i class="inbox icon"></i>
+    <div class="content">
+      <div class="header">
+        <% if @task.task_type == 1 %>
+          <%= @target_document.size %> (marked as "Complete") out of <%= @collection.documents.size %> documents will be used for training
+        <% else %>
+          <%= @target_document.size %> (not marked as "Complete") out of <%= @collection.documents.size %> documents will be auto-annotated
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <%= render 'form', task: @task %>
+<% end %>
+
+

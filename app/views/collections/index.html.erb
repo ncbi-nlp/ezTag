@@ -1,0 +1,67 @@
+<h1 class="ui header">Collections</h1>
+
+<% if @collections.blank? %>
+  <div class='ui icon info message'>
+    <i class="info circle icon"></i>
+    <div class='content'>
+      <div class="header">
+        No Collections. Try Sample Collections 
+      </div>
+      <p>
+      You can use our sample training/test datasets &amp; lexicon by clicking the green button below.
+        <ul>
+          <li>Sample training set: 60 documents with 542 annotations. This is for training TaggerOne and getting a customized tagging model.</li>
+          <li>Sample test set: 10 documents without annotations. This is for testing the auto-tagging feature ("Auto Annotate").</li>
+          <li>Sample lexicon: This sample is for "Annotate with a Lexicon" in "Auto Annotate" or training on the sample training collection ("Train").</li>
+        </ul>
+      </p>
+    </div>
+  </div>
+<% else %>
+  <table class="ui table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Articles</th>
+        <th>Annotations</th>
+        <th>Status</th>
+        <th>Note</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody class="collection-list">
+      <%= render partial: "index_partial" %>
+    </tbody>
+  </table>
+  <ul class='footnote'>
+    <li>
+      <b>Auto Annotate</b>: Annotate documents using a lexicon or a pre-trained concept tagging model.
+    </li>
+    <li>
+      <b>Train</b>: Obtain a customized tagging model from a given collection. Annotated documents in the collection are used for training TaggerOne.
+    </li>
+    <li>
+      <b>Show</b>: Show the list of documents in a collection. Here you can perform manual annotation for each document.
+    </li>
+    <li>
+      Click setting icons (<i class="setting icon"></i>, <i class="settings icon"></i>) for more options.
+    </li>
+  </ul>
+<% end %>
+<%=render partial: "/collections/annotator_modal" %>
+
+<%= link_to 'New Collection', new_collection_path, class: "ui button primary" %>
+<% unless @current_user.has_samples? %>
+  <%= link_to 'Try Sample Collections', load_samples_collections_path, class: 'ui button green', method: :post %>
+<% end %>
+
+<script>
+  function updateViews2() {
+    $(".collection-list").load('<%= partial_collections_path%>', function() {
+      $(".ui.dropdown").dropdown();
+    });
+  }
+  updateViews2();
+  setInterval(updateViews2, 10000);
+</script>
