@@ -10,7 +10,7 @@ In ezTag, users can upload documents in [BioC](http://bioc.sourceforge.net/) for
 - State-of-the-art entity tagging tools such as [TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone), [GNormPlus](https://www.ncbi.nlm.nih.gov/bionlp/Tools/gnormplus) and [tmVar](https://www.ncbi.nlm.nih.gov/bionlp/Tools/tmvar)
 - Our string match algorithm, using a user-provided lexicon
 
-- Customized tagging models [TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone)) trained on a set of annotated documents (i.e. a collection).
+- Customized tagging models ([TaggerOne](https://www.ncbi.nlm.nih.gov/bionlp/Tools/taggerone)) trained on a set of annotated documents (i.e. a collection).
 
 Basic workflow (without interactive learning):
 
