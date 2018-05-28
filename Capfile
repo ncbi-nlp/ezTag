@@ -23,7 +23,6 @@ require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
 require 'capistrano/passenger'
 require "capistrano/scm/git"
-require 'rollbar/capistrano3'
 
 install_plugin Capistrano::SCM::Git
 
