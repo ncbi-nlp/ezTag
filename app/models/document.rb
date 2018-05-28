@@ -67,6 +67,66 @@ class Document < ApplicationRecord
     "#{max + 1}"
   end
 
+  def annotate_all_by_text(text, entity_type, concept, case_sensitive, whole_word)
+    exist_offsets = []
+    currents_annotations = self.bioc_doc.all_annotations.each do |a|
+      if a.text.upcase == text.upcase
+        a.locations.each do |l|
+          exist_offsets << l.offset.to_i
+        end
+      end
+    end
+    if whole_word && case_sensitive
+      pattern = /\b#{Regexp.escape(text)}\b/
+    elsif whole_word
+      pattern = /\b#{Regexp.escape(text)}\b/i
+    elsif case_sensitive
+      pattern = /#{Regexp.escape(text)}/
+    else
+      pattern = /#{Regexp.escape(text)}/i
+    end
+    Document.transaction do 
+      a = nil
+      self.bioc_doc.passages.each do |p|
+        if p.text.nil?
+          p.sentences.each do |s|
+            positions = find_all_locations(s, pattern)
+            positions.each do |offset|
+              next if exist_offsets.include?(offset)
+              a = SimpleBioC::Annotation.new(s)
+              a.id = gen_id
+              a.text = s.text[offset - s.offset, text.length]
+              a.infons["type"] = entity_type
+              a.infons["identifier"] = concept
+              l = SimpleBioC::Location.new(a)
+              l.offset = offset
+              l.length = text.length
+              a.locations << l
+              s.annotations << a
+            end
+          end
+        else 
+          positions = find_all_locations(p, pattern)
+          positions.each do |offset|
+            next if exist_offsets.include?(offset)
+            a = SimpleBioC::Annotation.new(p)
+            a.id = gen_id
+            a.text = p.text[offset - p.offset, text.length]
+            a.infons["type"] = entity_type
+            a.infons["identifier"] = concept
+            l = SimpleBioC::Location.new(a)
+            l.offset = offset
+            l.length = text.length
+            a.locations << l
+            p.annotations << a
+          end
+        end
+      end
+      self.save_xml(self.bioc)
+      return a
+    end
+  end
+
   def add_annotation(text, offset, entity_type, concept)
     Document.transaction do 
       a = nil

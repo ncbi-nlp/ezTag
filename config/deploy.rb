@@ -1,8 +1,8 @@
 # config valid only for current version of Capistrano
-lock '3.10.0'
+lock '3.10.2'
 
 set :application, 'eztag'
-set :repo_url, 'git@github.com:dongseop/eztag.git'
+set :repo_url, 'git@github.com:ncbi-nlp/ezTag.git'
 
 set :rbenv_type, :user # or :system, depends on your rbenv setup
 set :rbenv_ruby, '2.3.1'

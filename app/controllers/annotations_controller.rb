@@ -45,12 +45,18 @@ class AnnotationsController < ApplicationController
     @type = params[:type] || ""
     @concept.strip!
     @type.strip!
-    if params[:mode] == "true" || params[:mode] == "1"
+    if params[:mode] == "true" || params[:mode] == "1" || params[:mode] == "concept"
       logger.debug("update_concept")
       @document.update_concept(params[:id], @type, @concept)
     else
       logger.debug("update_mention")
       @document.update_mention(params[:id], @type, @concept)
+    end
+    if params[:annotate_all] == "all"
+      @text = (params[:text] || "").strip
+      @case_sensitive = (params[:case_sensitive] == "y")
+      @whole_word = (params[:whole_word] == "y")
+      @document.annotate_all_by_text(@text, @type, @concept, @case_sensitive, @whole_word)
     end
     @entity_types = EntityType.where(collection_id: @document.collection_id)
     respond_to do |format|

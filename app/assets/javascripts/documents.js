@@ -41,7 +41,6 @@ var BioC = function(id, options) {
       self.addNewEntity();
     }
   });
-  return this;
 };
 
 BioC.prototype.addNewEntity = function() {
@@ -601,16 +600,40 @@ BioC.prototype.clickAnnotation = function(e) {
   var old_concept = a.concept;
   $("#annotationModal .hide-for-add").show();
   $("#annotationModal .show-for-add").hide();
-
+  $("#annotationModal .for-annotate-all").hide();
+  $(".btn-update-text").text("Update");
   $("#annotationModal .header").html(a.text);
+  $("#annotationModal input[name='text']").val(a.text);
   $("#annotationModal input[name='offset']").val(offsets.join(","));
   $("#annotationModal select[name='type']").dropdown("set selected", a.type);
   $("#annotationModal input[name='concept']").val(a.concept);
   $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
+  $("#annotationModal input[name='annotate_all']").prop("checked", false);
   $("#annotationModal .dimmer").removeClass("active");
   if (this.busy) {
     $(".action-button").hide();
   }
+  $("#annotationModal .ui.checkbox.case-sensitive").checkbox("uncheck");
+  $("#annotationModal .ui.checkbox.whole-word").checkbox("check");
+  $("#annotationModal .ui.checkbox.annotate-all").checkbox({
+    onChecked: function() {
+      $("#annotationModal .for-annotate-all").show();
+      $(".btn-update-text").text("Update & Annotate All")
+    },
+    onUnchecked: function() {
+      $("#annotationModal .for-annotate-all").hide();
+      $(".btn-update-text").text("Update");
+    }
+  }).checkbox('uncheck');
+  $("#annotationModal input[name='concept']").keyup(function() {
+    var text = $(this).val().trim();
+    if (text) {
+      $("#annotationModal .ui.checkbox.annotate-all").checkbox('set enabled');
+    } else {
+      $("#annotationModal .ui.checkbox.annotate-all").checkbox('set disabled');
+    }
+  }).keyup();
+  
 
   $("#annotationModal .delete-annotation")
     .dropdown({
@@ -653,7 +676,8 @@ BioC.prototype.clickAnnotation = function(e) {
         var new_type = $("#annotationModal select[name='type']").val();
         var new_concept = $("#annotationModal input[name='concept']").val();
         var mode = $("#annotationModal input[name='mode']").val();
-        if (old_concept == new_concept && old_type == new_type) {
+        var needAnnotateAll = ($(".btn-update-text").text() != "Update");
+        if (old_concept == new_concept && old_type == new_type && !needAnnotateAll) {
           return;
         }
         $("#annotationModal .dimmer").addClass("active");
@@ -663,7 +687,7 @@ BioC.prototype.clickAnnotation = function(e) {
           data: $("#annotationModal form").serialize(), 
           success: function(data) {
             console.log("SUCCESS", old_type, new_type)
-            if (old_type != new_type) {
+            if (old_type != new_type || needAnnotateAll) {
               $("#main-document").load($("#main-document").data("url"), function() {
                 self.bindAnnotationSpan();
                 toastr.success("Successfully updated.");              

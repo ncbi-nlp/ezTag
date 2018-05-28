@@ -103,6 +103,7 @@
   <i class="close icon"></i>
   <div class="header">
   </div>
+
   <div class="content">
     <div class="ui inverted dimmer">
       <div class="ui text loader">Loading</div>
@@ -134,16 +135,46 @@
         <label>Concept ID</label>
         <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
       </div>
-      <div class="ui checkbox for-mention hide-for-add">
-        <input type="checkbox" tabindex="0" name="mode" value="concept" <%="disabled" if @collection.busy? %>>
-        <label>Update all entities with the same concept ID</label>
+      <div class="field">
+        <div class="ui checkbox for-mention hide-for-add">
+          <input type="checkbox" tabindex="0" name="mode" value="concept" <%="disabled" if @collection.busy? %>>
+          <label>
+            Update all entities with the same concept ID
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <div class="ui checkbox annotate-all hide-for-add">
+          <input type="checkbox" tabindex="0" name="annotate_all" value="all" id='check-for-annotate-all' <%="disabled" if @collection.busy? %>>
+          <label>
+            Find all occurrence & Annotate as the same
+          </label>
+        </div>
+      </div>
+      <div class="ui segment for-annotate-all">
+        <div class="field">
+          <div class="ui checkbox case-sensitive">
+            <input type="checkbox" tabindex="0" name="case_sensitive" value="y" <%="disabled" if @collection.busy? %>>
+            <label>
+              Case Sensitive
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox whole-word">
+            <input type="checkbox" tabindex="0" name="whole_word" value="y" <%="disabled" if @collection.busy? %>>
+            <label>
+              Match Whole Word Only
+            </label>
+          </div>
+        </div>
       </div>
     <% end %>
   </div>
   <div class="actions">
     <div class="ui button cancel">Cancel</div>
     <div class="ui ok blue button show-for-add"><i class="icon plus"></i> Add New Mention</div>
-    <div class="ui blue button positive action-button hide-for-add"><i class="checkmark icon"></i> Update</div>
+    <div class="ui blue button positive action-button hide-for-add"><i class="checkmark icon"></i> <span class='btn-update-text'>Update</span></div>
     <div class="ui button top left pointing red dropdown delete-annotation action-button hide-for-add" style="float:left">
       <i class="remove icon"></i> Delete
       <div class="menu">

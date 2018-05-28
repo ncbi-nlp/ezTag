@@ -52,7 +52,7 @@ $(function() {
   $(".jscolor").change(function(e) {
     var $e = $(e.currentTarget);
     var $tr = $e.closest("tr");
-    var color = $e.val();
+    var color = "#" + $e.val();
     $tr.find("td>span").css("background-color", color);
     $.ajax({
       url: "/entity_types/" + $tr.data("id") + ".json",
