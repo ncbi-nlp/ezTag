@@ -147,7 +147,7 @@
         <div class="ui checkbox annotate-all hide-for-add">
           <input type="checkbox" tabindex="0" name="annotate_all" value="all" id='check-for-annotate-all' <%="disabled" if @collection.busy? %>>
           <label>
-            Find all occurrence & Annotate as the same
+            Find and add all other occurrences of the same name
           </label>
         </div>
       </div>
@@ -156,7 +156,7 @@
           <div class="ui checkbox case-sensitive">
             <input type="checkbox" tabindex="0" name="case_sensitive" value="y" <%="disabled" if @collection.busy? %>>
             <label>
-              Case Sensitive
+              Case sensitive
             </label>
           </div>
         </div>
@@ -164,7 +164,7 @@
           <div class="ui checkbox whole-word">
             <input type="checkbox" tabindex="0" name="whole_word" value="y" <%="disabled" if @collection.busy? %>>
             <label>
-              Match Whole Word Only
+              Match whole word only
             </label>
           </div>
         </div>
