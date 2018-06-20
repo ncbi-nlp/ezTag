@@ -1,4 +1,4 @@
-<h2>Prevent Hackers using Robot</h2>
+<h2>Please show you are not a robot</h2>
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <style>
 .ui.grid>.column+.divider, .ui.grid>.row>.column+.divider {
@@ -14,22 +14,20 @@
 }
 </style>
 <h4 class="ui text information">
-  Our service is <span class='bb'>free</span> to use <span class='bb'>without registration</span>.
-  <span class='cc'>It is also available to use with an email and password</span>. You may choose what you want
+  <span class='bb'>LOGIN IS NOT REQUIRED</span> to use ezTag. However, you may choose to create an account using your email and password.
 </h4>
 <div class="ui two column very relaxed grid">
   <div class="column">
     <div class='ui segment'>
       <p>
-        Please check the following reCAPTCHA to prevent uses by robot.<br>
-        Once you check it, you will not be checked again from the same computer.
+        We use reCAPTCHA to protect our website from spam and abuse. Thank you.
       </p>
       <%= form_tag(generate_users_path, method: "POST", class:"ui form") do %>
         <%= recaptcha_tags %>
         <br>
         <button class="ui button fluid large pink">
           <i class='icon heart'></i>
-          Continue to use without registration
+          Continue without login
         </button>
       <% end %>
     </div>

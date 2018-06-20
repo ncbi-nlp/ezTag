@@ -40,7 +40,7 @@ class UsersController < ApplicationController
       sign_in(@current_user)
       redirect_to '/', notice: 'Session was successfully created.'
     else
-      redirect_to new_user_session_url, alert: 'Please check reCAPTCHA'
+      redirect_to new_user_session_url, alert: 'Please verify reCAPTCHA.'
     end 
   end
 
