@@ -1,4 +1,5 @@
 class LexiconGroupsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_lexicon_group, only: [:show, :edit, :update, :destroy]
   before_action :set_top_menu
   semantic_breadcrumb :index, :lexicon_groups_path

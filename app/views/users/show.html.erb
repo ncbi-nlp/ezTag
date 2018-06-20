@@ -1,6 +1,10 @@
 <h1 class="ui header">
-  <i class="icon user"></i>
-  ID: <%= @current_user.session_str %>
+  <i class="icon user circle"></i>
+  <% if @current_user.valid_email? %>
+    <%= @current_user.email %>
+  <% else %>
+    ID: <%= @current_user.session_str %>
+  <% end %>
 </h1>
 
 <div class="ui message info">
@@ -18,4 +22,31 @@
       Send me the URL above
     </button>
   </div>
+<% end %>
+
+
+<div class="ui divider">
+
+
+</div>
+
+<%=link_to destroy_user_session_path,  method: :delete, data: { confirm: 'Are you sure?' }, class: 'ui button red' do %>
+  <i class="icon sign out"></i>
+  Sign Out
+<% end %>
+
+<% if @current_user.valid_email? %>
+  <%=link_to 'Edit Profile', edit_user_registration_path, class: 'ui button teal basic' %>
+<% else %>
+  <%=link_to edit_user_path(@current_user), class: 'ui button green' do %>
+    <i class="icon linkify"></i>
+    Register Email & Password
+  <% end %>
+<% end %>
+
+<% if @current_user.super_admin? %>
+  <%=link_to '/users', class: 'ui button green' do %>
+    <i class="icon user secret"></i>
+    Manage Users
+  <% end %>
 <% end %>

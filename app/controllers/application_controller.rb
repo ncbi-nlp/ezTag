@@ -4,24 +4,28 @@ class ApplicationController < ActionController::Base
   
   def check_user
     @session_str = params[:session_str] || cookies[:eztag]
-    @current_user = User.where("session_str = ?", @session_str).first unless @session_str.nil?
-    logger.debug "CurrentUser #{@current_user} Session Str #{@session_str}"
+    logger.debug("CURRENT_USER = #{current_user}")
+    if params[:session_str].present?
+      @current_user = User.where("session_str = ?", @session_str).first
+      @ask_new_session = true
+    elsif current_user.present?
+      @current_user = current_user
+    else
+      @current_user = current_user || User.where("session_str = ?", @session_str).first unless @session_str.nil?
+    end
+
     if @current_user.blank? && @session_str.present?
       @current_user = nil
       cookies.delete :eztag
       @ask_new_session = true
     end
 
-    unless @ask_new_session
-      if @current_user.nil?
-        @current_user = User.new_user
-      end
+    if @current_user.present? && @current_user.session_str.present?
       cookies[:eztag] = {
         value: @current_user.session_str,
         expires: 10.year.from_now
       }
-      @current_user.ip = request.remote_ip
-      @current_user.save
+      sign_in(@current_user)
     end
   end
 end

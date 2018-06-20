@@ -1,4 +1,5 @@
 class DocumentsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_collection, only: [:create, :new, :index]
   before_action :set_document, only: [:show, :edit, :partial, :update, :destroy, :verify, :delete_all_annotations, :done]
   before_action :set_top_menu

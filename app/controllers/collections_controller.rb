@@ -1,11 +1,16 @@
 require 'zip'
+
 class CollectionsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_collection, only: [:show, :edit, :update, :destroy, :download, :empty, :delete_all_annotations, :done_all]
   before_action :set_top_menu
   semantic_breadcrumb :index, :collections_path
   # GET /collections
   # GET /collections.json
   def index
+    logger.debug("CURRENT_USER = #{current_user}")
+    logger.debug("@CURRENT_USER = #{@current_user}")
+
     @collections = @current_user.collections.all
   end
 

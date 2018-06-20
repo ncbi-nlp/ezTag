@@ -48,10 +48,17 @@ Rails.application.routes.draw do
       post 'delete_all_annotations'
     end
   end
+  
+  devise_for :users, path: 'account', controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
   resources :users do
     collection do 
       post 'sendmail'
+      post 'generate'
     end
   end
+  # devise_for :users, :controllers => { registrations: 'registrations' }
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

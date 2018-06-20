@@ -1,4 +1,17 @@
 class User < ApplicationRecord
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+
+  before_validation :generate_session_str
+
+  def generate_session_str
+    self.session_str = SecureRandom.uuid if self.session_str.blank?
+  end
+
+  def super_admin?
+    %w(dongseop@gmail.com echosf@gmail.com).include?(self.email)
+  end
+
   has_many :collections, dependent: :destroy
   has_many :lexicon_groups, dependent: :destroy
   has_many :models,-> { order 'created_at desc' }, dependent: :destroy
@@ -7,7 +20,13 @@ class User < ApplicationRecord
   def self.new_user
     user = User.new
     user.session_str = SecureRandom.uuid
+    user.email = SecureRandom.uuid + '@not-exist.email'
+    user.password = 'invalid_password'
     user
+  end
+
+  def valid_email?
+    self.email.present? && !self.email.include?('@not-exist.email') 
   end
 
   def has_samples?
@@ -17,7 +36,12 @@ class User < ApplicationRecord
   def has_sample_lexicons?
     self.lexicon_groups.where("`key` = ?", 'samples').present?
   end
+
   def session_tail
+    if self.session_str.blank?
+      self.session_str = SecureRandom.uuid
+      self.save!
+    end
     self.session_str[-12..-1] || self.session_str
   end 
 end

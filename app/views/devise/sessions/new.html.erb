@@ -1,0 +1,59 @@
+<h2>Prevent Hackers using Robot</h2>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<style>
+.ui.grid>.column+.divider, .ui.grid>.row>.column+.divider {
+    left: 50%;
+}
+.bb {
+  font-weight: bold;
+  color: #00b5ad;
+  text-decoration: underline;
+}
+.cc {
+  font-weight: normal;
+}
+</style>
+<h4 class="ui text information">
+  Our service is <span class='bb'>free</span> to use <span class='bb'>without registration</span>.
+  <span class='cc'>It is also available to use with an email and password</span>. You may choose what you want
+</h4>
+<div class="ui two column very relaxed grid">
+  <div class="column">
+    <div class='ui segment'>
+      <p>
+        Please check the following reCAPTCHA to prevent uses by robot.<br>
+        Once you check it, you will not be checked again from the same computer.
+      </p>
+      <%= form_tag(generate_users_path, method: "POST", class:"ui form") do %>
+        <%= recaptcha_tags %>
+        <br>
+        <button class="ui button fluid large pink">
+          <i class='icon heart'></i>
+          Continue to use without registration
+        </button>
+      <% end %>
+    </div>
+  </div>
+  <div class="column">
+    <div class="ui segment">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: {class: 'ui form'}) do |f| %>
+        <div class="field">
+          <%= f.label :email %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        </div>
+
+        <div class="field">
+          <%= f.label :password %>
+          <%= f.password_field :password, autocomplete: "off" %>
+        </div>
+
+        <div class="actions">
+          <button class='ui fluid button primary'>
+            <i class="icon sign in"></i> Sign in with your email and password
+          </button>
+        </div>
+      <% end %>
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

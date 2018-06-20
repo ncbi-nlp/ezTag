@@ -1,9 +1,11 @@
-<%= form_for(user) do |f| %>
+<%= form_for(user, html: {class: 'ui form'}) do |f| %>
   <% if user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+    <div class="ui message negative">
+      <div class="header">
+        <%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:
+      </div>
 
-      <ul>
+      <ul class="list">
       <% user.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
@@ -12,16 +14,21 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :session_str %>
-    <%= f.text_field :session_str %>
+    <%= f.label :email %>
+    <%= f.text_field :email %>
   </div>
 
   <div class="field">
-    <%= f.label :ip %>
-    <%= f.text_field :ip %>
+    <%= f.label :password %>
+    <%= f.password_field :password %>
+  </div>  
+  <div class="field">
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation %>
   </div>
 
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit  class: 'ui button primary' %>
+    <%= link_to 'Show Profile', @user, class: 'ui button' %>
   </div>
 <% end %>

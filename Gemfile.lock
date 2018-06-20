@@ -41,6 +41,8 @@ GEM
     airbrussh (1.3.0)
       sshkit (>= 1.6.1, != 1.7.0)
     arel (7.1.4)
+    bcrypt (3.1.12)
+    bcrypt (3.1.12-x64-mingw32)
     bindex (0.5.0)
     bower-rails (0.11.0)
     browser (2.5.3)
@@ -71,6 +73,12 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
+    devise (4.4.3)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0, < 6.0)
+      responders
+      warden (~> 1.2.3)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
@@ -139,6 +147,7 @@ GEM
       mini_portile2 (~> 2.3.0)
     nokogiri (1.8.2-x64-mingw32)
       mini_portile2 (~> 2.3.0)
+    orm_adapter (0.5.0)
     puma (3.11.4)
     rack (2.0.5)
     rack-test (0.6.3)
@@ -170,6 +179,11 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
+    recaptcha (4.8.0)
+      json
+    responders (2.4.0)
+      actionpack (>= 4.2.0, < 5.3)
+      railties (>= 4.2.0, < 5.3)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -227,6 +241,8 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unf_ext (0.0.7.5-x64-mingw32)
+    warden (1.2.7)
+      rack (>= 1.0)
     web-console (3.6.2)
       actionview (>= 5.0)
       activemodel (>= 5.0)
@@ -249,6 +265,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rbenv
   coffee-rails (~> 4.2)
+  devise
   httparty
   jbuilder (~> 2.5)
   jquery-rails
@@ -260,6 +277,7 @@ DEPENDENCIES
   nokogiri
   puma (~> 3.0)
   rails (~> 5.0.0, >= 5.0.0.1)
+  recaptcha
   rollbar
   rubyzip
   sass-rails (~> 5.0)

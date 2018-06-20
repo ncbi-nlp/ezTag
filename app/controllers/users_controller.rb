@@ -1,17 +1,23 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, only: [:index, :show, :new, :edit, :create, :update]
 
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    unless @current_user.super_admin?
+      return redirect_to "/"
+    end
+    @users = User.page params[:page]
   end
 
   # GET /users/1
   # GET /users/1.json
   def show
-    semantic_breadcrumb :sessions
-    @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @current_user.session_str
+    # semantic_breadcrumb :Account
+    if @current_user.session_str.present?
+      @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @current_user.session_str
+    end
   end
 
   # GET /users/new
@@ -21,11 +27,29 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
+    unless @user.valid_email?
+      @user.email = ""
+    end
+  end
+
+  def generate
+    if verify_recaptcha
+      @current_user = User.new_user
+      @current_user.save
+      logger.debug(@current_user.errors.inspect)
+      sign_in(@current_user)
+      redirect_to '/', notice: 'Session was successfully created.'
+    else
+      redirect_to new_user_session_url, alert: 'Please check reCAPTCHA'
+    end 
   end
 
   def sessions
     if @ask_new_session
-
+      if @current_user.session_str.present?
+        @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @current_user.session_str
+      end
+      render :show
     else
       redirect_to "/"
     end
@@ -41,7 +65,7 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(user_params)
-
+    return
     respond_to do |format|
       if @user.save
         format.html { redirect_to @user, notice: 'User was successfully created.' }
@@ -85,6 +109,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:session_str, :ip)
+      params.require(:user).permit(:email, :password)
     end
 end

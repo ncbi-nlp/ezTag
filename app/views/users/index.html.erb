@@ -2,11 +2,15 @@
 
 <h1>Users</h1>
 
-<table>
+<table class="ui table table-bordered">
   <thead>
     <tr>
+      <th>Email</th>
       <th>Session str</th>
       <th>Ip</th>
+      <th>#. collections</th>
+      <th>Created At</th>
+      <th>Last Sign In</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -14,8 +18,18 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= user.session_str %></td>
-        <td><%= user.ip %></td>
+        <td>
+          <% if user.valid_email? %>
+            <%= user.email %>
+          <% elsif user.email.present? %>
+            <span style='color:silver;'>N/A</span>
+          <% end %>  
+        </td>
+        <td><%=link_to user.session_str, "/sessions/#{user.session_str}" %></td>
+        <td><%= user.current_sign_in_ip %></td>
+        <td><%= user.collections.size %></td>
+        <td><%= user.created_at %></td>
+        <td><%= user.last_sign_in_at %></td>
         <td><%= link_to 'Show', user %></td>
         <td><%= link_to 'Edit', edit_user_path(user) %></td>
         <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
@@ -23,7 +37,8 @@
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New User', new_user_path %>
+<div class="ui center aligned grid">
+  <div class="row">
+    <%= paginate @users %>
+  </div>
+</div>
