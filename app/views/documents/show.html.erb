@@ -272,7 +272,7 @@ $(function() {
   
   var doc = new BioC('<%=@document.id%>', {
     root: '<%=root_path%>',
-    busy: <%=@collection.busy? %>,
+    busy: <%=@collection.busy? || @document.done %>,
     annotations: [
       <% 
       p_offset = @document.bioc_doc.passages.map{|p, index| p.offset.to_i }
