@@ -2173,7 +2173,7 @@ define('handlebars/compiler/helpers',['exports', '../exception'], function (expo
     if (open.path.original !== close) {
       var errorNode = { loc: open.path.loc };
 
-      throw new _Exception['default'](open.path.original + " doesn't match " + close, errorNode);
+      throw new _Exception['default'](open.path.original + " does not match " + close, errorNode);
     }
   }
 

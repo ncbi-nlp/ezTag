@@ -15,20 +15,21 @@
 
   <div class="field">
     <%= f.label :email %>
-    <%= f.text_field :email %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
   </div>
 
   <div class="field">
     <%= f.label :password %>
-    <%= f.password_field :password %>
-  </div>  
+    <%= f.password_field :password, autocomplete: "off" %>
+  </div>
+  
   <div class="field">
     <%= f.label :password_confirmation %>
-    <%= f.password_field :password_confirmation %>
+    <%= f.password_field :password_confirmation, autocomplete: "off" %>
   </div>
 
   <div class="actions">
-    <%= f.submit  class: 'ui button primary' %>
+    <%= f.submit "Update", class: 'ui button primary' %>
     <%= link_to 'Show Profile', @user, class: 'ui button' %>
   </div>
 <% end %>

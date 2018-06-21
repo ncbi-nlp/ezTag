@@ -2525,7 +2525,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (open.path.original !== close) {
 	    var errorNode = { loc: open.path.loc };
 
-	    throw new _exception2['default'](open.path.original + " doesn't match " + close, errorNode);
+	    throw new _exception2['default'](open.path.original + " does not match " + close, errorNode);
 	  }
 	}
 

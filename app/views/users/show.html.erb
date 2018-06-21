@@ -8,7 +8,7 @@
 </h1>
 
 <div class="ui message info">
-  Please save the URL below. You can re-use this session with the URL.
+  Please save the URL below. You can re-use or share this session using the URL.
   <h3 style='padding: 1em;'>
     <%=link_to @url, @url %>
   </h3>
@@ -32,7 +32,7 @@
 
 <%=link_to destroy_user_session_path,  method: :delete, data: { confirm: 'Are you sure?' }, class: 'ui button red' do %>
   <i class="icon sign out"></i>
-  Sign Out
+  Log Out
 <% end %>
 
 <% if @current_user.valid_email? %>

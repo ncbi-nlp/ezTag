@@ -51,7 +51,7 @@ class UsersController < ApplicationController
       end
       render :show
     else
-      redirect_to "/", alert: "Session is not exist: '#{params[:session_str]}'"
+      redirect_to "/", alert: "Session does not exist: '#{params[:session_str]}'"
     end
   end
 
@@ -82,7 +82,7 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
+        format.html { redirect_to @user, notice: 'User profile was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit }
@@ -96,7 +96,7 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
     respond_to do |format|
-      format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
+      format.html { redirect_to users_url, notice: 'User was successfully removed.' }
       format.json { head :no_content }
     end
   end
