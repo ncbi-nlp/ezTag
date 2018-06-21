@@ -83,7 +83,8 @@
     <% if params[:controller] != "documents" || params[:action] != "show" %>
       <div class="footer" id="main-footer">
         <div class="ui container">
-          Copyright © 2017 ezTag
+          Copyright © 2017 ezTag. 
+          
         </div>
       </div> 
     <% end %>
@@ -111,4 +112,12 @@
   gtag('config', 'UA-111986512-1');
 </script>
 
-
+<!--
+======================================================================
+  Browser Name : <%= browser.name %> 
+  Browser full version : <%= browser.full_version %>
+  Browser Modern? : <%= browser.modern? %>
+  Browser IE version: <%= browser.msie_full_version %>
+  Browser Compatibility View? : <%=browser.compatibility_view? %>
+======================================================================
+-->
