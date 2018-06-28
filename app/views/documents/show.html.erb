@@ -139,7 +139,7 @@
         <div class="ui checkbox for-mention hide-for-add">
           <input type="checkbox" tabindex="0" name="mode" value="concept" <%="disabled" if @collection.busy? %>>
           <label>
-            Update all entities with the same concept ID
+            Update mentions with previous concept ID to the current ID
           </label>
         </div>
       </div>
@@ -147,7 +147,7 @@
         <div class="ui checkbox annotate-all hide-for-add">
           <input type="checkbox" tabindex="0" name="annotate_all" value="all" id='check-for-annotate-all' <%="disabled" if @collection.busy? %>>
           <label>
-            Find all other occurrences of the same name
+            Annotate each instance of this mention text
           </label>
         </div>
       </div>
@@ -156,7 +156,7 @@
           <div class="ui checkbox case-sensitive">
             <input type="checkbox" tabindex="0" name="case_sensitive" value="y" <%="disabled" if @collection.busy? %>>
             <label>
-              Case sensitive
+              Case sensitive match
             </label>
           </div>
         </div>
@@ -178,8 +178,8 @@
     <div class="ui button top left pointing red dropdown delete-annotation action-button hide-for-add" style="float:left">
       <i class="remove icon"></i> Delete
       <div class="menu">
-        <div class="item" data-value="concept" data-text="delete concept">Delete all entities with the same concept ID</div>
-        <div class="item" data-value="mention" data-text="delete mention only">Delete this entity only</div>
+        <div class="item" data-value="concept" data-text="delete concept">Delete all mentions with the same concept ID</div>
+        <div class="item" data-value="mention" data-text="delete mention only">Delete this mention only</div>
       </div>
     </div>
   </div>
