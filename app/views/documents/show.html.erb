@@ -132,8 +132,10 @@
         <% end %>
       </div>
       <div class="field">
-        <label>Concept ID</label>
+        <label>Concept ID 
+        </label>
         <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
+        <a id="showMeshBtn" target='_blank'><i class="fa fa-external-link"></i> Show MeSH</a>
       </div>
       <div class="field">
         <div class="ui checkbox for-mention hide-for-add">
@@ -196,7 +198,7 @@
 <script type="text/template" id="conceptHead">
   <tr>
     <th>Type</th>
-    <th>Concept ID</th>
+    <th>Concept ID  <span style='color: #aaa'>&dtrif;</span> </th>
     <th>Text</th>
   </tr>
 </script>

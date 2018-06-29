@@ -178,6 +178,19 @@ body {
   }
 }
 
+#annotationTable.ui.celled.table tr th, 
+#annotationTable.ui.celled.table tr td,
+#annotationTable.ui.inverted.table tr td,
+#annotationTable.ui.inverted.table tr th {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+#showMeshBtn {
+  position: absolute;
+  right: 1em;
+  margin-top: -2em;
+}
 .ui.buttons .disabled.button, .ui.disabled.button, .ui.button:disabled, .ui.disabled.button:hover, .ui.disabled.active.button {
   background-color: #666;
   color: white;

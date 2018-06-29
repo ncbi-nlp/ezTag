@@ -607,6 +607,13 @@ BioC.prototype.clickAnnotation = function(e) {
   $("#annotationModal input[name='offset']").val(offsets.join(","));
   $("#annotationModal select[name='type']").dropdown("set selected", a.type);
   $("#annotationModal input[name='concept']").val(a.concept);
+  if (a.concept.match(/^MESH:/i)) {
+    var parts = a.concept.split(":");
+    $("#showMeshBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
+    $("#showMeshBtn").show();
+  } else {
+    $("#showMeshBtn").attr('href', '#').hide();
+  }
   $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
   $("#annotationModal input[name='annotate_all']").prop("checked", false);
   $("#annotationModal .dimmer").removeClass("active");
