@@ -611,6 +611,10 @@ BioC.prototype.clickAnnotation = function(e) {
     var parts = a.concept.split(":");
     $("#showMeshBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
     $("#showMeshBtn").show();
+  }
+  else if (a.concept.match(/^[CD][0-9]+$/i)) {
+    $("#showMeshBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + a.concept);
+    $("#showMeshBtn").show();
   } else {
     $("#showMeshBtn").attr('href', '#').hide();
   }
