@@ -80,6 +80,9 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
+    if params[:user][:password] != params[:user][:password_confirmation]
+      return redirect_to :back, alert: "Password confirmation doesn't match Password"
+    end
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: 'User profile was successfully updated.' }
