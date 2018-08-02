@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   
   def check_user
     @session_str = params[:session_str] || cookies[:eztag]
-    logger.debug("CURRENT_USER = #{current_user}")
     if params[:session_str].present?
       @current_user = User.where("session_str = ?", @session_str).first
       @ask_new_session = true

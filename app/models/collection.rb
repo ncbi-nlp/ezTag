@@ -177,19 +177,28 @@ class Collection < ApplicationRecord
     end
   end
 
-  def busy?
-    self.status == 'requested' || self.status == 'processing'
+  def busy?(st = nil)
+    if st.nil?
+      st = self.status
+    end
+    st == 'requested' || st == 'processing'
   end
 
-  def task_available?
-    !self.busy? && self.documents_count > 0
+  def task_available?(st = nil)
+    if st.nil?
+      st = self.status
+    end
+    !self.busy?(st) && self.documents_count > 0
   end
   
-  def status_with_icon
-    if self.busy?
-      "<i class='icon refresh loading'></i> #{self.status.capitalize}".html_safe
+  def status_with_icon(st = nil)
+    if st.nil?
+      st = self.status
+    end
+    if self.busy?(st)
+      "<i class='icon refresh loading'></i> #{st.capitalize}".html_safe
     else
-      "<i class='icon checkmark'></i> #{self.status.capitalize}".html_safe
+      "<i class='icon checkmark'></i> #{st.capitalize}".html_safe
     end
   end
 
