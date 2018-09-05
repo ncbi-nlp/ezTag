@@ -53,6 +53,8 @@ var BioC = function(id, options) {
       localStorage && localStorage.removeItem('defaultType_' + options.collectionId);
     }
   }
+  this.restoreScrollTop();
+  $(window).scroll(_.debounce(this.storeScrollTop.bind(this), 100));
 };
 
 BioC.prototype.addNewEntity = function() {
@@ -921,6 +923,23 @@ BioC.prototype.scrollToPasssage = function(passage) {
       scrollTop: ($(passage).offset().top - 130) 
     }, 300);
 };
+
+BioC.prototype.storeScrollTop = function() {
+  var pos = $("html, body").scrollTop();
+  localStorage && localStorage.setItem('ScrollTop_' + this.id, pos);
+  console.log("last pos: " + pos);
+}
+
+BioC.prototype.restoreScrollTop = function() {
+  var pos = localStorage && localStorage.getItem('ScrollTop_' + this.id);
+  if (pos && pos > 0) {
+    if (confirm("Do you want to go to the last used location in the document?")) {
+      $("html, body").animate({
+          scrollTop: pos 
+        }, 300);
+    } 
+  }
+}
 
 BioC.prototype.initModal = function() {
   $(".doc-info-btn").click(function() {
