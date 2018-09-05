@@ -8,6 +8,7 @@ var BioC = function(id, options) {
   if (options.root.slice(-1) != "/") {
     options.root = options.root + "/";
   }
+  this.collectionId = options.collectionId;
   this.endpoints = options.endpoints;
   this.annotations = options.annotations;
   this.templates = options.templates;
@@ -36,11 +37,22 @@ var BioC = function(id, options) {
   $("#defaultTypeSelector select").change(function(e) {
     var selected = $("#defaultTypeSelector select option:selected");
     console.log(selected);
+    localStorage && localStorage.setItem('defaultType_' + options.collectionId, selected.text());
     if (selected.hasClass("new")) {
       console.log("has class");
       self.addNewEntity();
     }
   });
+  console.log('defaultType_' + options.collectionId);
+  var defaultType = localStorage && localStorage.getItem('defaultType_' + options.collectionId);
+  if (defaultType) {
+    var types = $.map($("#defaultTypeSelector select option"), function(item) {return $(item).text();});
+    if (types.includes(defaultType)) {
+      $("#defaultTypeSelector select").val(defaultType);  
+    } else {
+      localStorage && localStorage.removeItem('defaultType_' + options.collectionId);
+    }
+  }
 };
 
 BioC.prototype.addNewEntity = function() {
