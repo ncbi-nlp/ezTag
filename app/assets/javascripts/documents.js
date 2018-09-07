@@ -937,7 +937,9 @@ BioC.prototype.restoreScrollTop = function() {
       $("html, body").animate({
           scrollTop: pos 
         }, 300);
-    } 
+    } else {
+      localStorage && localStorage.removeItem('ScrollTop_' + this.id);
+    }
   }
 }
 
