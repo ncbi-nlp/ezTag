@@ -18,7 +18,11 @@
   </h4>
   <h4>Basic workflow (without interactive learning):</h4>
   <div class="content" style="text-align: center">
-    <%=image_tag "overview.jpg", class: "image", style: "margin:auto", width: 720 %>
+    <picture>
+      <source srcset="<%=asset_path 'overview.webp'%>" type="image/webp">
+      <source srcset="<%=asset_path 'overview.jpg'%>" type="image/jpeg"> 
+      <%=image_tag "overview.jpg", class: "image", style: "margin:auto", width: 720 %>
+    </picture>
   </div>
   <ul>
     The blue boxes in the figure indicate the steps users should follow to navigate to the specified function.

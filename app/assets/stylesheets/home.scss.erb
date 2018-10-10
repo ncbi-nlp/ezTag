@@ -3,7 +3,7 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 .hero {
   background: #000;
-  background-image: url('<%=asset_path "dna-wide.png" %>');
+  
   background-size: auto;
   background-repeat: no-repeat;
   background-position: right center;
@@ -29,7 +29,12 @@
     }
   }
 }
-
+.no-webp .hero {
+  background-image: url('<%=asset_path "dna-wide.png" %>');
+}
+.webp .hero {
+  background-image: url('<%=asset_path "dna-wide.webp" %>');
+}
 .home-desc {
   h3 {
     font-family: 'Raleway', sans-serif;
