@@ -38,9 +38,11 @@
   <% end %>
 </div>
 <script>
-  $('.atype-check').change(function(e) {
-    var $e = $(e.currentTarget);
-    var type = $e.closest('.item').data('type');
-    $('.main.pane').toggleClass(type + '-enabled', $e.prop('checked'));
+  $(function() {
+    $('.atype-check').change(function(e) {
+      var $e = $(e.currentTarget);
+      var type = $e.closest('.item').data('type');
+      $('.main.pane').toggleClass(type + '-enabled', $e.prop('checked'));
+    });
   });
 </script>

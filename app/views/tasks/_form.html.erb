@@ -81,15 +81,6 @@
   form.train .for-train {display: block;}
 </style>
 <script>
-  $('.ui.radio.checkbox').checkbox({
-    onChange: function() {
-      var value = $(".with-check.checked").data("value");
-      console.log(value);
-      $(".field-model").toggleClass("disabled", value === "lexicon");
-      $(".field-lexicon").toggleClass("disabled", value !== "lexicon");
-    }
-  });
-
   function checkSubmitButton() {
     var enabled;
     if ($('form').hasClass('annotate')) {
@@ -109,6 +100,14 @@
     $("input[type='submit']").prop("disabled", !enabled);
   }
   $(function() {
+    $('.ui.radio.checkbox').checkbox({
+      onChange: function() {
+        var value = $(".with-check.checked").data("value");
+        console.log(value);
+        $(".field-model").toggleClass("disabled", value === "lexicon");
+        $(".field-lexicon").toggleClass("disabled", value !== "lexicon");
+      }
+    });
     checkSubmitButton();
     $("select, input").change(checkSubmitButton);
     $("#output_model_name").keyup(checkSubmitButton);

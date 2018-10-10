@@ -156,7 +156,7 @@ if (mode == 1) {
     $("#submitModal form").submit();
   }
 }
-$(function() {
+window.onload = function() {
   $(".annotator").click(function(e) {
     e.stopPropagation();
     var $e = $(e.currentTarget);
@@ -168,6 +168,6 @@ $(function() {
     }
     return false;
   });
-});
+};
 
 </script>

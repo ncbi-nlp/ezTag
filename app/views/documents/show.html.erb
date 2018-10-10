@@ -223,26 +223,26 @@
   </tr>
 </script>
 <script>
-setTimeout(function() {
-  $('.error-checker').addClass('loading');
-  $.getJSON("/documents/<%=@document.id%>/verify", function(data) {
-    $('.error-checker').removeClass('loading');
-    if (data.length > 0) {
-      $('.error-checker').addClass('error');
-      var items = _.map(data, function(str) {
-        return "<li>" + str + "</li>";
-      });
-      $('.error-modal .content ol').html(items.join('\n'));
-    } else {
-      /*$('.error-checker').addClass('no-error');*/
-    }
-  });
-}, 0);
-$('.btn-errors').click(function() {
-  $('.error-modal').modal('show');
-});
-
 $(function() {
+  setTimeout(function() {
+    $('.error-checker').addClass('loading');
+    $.getJSON("/documents/<%=@document.id%>/verify", function(data) {
+      $('.error-checker').removeClass('loading');
+      if (data.length > 0) {
+        $('.error-checker').addClass('error');
+        var items = _.map(data, function(str) {
+          return "<li>" + str + "</li>";
+        });
+        $('.error-modal .content ol').html(items.join('\n'));
+      } else {
+        /*$('.error-checker').addClass('no-error');*/
+      }
+    });
+  }, 0);
+  $('.btn-errors').click(function() {
+    $('.error-modal').modal('show');
+  });
+
   <% 
   flash.each do |type, message|
     next if message.blank?

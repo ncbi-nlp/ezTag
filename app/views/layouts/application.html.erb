@@ -10,27 +10,6 @@
     <title>ezTag</title>
     <%= csrf_meta_tags %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application' %>
-    <script src="https://use.fontawesome.com/3666a64f0a.js"></script>
-    <script>
-      toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": true,
-        "progressBar": false,
-        "positionClass": "toast-bottom-full-width",
-        "preventDuplicates": true,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "2500",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-      }
-    </script>
   </head>
 
   <body class="<%=params[:controller]%>-<%=params[:action]%>" data-no-turbolink>
@@ -89,7 +68,7 @@
       </div> 
     <% end %>
     <script>
-    $(function() {
+    window.onload = (function() {
       $('.message .close').on('click', function() {
         $(this).closest('.message').slideUp();
       });
@@ -101,7 +80,8 @@
     });
     </script>
 </body>
-</html>
+<%= javascript_include_tag 'application', defer: "defer", async: "async" %>
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111986512-1"></script>
 <script>
@@ -111,6 +91,29 @@
 
   gtag('config', 'UA-111986512-1');
 </script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<script>
+  window.onload = function() {
+    toastr.options = {
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": true,
+      "progressBar": false,
+      "positionClass": "toast-bottom-full-width",
+      "preventDuplicates": true,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "2500",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+  };
+</script>
+</html>
 
 <!--
 ======================================================================
