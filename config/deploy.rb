@@ -66,5 +66,25 @@ namespace :deploy do
   #     # end
   #   end
   # end
+  namespace :assets do
+    namespace :webp do
 
+      desc 'Updates mtime for webp images'
+      task :touch => [:set_rails_env] do
+        on roles(:web) do
+          execute <<-CMD.gsub(/[\r\n\t]?/, '').squeeze(' ').strip
+          cd #{release_path.join('public/assets')};
+          for asset in $(
+            find . -regex ".*\.webp$" -type f | LC_COLLATE=C sort
+          ); do
+            echo "Update webp asset: $asset";
+            touch -c -- "$asset";
+          done
+          CMD
+        end
+      end
+    end
+  end
 end
+
+after 'deploy:updated', 'deploy:assets:webp:touch'
