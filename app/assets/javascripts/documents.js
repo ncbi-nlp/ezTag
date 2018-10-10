@@ -623,14 +623,15 @@ BioC.prototype.clickAnnotation = function(e) {
   $("#annotationModal input[name='concept']").val(a.concept);
   if (a.concept.match(/^MESH:/i)) {
     var parts = a.concept.split(":");
-    $("#showMeshBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
-    $("#showMeshBtn").show();
+    $("#showMoreBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
+    $("#showMoreBtn").show();
   }
-  else if (a.concept.match(/^[CDQ][0-9]+$/i)) {
-    $("#showMeshBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + a.concept);
-    $("#showMeshBtn").show();
+  else if (a.concept.match(/^GENE:/i)) {
+    var parts = a.concept.split(":");
+    $("#showMoreBtn").attr('href', 'https://www.ncbi.nlm.nih.gov/gene/' + parts[1]);
+    $("#showMoreBtn").show();
   } else {
-    $("#showMeshBtn").attr('href', '#').hide();
+    $("#showMoreBtn").attr('href', '#').hide();
   }
   $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
   $("#annotationModal input[name='annotate_all']").prop("checked", false);
