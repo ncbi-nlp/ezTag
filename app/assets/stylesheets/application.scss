@@ -146,12 +146,16 @@ a {
 
 .footer {
   border-top: 1px solid #eee;
-  color: #aaa;
+  color: #6f6f6f;
   margin-top: 1em;
   padding: 1em 0;
   a {
-    color: #bbb;
+    color: #444;
   }
+}
+
+.ui.inverted.menu .item, .ui.inverted.menu .item > a:not(.ui) {
+    color: rgb(255, 255, 255);
 }
 
 .ref {
