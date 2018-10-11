@@ -35,6 +35,8 @@
   </div>
 <% end %>
 <script>
+<%= content_for :defer_js do -%>
+
 $(function() {
   $(".color-button").click(function(e) {
     var $e = $(e.currentTarget);
@@ -45,4 +47,5 @@ $(function() {
     return false;
   })
 });
+<%- end -%>
 </script>

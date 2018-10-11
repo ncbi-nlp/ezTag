@@ -76,16 +76,18 @@
   </div>
 </div>
 <script>
-$(function() {
-  $(".upload-button").click(function(e) {
-    $("#fileModal input[type='file']").val("");
-    $("#fileModal")
-      .modal({
-        onApprove: function() {
-          $("#fileModal form").submit();
-        }
-      })
-      .modal('show');  
+<%= content_for :defer_js do %>
+  $(function() {
+    $(".upload-button").click(function(e) {
+      $("#fileModal input[type='file']").val("");
+      $("#fileModal")
+        .modal({
+          onApprove: function() {
+            $("#fileModal form").submit();
+          }
+        })
+        .modal('show');  
+    });
   });
-});
+<% end %>
 </script>

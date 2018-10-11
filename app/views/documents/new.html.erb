@@ -166,76 +166,78 @@ function PMIDUploader(ids) {
     }
   };
 };
+<%= content_for :defer_js do %>
 
-$(function() {
-  $("#fileuploader").uploadFile({
-    url: "<%=collection_documents_path(@collection, format: :json) %>",
-    fileName: "file",
-    sequential: true,
-    showAbort: false,
-    sequentialCount: 1,
-    dragdropWidth: '100%',
-    allowedTypes: 'xml',
-    statusBarWidth: '100%',
-    fileCounterStyle: ") ",
-    uploadStr: '<i class="icon upload"></i> Upload Multiple BioC Documents',
-    afterUploadAll: function(obj) {
-      $("#uploadSpinner").removeClass("active");
-      console.log(obj);
-      // location.reload();
-    },
-    onError: function(files,status,errMsg,pd) {
-      //files: list of files
-      //status: error status
-      //errMsg: error message
-      if (errMsg === 'Unprocessable Entity') {
-        toastr.error(files[0] + ": Invalid document to BioC DTD", null,{
+  $(function() {
+    $("#fileuploader").uploadFile({
+      url: "<%=collection_documents_path(@collection, format: :json) %>",
+      fileName: "file",
+      sequential: true,
+      showAbort: false,
+      sequentialCount: 1,
+      dragdropWidth: '100%',
+      allowedTypes: 'xml',
+      statusBarWidth: '100%',
+      fileCounterStyle: ") ",
+      uploadStr: '<i class="icon upload"></i> Upload Multiple BioC Documents',
+      afterUploadAll: function(obj) {
+        $("#uploadSpinner").removeClass("active");
+        console.log(obj);
+        // location.reload();
+      },
+      onError: function(files,status,errMsg,pd) {
+        //files: list of files
+        //status: error status
+        //errMsg: error message
+        if (errMsg === 'Unprocessable Entity') {
+          toastr.error(files[0] + ": Invalid document to BioC DTD", null,{
+            positionClass: "toast-bottom-full-width"
+          });
+        } else {
+          toastr.error(errMsg);
+        }
+      }, 
+      onSubmit: function (files, xhr) {
+        $("#uploadSpinner").addClass("active");
+      },
+      onSuccess:function(files,data,xhr,pd) {
+        //files: list of files
+        //data: response from server
+        //xhr : jquer xhr object
+        toastr.success(files + " files were uploaded successfully.", null,{
           positionClass: "toast-bottom-full-width"
         });
-      } else {
-        toastr.error(errMsg);
-      }
-    }, 
-    onSubmit: function (files, xhr) {
-      $("#uploadSpinner").addClass("active");
-    },
-    onSuccess:function(files,data,xhr,pd) {
-      //files: list of files
-      //data: response from server
-      //xhr : jquer xhr object
-      toastr.success(files + " files were uploaded successfully.", null,{
-        positionClass: "toast-bottom-full-width"
-      });
-    },
-    onError: function (files, status, message, pd) {},
-    onCancel: function (files, pd) {},
-    onAbort: function (files, pd) {},
-  });
-  $("#pmidFileButton").click(function() {
-    $("#pmidFile").change(function(e) {
-      var file = e.target.files[0];
-      if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var content = e.target.result;
-          $("#pmids").text(_.uniq(content.toUpperCase().match(/(PMC){0,1}\d+/g)).join(" "));
-        };
-      }
-      reader.readAsText(file);
+      },
+      onError: function (files, status, message, pd) {},
+      onCancel: function (files, pd) {},
+      onAbort: function (files, pd) {},
     });
-    $("#pmidFile").click();
+    $("#pmidFileButton").click(function() {
+      $("#pmidFile").change(function(e) {
+        var file = e.target.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var content = e.target.result;
+            $("#pmids").text(_.uniq(content.toUpperCase().match(/(PMC){0,1}\d+/g)).join(" "));
+          };
+        }
+        reader.readAsText(file);
+      });
+      $("#pmidFile").click();
+    });
+    $("#uploadPmidButton").click(function() {
+      var ids = $("#pmids").val().toUpperCase().match(/(PMC){0,1}\d+/g);
+      var uniq_ids = _.uniq(ids);
+      if (uniq_ids.length <= 0) {
+        alert("Please enter document IDs first");
+        return;
+      }
+      // ids.sort();
+      var uploader = new PMIDUploader(ids);
+      console.log(uploader);
+      uploader.upload();
+    });
   });
-  $("#uploadPmidButton").click(function() {
-    var ids = $("#pmids").val().toUpperCase().match(/(PMC){0,1}\d+/g);
-    var uniq_ids = _.uniq(ids);
-    if (uniq_ids.length <= 0) {
-      alert("Please enter document IDs first");
-      return;
-    }
-    // ids.sort();
-    var uploader = new PMIDUploader(ids);
-    console.log(uploader);
-    uploader.upload();
-  });
-});
+<% end %>
 </script>

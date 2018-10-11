@@ -74,10 +74,11 @@ function updateViews() {
     changeToLocalTime();
   });
 }
-
-$(function() {
-  changeToLocalTime();
-  updateViews();
-  setInterval(updateViews, 10000);
-});
+<%= content_for :defer_js do %>
+  $(function() {
+    changeToLocalTime();
+    updateViews();
+    setInterval(updateViews, 10000);
+  });
+<% end %>
 </script>

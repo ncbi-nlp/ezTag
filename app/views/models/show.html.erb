@@ -25,11 +25,14 @@
     <div class="main"></div>
   </div> 
   <script>
+    <%= content_for :defer_js do -%>
+
     $(function() {
       $(".url-area .dimmer").addClass("active");
       $(".url-area .main").load("<%=@model.model_url%>", function() {
         $(".url-area .dimmer").removeClass("active");
       });
     });
+    <%-end-%>
   </script>
 <% end %>

@@ -38,11 +38,13 @@
   <% end %>
 </div>
 <script>
-  $(function() {
-    $('.atype-check').change(function(e) {
-      var $e = $(e.currentTarget);
-      var type = $e.closest('.item').data('type');
-      $('.main.pane').toggleClass(type + '-enabled', $e.prop('checked'));
+  <%= content_for :defer_js do %>
+    $(function() {
+      $('.atype-check').change(function(e) {
+        var $e = $(e.currentTarget);
+        var type = $e.closest('.item').data('type');
+        $('.main.pane').toggleClass(type + '-enabled', $e.prop('checked'));
+      });
     });
-  });
+  <% end %>
 </script>

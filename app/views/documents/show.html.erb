@@ -223,89 +223,92 @@
   </tr>
 </script>
 <script>
-$(function() {
-  setTimeout(function() {
-    $('.error-checker').addClass('loading');
-    $.getJSON("/documents/<%=@document.id%>/verify", function(data) {
-      $('.error-checker').removeClass('loading');
-      if (data.length > 0) {
-        $('.error-checker').addClass('error');
-        var items = _.map(data, function(str) {
-          return "<li>" + str + "</li>";
+  <%= content_for :defer_js do %>
+
+    $(function() {
+      setTimeout(function() {
+        $('.error-checker').addClass('loading');
+        $.getJSON("/documents/<%=@document.id%>/verify", function(data) {
+          $('.error-checker').removeClass('loading');
+          if (data.length > 0) {
+            $('.error-checker').addClass('error');
+            var items = _.map(data, function(str) {
+              return "<li>" + str + "</li>";
+            });
+            $('.error-modal .content ol').html(items.join('\n'));
+          } else {
+            /*$('.error-checker').addClass('no-error');*/
+          }
         });
-        $('.error-modal .content ol').html(items.join('\n'));
-      } else {
-        /*$('.error-checker').addClass('no-error');*/
-      }
-    });
-  }, 0);
-  $('.btn-errors').click(function() {
-    $('.error-modal').modal('show');
-  });
+      }, 0);
+      $('.btn-errors').click(function() {
+        $('.error-modal').modal('show');
+      });
 
-  <% 
-  flash.each do |type, message|
-    next if message.blank?
-    type = :success if type.to_sym == :notice
-    type = :error   if type.to_sym == :alert
-    next unless [:error, :info, :success, :warning].include?(type.to_sym)
-    %>
-    toastr.<%= type %>('<%= message%>');
-    <%
-  end
-  %>
-  $("#demoModal").modal({
-    onDeny: function() {
-      localStorage.setItem("DontShowDemo", "true");
-    }
-  });
-  if(localStorage.getItem("DontShowDemo") !== "true") {
-    $("#demoModal").modal("show");
-  }
-  $("#showDemoButton").click(function() {
-    $("#demoModal").modal("show");
-    localStorage.setItem("DontShowDemo", false);
-  });
-
-  $(".passage .annotation").click(function(e) {
-    var $e = $(e.currentTarget);
-    console.log($e.data('ids'));
-  });
-  
-  var doc = new BioC('<%=@document.id%>', {
-    root: '<%=root_path%>',
-    busy: <%=@collection.busy? || @document.done %>,
-    collectionId: '<%=@collection.id%>', 
-    annotations: [
       <% 
-      p_offset = @document.bioc_doc.passages.map{|p, index| p.offset.to_i }
-      @document.bioc_doc.all_annotations.each do |a| 
-        entity = EntityUtil.get_annotation_entity(a)
-        text = a.text
-        a.locations.each do |l|
-          p_idx = 0
-          
-          while p_idx < p_offset.size - 1
-            break if p_offset[p_idx] > l.offset.to_i
-            p_idx += 1
-          end
-          p_idx -= 1 if p_idx > 0
-          %>
-          {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>"},
-          <%
-        end
-      end 
+      flash.each do |type, message|
+        next if message.blank?
+        type = :success if type.to_sym == :notice
+        type = :error   if type.to_sym == :alert
+        next unless [:error, :info, :success, :warning].include?(type.to_sym)
+        %>
+        toastr.<%= type %>('<%= message%>');
+        <%
+      end
       %>
-    ],
-    endpoints: {
-      annotations: "<%=document_annotations_path(@document) %>"
-    },
-    templates: {
-      head: $("#conceptHead").html(),
-      view1: Handlebars.compile($("#conceptViewTemplate1").html()),
-      view2: Handlebars.compile($("#conceptViewTemplate2").html())
-    }
-  });
-  $("#documentSpinner").removeClass("active");
-});
+      $("#demoModal").modal({
+        onDeny: function() {
+          localStorage.setItem("DontShowDemo", "true");
+        }
+      });
+      if(localStorage.getItem("DontShowDemo") !== "true") {
+        $("#demoModal").modal("show");
+      }
+      $("#showDemoButton").click(function() {
+        $("#demoModal").modal("show");
+        localStorage.setItem("DontShowDemo", false);
+      });
+
+      $(".passage .annotation").click(function(e) {
+        var $e = $(e.currentTarget);
+        console.log($e.data('ids'));
+      });
+      
+      var doc = new BioC('<%=@document.id%>', {
+        root: '<%=root_path%>',
+        busy: <%=@collection.busy? || @document.done %>,
+        collectionId: '<%=@collection.id%>', 
+        annotations: [
+          <% 
+          p_offset = @document.bioc_doc.passages.map{|p, index| p.offset.to_i }
+          @document.bioc_doc.all_annotations.each do |a| 
+            entity = EntityUtil.get_annotation_entity(a)
+            text = a.text
+            a.locations.each do |l|
+              p_idx = 0
+              
+              while p_idx < p_offset.size - 1
+                break if p_offset[p_idx] > l.offset.to_i
+                p_idx += 1
+              end
+              p_idx -= 1 if p_idx > 0
+              %>
+              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>"},
+              <%
+            end
+          end 
+          %>
+        ],
+        endpoints: {
+          annotations: "<%=document_annotations_path(@document) %>"
+        },
+        templates: {
+          head: $("#conceptHead").html(),
+          view1: Handlebars.compile($("#conceptViewTemplate1").html()),
+          view2: Handlebars.compile($("#conceptViewTemplate2").html())
+        }
+      });
+      $("#documentSpinner").removeClass("active");
+    });
+  <% end %>
 </script>

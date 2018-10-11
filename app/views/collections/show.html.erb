@@ -53,10 +53,12 @@
 </div>
 
 <script>
-$(function() {
-  $('table').tablesort();
-  setInterval(updateCollectionStatus, 10000);
+<%= content_for :defer_js do -%>
+  $(function() {
+    $('table').tablesort();
+    setInterval(updateCollectionStatus, 10000);
 
-});
+  });
+<%- end -%>
 </script>
 

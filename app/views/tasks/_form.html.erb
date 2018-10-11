@@ -99,6 +99,7 @@
     }
     $("input[type='submit']").prop("disabled", !enabled);
   }
+  <%= content_for :defer_js do %>
   $(function() {
     $('.ui.radio.checkbox').checkbox({
       onChange: function() {
@@ -112,4 +113,5 @@
     $("select, input").change(checkSubmitButton);
     $("#output_model_name").keyup(checkSubmitButton);
   });
+  <%-end-%>
 </script>

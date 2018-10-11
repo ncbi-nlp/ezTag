@@ -93,81 +93,83 @@
 
 <br>
 <script type="text/javascript">
-function q1(collection) {
-  $("#annotatorQ1")
-  .modal({
-    onDeny: function() {
-      q2(collection);
-    },
-    onApprove: function() {
-      q4(collection, 3)
-    }
-  })
-  .modal('show');
-}
-function q2(collection) {
-  $("#annotatorQ2")
-  .modal({
-    onDeny: function() {
-      q3(collection);
-    },
-    onApprove: function() {
-      q4(collection, 1);
-    }
-  })
-  .modal('show');
-}
-function q3(collection) {
-  $("#annotatorQ3")
-  .modal({
-    onDeny: function() {
-      q4(collection, 0);
-    },
-    onApprove: function() {
-      q4(collection, 2);
-    }
-  })
-  .modal('show');
-}
-function q4(collection, mode) {
-if (mode == 1) {
-    $("#submitModal .confirm").hide();
-    $("#submitModal .for-pre-trained-model").hide();
-    $("#submitModal .for-lexicon label").html("Select a lexicon file");
-  } else if (mode == 2) {
-    $("#submitModal .confirm").hide();
-    $("#submitModal .for-pre-trained-model").show();
-    $("#submitModal .for-lexicon label").html("Select a lexicon file for normalization");
-  }
-  $("#submitModal input[name='mode']").val(mode);
-  $("#submitModal input[type='checkbox']").prop('checked', false);
-  $("#submitModal input[type='file']").val("");
-
-  $("#submitModal form").attr("action", "/collections/" + collection + "/tasks");
-  if (mode == 1 || mode == 2) {
-    $("#submitModal")
+  function q1(collection) {
+    $("#annotatorQ1")
     .modal({
+      onDeny: function() {
+        q2(collection);
+      },
       onApprove: function() {
-        $("#submitModal form").submit();
+        q4(collection, 3)
       }
     })
-    .modal('show');  
-  } else {
-    $("#submitModal form").submit();
+    .modal('show');
   }
-}
-window.onload = function() {
-  $(".annotator").click(function(e) {
-    e.stopPropagation();
-    var $e = $(e.currentTarget);
-    var hasAnnotation = $e.hasClass("has-annotation");
-    if (hasAnnotation) {
-      q1($e.data("id"));
-    } else {
-      q2($e.data("id"));
+  function q2(collection) {
+    $("#annotatorQ2")
+    .modal({
+      onDeny: function() {
+        q3(collection);
+      },
+      onApprove: function() {
+        q4(collection, 1);
+      }
+    })
+    .modal('show');
+  }
+  function q3(collection) {
+    $("#annotatorQ3")
+    .modal({
+      onDeny: function() {
+        q4(collection, 0);
+      },
+      onApprove: function() {
+        q4(collection, 2);
+      }
+    })
+    .modal('show');
+  }
+  function q4(collection, mode) {
+  if (mode == 1) {
+      $("#submitModal .confirm").hide();
+      $("#submitModal .for-pre-trained-model").hide();
+      $("#submitModal .for-lexicon label").html("Select a lexicon file");
+    } else if (mode == 2) {
+      $("#submitModal .confirm").hide();
+      $("#submitModal .for-pre-trained-model").show();
+      $("#submitModal .for-lexicon label").html("Select a lexicon file for normalization");
     }
-    return false;
-  });
-};
+    $("#submitModal input[name='mode']").val(mode);
+    $("#submitModal input[type='checkbox']").prop('checked', false);
+    $("#submitModal input[type='file']").val("");
+
+    $("#submitModal form").attr("action", "/collections/" + collection + "/tasks");
+    if (mode == 1 || mode == 2) {
+      $("#submitModal")
+      .modal({
+        onApprove: function() {
+          $("#submitModal form").submit();
+        }
+      })
+      .modal('show');  
+    } else {
+      $("#submitModal form").submit();
+    }
+  }
+  <%= content_for :defer_js do %>
+    $(function() {
+      $(".annotator").click(function(e) {
+        e.stopPropagation();
+        var $e = $(e.currentTarget);
+        var hasAnnotation = $e.hasClass("has-annotation");
+        if (hasAnnotation) {
+          q1($e.data("id"));
+        } else {
+          q2($e.data("id"));
+        }
+        return false;
+      });
+    });
+  <% end %>
 
 </script>

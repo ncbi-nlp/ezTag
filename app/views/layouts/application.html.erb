@@ -11,7 +11,6 @@
     <%= csrf_meta_tags %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
   </head>
-
   <body class="<%=params[:controller]%>-<%=params[:action]%>" data-no-turbolink>
     <nav class="ui fixed menu inverted navbar" id="main-nav">
       <div class="ui container clearing">
@@ -67,20 +66,8 @@
         </div>
       </div> 
     <% end %>
-    <script>
-    window.onload = (function() {
-      $('.message .close').on('click', function() {
-        $(this).closest('.message').slideUp();
-      });
-      setTimeout(function() {
-        $('.main.container > .ui.message .close').click();
-      }, 3000);
-      $('.ui.dropdown').dropdown();
-      $(".need-popup").popup({inline: true});
-    });
-    </script>
 </body>
-<%= javascript_include_tag 'application', async: "async" %>
+<%= javascript_include_tag 'application' %>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111986512-1"></script>
@@ -88,7 +75,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'UA-111986512-1');
 </script>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -111,6 +97,16 @@
       "showMethod": "fadeIn",
       "hideMethod": "fadeOut"
     }
+    $('.message .close').on('click', function() {
+      $(this).closest('.message').slideUp();
+    });
+    setTimeout(function() {
+      $('.main.container > .ui.message .close').click();
+    }, 3000);
+    $('.ui.dropdown').dropdown();
+    $(".need-popup").popup({inline: true});
+
+    <%= yield :defer_js %>
   };
 </script>
 </html>

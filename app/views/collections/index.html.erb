@@ -62,8 +62,11 @@
       $(".ui.dropdown").dropdown();
     });
   }
-  $(function() {
-    updateViews2();
-    setInterval(updateViews2, 10000);    
-  });
+  <%= content_for :defer_js do %>
+    $(function() {
+      console.log("in collections#index")
+      updateViews2();
+      setInterval(updateViews2, 10000);    
+    });
+  <% end %>
 </script>

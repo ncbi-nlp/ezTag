@@ -90,10 +90,12 @@
   <% end %>
 
 </div>
-
 <script>
-$(function() {
-  setInterval(updateCollectionStatus, 10000);
-});
+<%= content_for :defer_js do %>
+  // in documents#index
+  $(function() {
+    setInterval(updateCollectionStatus, 10000);
+  });
+<% end %>
 </script>
 
