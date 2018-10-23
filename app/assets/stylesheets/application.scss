@@ -79,7 +79,10 @@ a {
   .ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
     background-color: #00B5AD !important;
   }
-
+  .curatable-checker .ui.toggle.checkbox input:checked ~ .box:before, 
+  .curatable-checker .ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #2185D0 !important;
+  }
 
   .navbar .container {
     width: 100%;

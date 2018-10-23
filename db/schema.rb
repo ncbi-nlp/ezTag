@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180619100618) do
+ActiveRecord::Schema.define(version: 20181023082729) do
 
   create_table "collections", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.integer  "user_id"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20180619100618) do
     t.integer  "batch_id",                             default: 0
     t.integer  "batch_no",                             default: 0
     t.boolean  "done",                                 default: false
+    t.boolean  "curatable",                            default: false
     t.index ["collection_id"], name: "index_documents_on_collection_id", using: :btree
     t.index ["did"], name: "index_documents_on_did", using: :btree
   end

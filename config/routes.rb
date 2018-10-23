@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       get 'partial'
       post 'delete_all_annotations'
       post 'done'
+      post 'curatable'
     end
     resources :annotations 
   end

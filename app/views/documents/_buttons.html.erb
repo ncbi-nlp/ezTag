@@ -29,7 +29,13 @@
       <div class='ui label yellow'><%=@collection.status_with_icon %></div>
     </div>
   <% else %>
-    <div class="document-done-checker done-checker need-popup" title="Toggle this on when annotation is complete">
+    <div class="document-done-checker curatable-checker need-popup" title="Toggle this on when annotation is complete">
+      <div class="ui checkbox toggle">
+        <input type="checkbox" name="example" data-id='<%=@document.id%>' <%='checked' if @document.curatable %> <%='disabled' if !@collection.task_available? %>>
+        <label>Curatable</label>
+      </div>
+    </div>
+    <div class="document-done-checker done-checker need-popup" title="Toggle this on when document is curatable">
       <div class="ui checkbox toggle">
         <input type="checkbox" name="example" data-id='<%=@document.id%>' <%='checked' if @document.done %> <%='disabled' if !@collection.task_available? %>>
         <label>Complete</label>

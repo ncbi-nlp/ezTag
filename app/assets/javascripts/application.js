@@ -58,7 +58,33 @@ $(function() {
       });
     },
   });
-});
+  $('.curatable-checker .checkbox').checkbox().checkbox({
+    onChange: function() {
+      var $e = $(this);
+      var id = $e.data('id');
+      var checked = $e.prop('checked');
+      var $loader = $e.siblings('.loader');
+      console.log(id, checked, $loader);
+      $loader.addClass('active');
+      $e.addClass
+      $.ajax({
+        url: '/documents/' + id + '/curatable',
+        method: "POST",
+        data: {value: checked}, 
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        success: function(data) {
+          location.reload();
+          console.log(data);
+        }, 
+        error: function(err) {
+          console.error(err);
+        },
+        complete: function() {
+          $loader.removeClass('active');
+        }
+      });
+    },
+  });});
 
 /*! modernizr 3.6.0 (Custom Build) | MIT *
  * https://modernizr.com/download/?-webp-setclasses !*/

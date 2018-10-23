@@ -40,6 +40,7 @@
               </div>
             </div>
           </th>
+          <th>Curatable</th>
           <th>Last Update</th>
           <th></th>
         </tr>
@@ -56,6 +57,9 @@
                 <input type="checkbox" name="example" <%='checked' if document.done %> data-id='<%=document.id%>' <%='disabled' if !@collection.task_available? %>>
                 <div class="ui centered mini inline loader"></div>
               </div>
+            </td>
+            <td style='text-align:center;'>
+              <%= document.curatable_str %>
             </td>
             <td><%= time_ago_in_words(document.updated_at) %> ago</td>
             <td class="center aligned">

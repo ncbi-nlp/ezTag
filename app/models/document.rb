@@ -1,7 +1,7 @@
 require 'rollbar'
 class Document < ApplicationRecord
   belongs_to :collection, counter_cache: true
-  
+
   def save_document(d, bioc, collection)
     self.did = d.id
     self.did_no = self.did.to_i
@@ -23,6 +23,14 @@ class Document < ApplicationRecord
     self.handle_update_xml(d)
   end
 
+  def curatable_str 
+    if self.curatable 
+      "Y"
+    else
+      "N"
+    end
+  end
+  
   def save_document_from_pmid(pmid, collection)
     begin
       xml = open("https://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/Empty/#{pmid}/BioC/").read
