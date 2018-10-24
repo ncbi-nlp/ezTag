@@ -331,8 +331,9 @@ class Document < ApplicationRecord
     end
     annotations = doc.all_annotations 
     self.annotations_count = annotations.size
+    self.curatable = doc.infons["curatable"] if doc.infons["curatable"].present?
     self.save
-
+    
     self.collection.update_annotation_count
   end
 

@@ -110,8 +110,10 @@ class DocumentsController < ApplicationController
       render json: {}, status: 401
       return
     end
-    @document.curatable = params[:value]
-    @document.save!
+    Document.transaction do 
+      @document.bioc_doc.infons["curatable"] = params[:value]
+      @document.save_xml(@document.bioc)
+    end
     render json: @document
   end
 
