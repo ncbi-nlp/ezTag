@@ -32,7 +32,7 @@
     <div class="document-done-checker done-checker need-popup" title="Toggle this on when annotation is complete">
       <div class="ui checkbox toggle">
         <input type="checkbox" name="example" data-id='<%=@document.id%>' <%='checked' if @document.done %> <%='disabled' if !@collection.task_available? %>>
-        <label>Complete</label>
+        <label>Done</label>
       </div>
     </div>
     <div class="document-done-checker curatable-checker need-popup" title="Toggle this on when document is curatable">

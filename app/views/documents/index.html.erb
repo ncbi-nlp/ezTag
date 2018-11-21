@@ -28,7 +28,7 @@
             %>
             <div class='need-popup' title='<%=popup_title%>'>
               <div class="ui simple dropdown <%='disabled' if !@collection.task_available? %>">
-                Complete <i class="dropdown icon" style='margin-left:0;'></i>
+                Done <i class="dropdown icon" style='margin-left:0;'></i>
                 <div class="menu" >
                   <div class='item'>
                     <%=link_to 'Check All', done_all_collection_path(@collection, value: true), method: :post, data: { confirm: 'Are you sure for checking all documents?' } %>

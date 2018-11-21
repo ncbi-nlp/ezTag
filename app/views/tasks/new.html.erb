@@ -19,16 +19,16 @@
       <p>
         <% if @task.task_type == 1 %>
           <% if @target_document.size == 0 %>
-            Nothing has been marked as "Complete". Only the documents that are marked as "Complete" will be used for training.
+            Nothing has been marked as "Done". Only the documents that are marked as "Done" will be used for training.
             <br>
-            You can mark/unmark "Complete" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
+            You can mark/unmark "Done" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
           <% elsif !@collection.has_annotations_on_done_documents? %>
-            There are no annotations in the completed documents (i.e. documents marked as "Complete").
+            There are no annotations in the completed documents (i.e. documents marked as "Done").
           <% end %>
         <% else %>
-          All documents are marked as "Complete". Only the documents that are not marked as "Complete" will be auto-annotated.
+          All documents are marked as "Done". Only the documents that are not marked as "Done" will be auto-annotated.
           <br>
-          You can mark/unmark "Complete" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
+          You can mark/unmark "Done" on <%=link_to 'the document list page', collection_documents_path(@collection)%> or on the manual annotation page.
         <% end %>
       </p>
     </div>
@@ -42,9 +42,9 @@
     <div class="content">
       <div class="header">
         <% if @task.task_type == 1 %>
-          <%= @target_document.size %> (marked as "Complete") out of <%= @collection.documents.size %> documents will be used for training
+          <%= @target_document.size %> (marked as "Done") out of <%= @collection.documents.size %> documents will be used for training
         <% else %>
-          <%= @target_document.size %> (not marked as "Complete") out of <%= @collection.documents.size %> documents will be auto-annotated
+          <%= @target_document.size %> (not marked as "Done") out of <%= @collection.documents.size %> documents will be auto-annotated
         <% end %>
       </div>
     </div>
