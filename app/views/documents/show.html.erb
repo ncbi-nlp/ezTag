@@ -138,6 +138,11 @@
         <a id="showMoreBtn" target='_blank'><i class="fa fa-external-link"></i> Show More</a>
       </div>
       <div class="field">
+        <label>Note
+        </label>
+        <input type="text" name="note" maxlength='50' <%="disabled" if @collection.busy? %>>
+      </div>
+      <div class="field">
         <div class="ui checkbox for-mention hide-for-add">
           <input type="checkbox" tabindex="0" name="mode" value="concept" <%="disabled" if @collection.busy? %>>
           <label>
@@ -214,12 +219,12 @@
         <input type="text" name="concept" value="{{concept}}">
       </span>
     </td>
-    <td class='td-annotation-text'><i class="icon search" title="edit"></i> {{{text}}}</td>
+    <td class='td-annotation-text'><i class="icon {{iconClass}}" title="edit"></i> {{{text}}}</td>
   </tr>
 </script>
 <script type="text/template" id="conceptViewTemplate2">
   <tr data-id="{{id}}" data-passage="{{passage}}" data-offset="{{offset}}" class="concept annotation-tr">
-    <td class='td-annotation-text'><i class="icon search" title="edit"></i> {{{text}}}</td>
+    <td class='td-annotation-text'><i class="icon {{iconClass}}" title="edit"></i> {{{text}}}</td>
   </tr>
 </script>
 <script>
@@ -293,7 +298,7 @@
               end
               p_idx -= 1 if p_idx > 0
               %>
-              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>"},
+              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>'},
               <%
             end
           end 

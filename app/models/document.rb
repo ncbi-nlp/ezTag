@@ -75,7 +75,7 @@ class Document < ApplicationRecord
     "#{max + 1}"
   end
 
-  def annotate_all_by_text(text, entity_type, concept, case_sensitive, whole_word)
+  def annotate_all_by_text(text, entity_type, concept, case_sensitive, whole_word, note)
     exist_offsets = []
     currents_annotations = self.bioc_doc.all_annotations.each do |a|
       if a.text.upcase == text.upcase
@@ -106,6 +106,7 @@ class Document < ApplicationRecord
               a.text = s.text[offset - s.offset, text.length]
               a.infons["type"] = entity_type
               a.infons["identifier"] = concept
+              a.infons["note"] = note if note.present?
               l = SimpleBioC::Location.new(a)
               l.offset = offset
               l.length = text.length
@@ -122,6 +123,7 @@ class Document < ApplicationRecord
             a.text = p.text[offset - p.offset, text.length]
             a.infons["type"] = entity_type
             a.infons["identifier"] = concept
+            a.infons["note"] = note if note.present?
             l = SimpleBioC::Location.new(a)
             l.offset = offset
             l.length = text.length
@@ -135,7 +137,7 @@ class Document < ApplicationRecord
     end
   end
 
-  def add_annotation(text, offset, entity_type, concept)
+  def add_annotation(text, offset, entity_type, concept, note = "")
     Document.transaction do 
       a = nil
       self.bioc_doc.passages.each do |p|
@@ -148,6 +150,7 @@ class Document < ApplicationRecord
               a.text = text
               a.infons["type"] = entity_type
               a.infons["identifier"] = concept
+              a.infons["note"] = note if note.present?
               l = SimpleBioC::Location.new(a)
               l.offset = offset
               l.length = text.length
@@ -162,6 +165,7 @@ class Document < ApplicationRecord
             a.text = text
             a.infons["type"] = entity_type
             a.infons["identifier"] = concept
+            a.infons["note"] = note if note.present?
             l = SimpleBioC::Location.new(a)
             l.offset = offset
             l.length = text.length
@@ -201,27 +205,27 @@ class Document < ApplicationRecord
     return true
   end
 
-  def update_concept_in_document(node, old, entity_type, concept)
+  def update_concept_in_document(node, old, entity_type, concept, note)
     node.annotations.each do |a|
       entity = EntityUtil.get_annotation_entity(a)
       logger.debug("#{a.id.inspect} #{entity.inspect}")
       if entity[:type] == old[:type] && entity[:id] == old[:id]
         logger.debug("FOUND id")
-        EntityUtil.update_annotation_entity(a, entity_type, concept)
+        EntityUtil.update_annotation_entity(a, entity_type, concept, note)
       end
     end
   end
 
-  def update_mention_in_document(node, id, entity_type, concept)
+  def update_mention_in_document(node, id, entity_type, concept, note)
     node.annotations.each do |a|
       logger.debug("#{a.id.inspect} ==? #{id.inspect}")
       if a.id == id
         logger.debug("FOUND id")
-        EntityUtil.update_annotation_entity(a, entity_type, concept)
+        EntityUtil.update_annotation_entity(a, entity_type, concept, note)
       end
     end
   end
-  def update_concept(id, entity_type, concept)
+  def update_concept(id, entity_type, concept, note)
     old_a = nil
     self.bioc_doc.all_annotations.each do |a|
       old_a = a if a.id == id
@@ -231,21 +235,21 @@ class Document < ApplicationRecord
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_concept_in_document(s, old_entity, entity_type, concept)
+          update_concept_in_document(s, old_entity, entity_type, concept, note)
         end
-        update_concept_in_document(p, old_entity, entity_type, concept)
+        update_concept_in_document(p, old_entity, entity_type, concept, note)
       end
       self.save_xml(self.bioc)
     end
   end
 
-  def update_mention(id, entity_type, concept)
+  def update_mention(id, entity_type, concept, note)
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_mention_in_document(s, id, entity_type, concept)
+          update_mention_in_document(s, id, entity_type, concept, note)
         end
-        update_mention_in_document(p, id, entity_type, concept)
+        update_mention_in_document(p, id, entity_type, concept, note)
       end
       self.save_xml(self.bioc)
     end

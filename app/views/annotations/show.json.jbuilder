@@ -14,6 +14,7 @@ json.annotations @document.bioc_doc.all_annotations.each do |a|
     json.type entity[:type]
     json.concept entity[:id]
     json.text a.text
+    json.note a.infons["note"]
     json.offset l.offset
     json.passage "#passage-#{p_idx - 1}"
   end

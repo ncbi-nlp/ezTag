@@ -406,11 +406,11 @@ BioC.prototype.renderAnnotationTable = function() {
         if (j == 0) {
           html.push(self.templates.view1({
             id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage,
-            size: text.length, type: last.type, concept: last.concept
+            size: text.length, type: last.type, concept: last.concept, iconClass: (text[j].note ?'comment': 'search')
           }));
         } else {
           html.push(self.templates.view2({
-            id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage
+            id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage, iconClass: (text[j].note ?'comment': 'search')
           }));
         }
       }
@@ -429,11 +429,11 @@ BioC.prototype.renderAnnotationTable = function() {
     if (j == 0) {
       html.push(self.templates.view1({
         id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage,
-        size: text.length, type: last.type, concept: last.concept
+        size: text.length, type: last.type, concept: last.concept, iconClass: (text[j].note ?'comment': 'search')
       }));
     } else {
       html.push(self.templates.view2({
-        id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage
+        id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage, iconClass: (text[j].note ?'comment': 'search')
       }));
     }
   }
@@ -612,6 +612,7 @@ BioC.prototype.clickAnnotation = function(e) {
   }
   var old_type = a.type;
   var old_concept = a.concept;
+  var old_note = a.note;
   $("#annotationModal .hide-for-add").show();
   $("#annotationModal .show-for-add").hide();
   $("#annotationModal .for-annotate-all").hide();
@@ -621,6 +622,7 @@ BioC.prototype.clickAnnotation = function(e) {
   $("#annotationModal input[name='offset']").val(offsets.join(","));
   $("#annotationModal select[name='type']").dropdown("set selected", a.type);
   $("#annotationModal input[name='concept']").val(a.concept);
+  $("#annotationModal input[name='note']").val(a.note);
   if (a.concept.match(/^MESH:/i)) {
     var parts = a.concept.split(":");
     $("#showMoreBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
@@ -701,9 +703,10 @@ BioC.prototype.clickAnnotation = function(e) {
         $("#annotationModal input[name='concept']").val($("#annotationModal input[name='concept']").val().trim());
         var new_type = $("#annotationModal select[name='type']").val();
         var new_concept = $("#annotationModal input[name='concept']").val();
+        var new_note = $("#annotationModal input[name='note']").val();
         var mode = $("#annotationModal input[name='mode']").val();
         var needAnnotateAll = ($(".btn-update-text").text() != "Update");
-        if (old_concept == new_concept && old_type == new_type && !needAnnotateAll) {
+        if (old_concept == new_concept && old_note == new_note && old_type == new_type && !needAnnotateAll) {
           return;
         }
         $("#annotationModal .dimmer").addClass("active");

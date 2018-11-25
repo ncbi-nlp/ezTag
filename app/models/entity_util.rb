@@ -16,9 +16,14 @@ class EntityUtil
     # {type: entity_type, id: ""}
   end
 
-  def self.update_annotation_entity(annotation, type, concept) 
+  def self.update_annotation_entity(annotation, type, concept, note = "") 
     annotation.infons["type"] = type unless type.nil?
     annotation.infons["identifier"] = concept unless concept.nil?
+    if note.present?
+      annotation.infons["note"] = note 
+    else
+      annotation.infons.delete('note')
+    end
     # unless annotation.infons[type + "ID"].nil?
     #   annotation.infons[type + "ID"] = concept
     #   return

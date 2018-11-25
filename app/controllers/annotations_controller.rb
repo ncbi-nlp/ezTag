@@ -28,8 +28,8 @@ class AnnotationsController < ApplicationController
     @offset = (params[:offset] || "-1").to_i
     @concept = params[:concept] || ""
     @type = params[:type] || ""
-
-    @ret = @document.add_annotation(@text, @offset, @type, @concept)
+    @note = params[:note] || ""
+    @ret = @document.add_annotation(@text, @offset, @type, @concept, @note)
     @entity_types = EntityType.where(collection_id: @document.collection_id)
 
     respond_to do |format|
@@ -43,20 +43,21 @@ class AnnotationsController < ApplicationController
   def update
     @concept = params[:concept] || ""
     @type = params[:type] || ""
+    @note = params[:note] || ""
     @concept.strip!
     @type.strip!
     if params[:mode] == "true" || params[:mode] == "1" || params[:mode] == "concept"
       logger.debug("update_concept")
-      @document.update_concept(params[:id], @type, @concept)
+      @document.update_concept(params[:id], @type, @concept, @note)
     else
       logger.debug("update_mention")
-      @document.update_mention(params[:id], @type, @concept)
+      @document.update_mention(params[:id], @type, @concept, @note)
     end
     if params[:annotate_all] == "all"
       @text = (params[:text] || "").strip
       @case_sensitive = (params[:case_sensitive] == "y")
       @whole_word = (params[:whole_word] == "y")
-      @document.annotate_all_by_text(@text, @type, @concept, @case_sensitive, @whole_word)
+      @document.annotate_all_by_text(@text, @type, @concept, @case_sensitive, @whole_word, @note)
     end
     @entity_types = EntityType.where(collection_id: @document.collection_id)
     respond_to do |format|
