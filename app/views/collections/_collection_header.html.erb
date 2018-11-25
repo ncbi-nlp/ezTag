@@ -2,6 +2,6 @@
   <%= @collection.name %>
   <div class="sub header"><%= @collection.note %></div>
   <% unless @collection.status.blank? %>
-    <div class="ui top right attached teal label collection-status" data-id="<%=@collection.id%>"><%=@collection.status_with_icon %></div>
+    <div class="ui top right attached teal label collection-status" data-status="<%=@collection.status%>" data-id="<%=@collection.id%>"><%=@collection.status_with_icon %></div>
   <% end %>
 </h1>

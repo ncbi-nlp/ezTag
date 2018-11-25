@@ -24,10 +24,21 @@ function updateCollectionStatus() {
     return;
   }
   var id = $e.data("id");
+  var status = $e.data('status');
   $.getJSON("/collections/" + id + ".json", function(data) {
+    console.log(data.status, status);
     $e.html(data.status_with_icon);
     $(".task-buttons-annotate").toggleClass("disabled", !data.task_available);
     $(".task-buttons-train").toggleClass("disabled", !data.task_available || !data.has_annotations);
+    $(".documents-list .ui.checkbox input[type='checkbox']").prop('disabled', !data.task_available);
+    if (data.task_available) {
+      popup_title = "Mark when annotation is done. The documents that are marked will be used for training TaggerOne";
+    } else {
+      popup_title = "This feature is unavailable while the collection is being processed";
+    }
+    $(".need-popup.for-done-button").attr('title', popup_title);
+    $(".ajax-update-disbled-with-status").toggleClass('disabled', !data.task_available);
+
   });
 }
 $(function() {

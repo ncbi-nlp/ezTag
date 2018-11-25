@@ -33,15 +33,15 @@
             </td>
             <td style="line-height: 200%">sample <span style="background-color: <%= entity_type.color %>">annotated text</span> in a sentence</td>
             <td class="center aligned">
-              <%= link_to 'Edit', edit_entity_type_path(entity_type), class: "button ui mini teal #{'disabled' if @collection.busy?}" %>
-              <%= link_to 'Delete', entity_type, method: :delete, data: { confirm: 'Are you sure?' }, class: "button ui mini teal #{'disabled' if @collection.busy?}" %>
+              <%= link_to 'Edit', edit_entity_type_path(entity_type), class: "button ui mini teal ajax-update-disbled-with-status #{'disabled' if @collection.busy?}" %>
+              <%= link_to 'Delete', entity_type, method: :delete, data: { confirm: 'Are you sure?' }, class: "button ui mini teal ajax-update-disbled-with-status #{'disabled' if @collection.busy?}" %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% end %>
-  <%= link_to 'New Entity Type', new_collection_entity_type_path(@collection), class: "ui button primary #{'disabled' if @collection.busy?}" %>
+  <%= link_to 'New Entity Type', new_collection_entity_type_path(@collection), class: "ui button primary ajax-update-disbled-with-status #{'disabled' if @collection.busy?}" %>
 </div>
 <br>
 
