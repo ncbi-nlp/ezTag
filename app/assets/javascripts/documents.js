@@ -462,7 +462,7 @@ BioC.prototype.bindAnnotationTr = function() {
       }
     })
 
-  $(".annotation-tr .icon.search").unbind("click").click(function(e) {
+  $(".annotation-tr .icon.search, .annotation-tr .icon.comment").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     self.clickAnnotation($e.closest("tr"));
   });
