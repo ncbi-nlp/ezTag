@@ -44,3 +44,9 @@
     <%= paginate @users %>
   </div>
 </div>
+<%=link_to '/users', class: 'ui button green' do %>
+  List
+<% end %>
+<%=link_to '/users/new', class: 'ui button blue' do %>
+  New User
+<% end %>

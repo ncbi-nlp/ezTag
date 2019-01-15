@@ -28,8 +28,30 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    redirect_to @current_user
+    if !@current_user.super_admin?
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+    @user = User.new
+    # redirect_to @current_user
   end
+
+  def create
+    if !@current_user.super_admin?
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+    
+    @user = User.new(user_params)
+    respond_to do |format|
+      if @user.save
+        format.html { redirect_to users_path, notice: 'The user was successfully created.' }
+        format.json { render :show, status: :created, location: @user }
+      else
+        format.html { render :new }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
 
   # GET /users/1/edit
   def edit

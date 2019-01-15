@@ -37,7 +37,11 @@
     </div>
   <% end %>
   <div class="actions">
-    <%= f.submit "Update", class: 'ui button primary' %>
-    <%= link_to 'Show Profile', @user, class: 'ui button' %>
+    <% if @current_user.super_admin? %>
+      <%= link_to 'Back', users_path, class: "ui button" %>
+    <% else %>
+      <%= link_to 'Show Profile', @user, class: 'ui button' %>
+    <% end %>
+    <%= f.submit "Submit", class: 'ui button primary' %>
   </div>
 <% end %>
