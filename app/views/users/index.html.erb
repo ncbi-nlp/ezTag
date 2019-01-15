@@ -3,12 +3,12 @@
 <table class="ui table table-bordered">
   <thead>
     <tr>
-      <th>Email</th>
+      <th><%=sortable 'email'%></th>
       <th>Session str</th>
-      <th>Ip</th>
+      <th><%=sortable 'ip'%></th>
       <th>#. collections</th>
-      <th>Created At</th>
-      <th>Last Sign In</th>
+      <th><%=sortable 'created_at'%></th>
+      <th><%=sortable 'last_sign_in_at'%></th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -17,18 +17,22 @@
     <% @users.each do |user| %>
       <tr>
         <td>
+          <% if user.super_admin? %>
+            <i class="icon user secret"></i>
+          <% end %>
           <% if user.valid_email? %>
             <%= user.email %>
           <% elsif user.email.present? %>
             <span style='color:silver;'>N/A</span>
           <% end %>  
         </td>
-        <td><%=link_to user.session_str, "/sessions/#{user.session_str}" %></td>
+        <td><%= link_to user.session_short, user %></td>
         <td><%= user.current_sign_in_ip %></td>
         <td><%= user.collections.size %></td>
-        <td><%= user.created_at %></td>
-        <td><%= user.last_sign_in_at %></td>
-        <td><%= link_to 'Show', user %></td>
+        <td><%=time_ago_in_words(user.created_at) %></td>
+        <td><%=time_ago_in_words(user.last_sign_in_at) if user.last_sign_in_at.present? %></td>
+        <td><%=link_to "Login as", "/sessions/#{user.session_str}" %></td>
+
         <td><%= link_to 'Edit', edit_user_path(user) %></td>
         <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>

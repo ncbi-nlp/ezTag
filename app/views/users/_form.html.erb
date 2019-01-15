@@ -28,6 +28,14 @@
     <%= f.password_field :password_confirmation, autocomplete: "off" %>
   </div>
 
+  <% if @current_user.super_admin? %>
+    <div class="field">
+      <div class="ui checkbox">
+        <%= f.check_box :super_admin %>
+        <%= f.label :super_admin %>
+      </div>
+    </div>
+  <% end %>
   <div class="actions">
     <%= f.submit "Update", class: 'ui button primary' %>
     <%= link_to 'Show Profile', @user, class: 'ui button' %>

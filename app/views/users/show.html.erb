@@ -1,9 +1,13 @@
 <h1 class="ui header">
-  <i class="icon user circle"></i>
-  <% if @current_user.valid_email? %>
-    <%= @current_user.email %>
+  <% if @user.super_admin? %>
+    <i class="icon user secret"></i>
   <% else %>
-    ID: <%= @current_user.session_str %>
+    <i class="icon user circle"></i>
+  <% end %>
+  <% if @user.valid_email? %>
+    <%= @user.email %>
+  <% else %>
+    ID: <%= @user.session_str %>
   <% end %>
 </h1>
 
@@ -35,10 +39,14 @@
   Log Out
 <% end %>
 
-<% if @current_user.valid_email? %>
-  <%=link_to 'Edit Profile', edit_user_registration_path, class: 'ui button teal basic' %>
+<% if @user.valid_email? %>
+  <% if @user.id == @current_user.id %>
+    <%=link_to 'Edit Profile', edit_user_registration_path, class: 'ui button teal basic' %>
+  <% else %>
+    <%=link_to 'Edit Profile', edit_user_path(@user), class: 'ui button teal basic' %>
+  <% end %>
 <% else %>
-  <%=link_to edit_user_path(@current_user), class: 'ui button green' do %>
+  <%=link_to edit_user_path(@user), class: 'ui button green' do %>
     <i class="icon linkify"></i>
     Register Email & Password
   <% end %>

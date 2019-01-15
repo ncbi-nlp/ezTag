@@ -2,21 +2,27 @@ class UsersController < ApplicationController
   before_action :authenticate_user!, only: [:index, :show, :new, :edit, :create, :update]
 
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  helper_method :sort_column, :sort_direction
+
   # GET /users
   # GET /users.json
   def index
     unless @current_user.super_admin?
-      return redirect_to "/"
+      return redirect_to "/", alert: 'Not authorized.'
     end
-    @users = User.page params[:page]
+    @users = User.order(sort_column + " " + sort_direction).page params[:page]
   end
 
   # GET /users/1
   # GET /users/1.json
   def show
     # semantic_breadcrumb :Account
-    if @current_user.session_str.present?
-      @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @current_user.session_str
+    if !@current_user.super_admin? && @user.id != @current_user.id
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+
+    if @user.session_str.present?
+      @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @user.session_str
     end
   end
 
@@ -27,6 +33,10 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
+    if !@current_user.super_admin? && @user.id != @current_user.id
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+
     unless @user.valid_email?
       @user.email = ""
     end
@@ -80,9 +90,18 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
+    if !@current_user.super_admin? && @user.id != @current_user.id
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+
     if params[:user][:password] != params[:user][:password_confirmation]
       return redirect_to :back, alert: "Password confirmation doesn't match Password"
     end
+
+    params[:user].delete(:password) if params[:user][:password].blank?
+    params[:user].delete(:super_admin) unless @current_user.super_admin?
+
+    logger.debug(params[:user])
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: 'User profile was successfully updated.' }
@@ -97,6 +116,10 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
+    if !@current_user.super_admin? && @user.id != @current_user.id
+      return redirect_to :back, alert: 'Not authorized.'
+    end
+
     @user.destroy
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully removed.' }
@@ -112,6 +135,14 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:email, :password)
+      params.require(:user).permit(:email, :password, :super_admin)
+    end
+
+    def sort_column
+      User.column_names.include?(params[:sort]) ? params[:sort] : "last_sign_in_at"
+    end
+
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
     end
 end

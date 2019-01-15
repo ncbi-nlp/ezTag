@@ -9,7 +9,7 @@ class User < ApplicationRecord
   end
 
   def super_admin?
-    %w(dongseop@gmail.com echosf@gmail.com).include?(self.email)
+    self.super_admin
   end
 
   has_many :collections, dependent: :destroy
@@ -44,4 +44,12 @@ class User < ApplicationRecord
     end
     self.session_str[-12..-1] || self.session_str
   end 
+
+  def session_short
+    if self.session_str.blank?
+      self.session_str = SecureRandom.uuid
+      self.save!
+    end
+    "#{self.session_str[0...4]}...#{self.session_str[-6...-1]}" || self.session_str
+  end
 end
