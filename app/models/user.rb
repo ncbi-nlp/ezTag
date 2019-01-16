@@ -30,10 +30,10 @@ class User < ApplicationRecord
     self.email.present? && !self.email.include?('@not-exist.email') 
   end
 
-  def email_or_id
-    return self.email if self.email.present?
-    "User#{self.id}"
+  def name_or_email_or_id
+    self.name || self.email || "User#{self.id}"
   end
+  
   def has_samples?
     self.collections.where("`key` = ?", 'samples').present?
   end

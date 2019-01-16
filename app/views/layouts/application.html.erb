@@ -39,7 +39,7 @@
             <%= link_to "/users/#{@current_user.id}", class: "item" do %>
               <i class="icon user"></i>
               <% if @current_user.valid_email? %>
-                <%= @current_user.email %>
+                <%= @current_user.name_or_email_or_id %>
               <% else %>
                ID: <%= @current_user.session_tail %>
               <% end %>

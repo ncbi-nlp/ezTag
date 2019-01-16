@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th><%=sortable 'email'%></th>
+      <th><%=sortable 'name'%></th>
       <th>Session str</th>
       <th><%=sortable 'ip'%></th>
       <th>#. collections</th>
@@ -26,6 +27,7 @@
             <span style='color:silver;'>N/A</span>
           <% end %>  
         </td>
+        <td><%= user.name %>
         <td><%= link_to user.session_short, user %></td>
         <td><%= user.current_sign_in_ip %></td>
         <td><%=link_to user.collections.size, user_collections_path(user) %></td>

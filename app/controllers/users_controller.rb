@@ -138,6 +138,7 @@ class UsersController < ApplicationController
       return redirect_to :back, alert: "Password confirmation doesn't match Password"
     end
 
+    params[:user].delete(:name) if params[:user][:name].blank?
     params[:user].delete(:password) if params[:user][:password].blank?
     params[:user].delete(:super_admin) unless @current_user.super_admin?
 
@@ -175,7 +176,7 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:email, :password, :super_admin)
+      params.require(:user).permit(:email, :password, :super_admin, :name)
     end
 
     def sort_column

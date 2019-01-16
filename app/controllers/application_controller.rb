@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
     if collection.present?
       title = "Collections"
       if @current_user.super_admin?
-        title = title + " of #{collection.user.email_or_id}"
+        title = title + " of #{collection.user.name_or_email_or_id}"
       end
       if @current_user.id == collection.user_id
         semantic_breadcrumb title, collections_path
