@@ -1,4 +1,4 @@
-<h1 class="ui header">Collections</h1>
+<h1 class="ui header">Collections of <%= @user.email_or_id %></h1>
 
 <% if @collections.blank? %>
   <div class='ui icon info message'>
@@ -58,7 +58,7 @@
 
 <script>
   function updateViews2() {
-    $(".collection-list").load('<%= partial_collections_path%>', function() {
+    $(".collection-list").load('<%= partial_user_collections_path(@user) %>', function() {
       $(".ui.dropdown").dropdown();
     });
   }

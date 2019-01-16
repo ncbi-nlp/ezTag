@@ -6,7 +6,7 @@ class TasksController < ApplicationController
   # GET /tasks
   # GET /tasks.json
   def index
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Tasks"
     @tasks = @collection.tasks
@@ -30,7 +30,7 @@ class TasksController < ApplicationController
     if @collection.busy?
       return redirect_to :back, alert: "Cannot create a new task because the collection is busy"
     end
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Create a Task"
     @task_type = params[:task_type] || "0"
@@ -117,7 +117,8 @@ class TasksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
-      @collection = @current_user.collections.find(params[:collection_id])
+      @collection = Collection.find(params[:collection_id])
+      redirect_to :back, alert: 'Not authorized' unless @collection.available?(@current_user)
     end
 
 

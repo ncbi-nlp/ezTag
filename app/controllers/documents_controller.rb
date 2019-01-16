@@ -7,9 +7,11 @@ class DocumentsController < ApplicationController
   # GET /documents
   # GET /documents.json
   def index
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name
-    @documents = @collection.documents.order("batch_id DESC, batch_no ASC, id DESC").page params[:page]
+    @documents = @collection.documents
+    @documents = @documents.where("did = ?", params[:did]) if params[:did].present?
+    @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page params[:page]
   end
 
   # GET /documents/1
@@ -42,7 +44,7 @@ class DocumentsController < ApplicationController
   # GET /documents/new
   def new
     @document = Document.new
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Add Documents"
   end
@@ -130,9 +132,10 @@ class DocumentsController < ApplicationController
       redirect_to "/", error: "Cannot access the document"
     end
     
+    logger.debug(params.inspect)
     if params[:file].present?
       error, dids = @collection.upload_from_file(params[:file], batch_id)
-    else params[:pmid].present?
+    elsif params[:pmid].present?
       error, dids = @collection.upload_from_pmids(params[:pmid], batch_id, params[:id_map])
     end
     logger.debug("RET === #{error.inspect}")

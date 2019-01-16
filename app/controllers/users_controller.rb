@@ -1,16 +1,34 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!, only: [:index, :show, :new, :edit, :create, :update]
-
+  before_action :set_top_menu
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   helper_method :sort_column, :sort_direction
 
   # GET /users
   # GET /users.json
   def index
-    unless @current_user.super_admin?
-      return redirect_to "/", alert: 'Not authorized.'
+    @users = User
+    if params[:term].present?
+      @users = @users.where("email like ?", "%#{params[:term]}%")
     end
-    @users = User.order(sort_column + " " + sort_direction).page params[:page]
+
+    if params[:email].present?
+      @users = @users.where("email = ?", params[:email])
+    end
+
+    unless @current_user.super_admin?
+      @users = @users.where("id = ?", @current_user.id)
+    end
+
+    if request.format.json?
+      @users = @users.order("email asc")
+    else
+      @users = @users.order(sort_column + " " + sort_direction).page params[:page]
+    end
+    respond_to do |format|
+      format.html
+      format.json {render json:@users.as_json(only: [:id, :email])}
+    end
   end
 
   # GET /users/1
@@ -166,5 +184,9 @@ class UsersController < ApplicationController
 
     def sort_direction
       %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
+    end
+
+    def set_top_menu
+      @top_menu = 'admin'
     end
 end

@@ -21,6 +21,16 @@
         <%= link_to "Collections", collections_path, class: "item #{'active' if @top_menu == 'collections'}" %>
         <%= link_to "Lexicons", lexicon_groups_path, class: "item #{'active' if @top_menu == 'lexicons'}" %>
         <%= link_to "Models", models_path, class: "item #{'active' if @top_menu == 'models'}" %>
+        <% if @current_user.super_admin? %>
+          <div class="ui dropdown item ">
+            Admin
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <%= link_to "Users", users_path, class: "item" %>
+              <%= link_to "API Keys", api_keys_path, class: "item" %>
+            </div>
+          </div>
+        <% end %>
         <%= link_to "#", onclick: "window.open('https://sites.google.com/view/eztaghelp/', 'eztag_help', 'width=850,height=800,menubar=no,location=no,scrollbars=yes,toolbar=no,status=no,resizable=yes');return false;", class: "item" do %>
               Tutorial
             <% end %>

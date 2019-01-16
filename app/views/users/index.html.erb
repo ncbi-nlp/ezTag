@@ -28,7 +28,7 @@
         </td>
         <td><%= link_to user.session_short, user %></td>
         <td><%= user.current_sign_in_ip %></td>
-        <td><%= user.collections.size %></td>
+        <td><%=link_to user.collections.size, user_collections_path(user) %></td>
         <td><%=time_ago_in_words(user.created_at) %></td>
         <td><%=time_ago_in_words(user.last_sign_in_at) if user.last_sign_in_at.present? %></td>
         <td><%=link_to "Login as", "/sessions/#{user.session_str}" %></td>

@@ -3,6 +3,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :trackable, :validatable
 
   before_validation :generate_session_str
+  has_many :api_keys, dependent: :destroy
 
   def generate_session_str
     self.session_str = SecureRandom.uuid if self.session_str.blank?
@@ -29,6 +30,10 @@ class User < ApplicationRecord
     self.email.present? && !self.email.include?('@not-exist.email') 
   end
 
+  def email_or_id
+    return self.email if self.email.present?
+    "User#{self.id}"
+  end
   def has_samples?
     self.collections.where("`key` = ?", 'samples').present?
   end

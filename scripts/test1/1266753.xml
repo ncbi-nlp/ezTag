@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE collection SYSTEM "BioC.dtd">
+<collection>
+  <source>PubMed</source>
+  <date>20171215</date>
+  <key>collection.key</key>
+  <document>
+    <id>1266753</id>
+    <passage>
+      <infon key="type">title</infon>
+      <offset>0</offset>
+      <text>Force-velocity-length relations in man expressed by a single hemodynamic expression: the ejection rate of change of power at peak tension.</text>
+    </passage>
+    <passage>
+      <infon key="type">abstract</infon>
+      <offset>139</offset>
+      <text>An attempt was made to develop a hemodynamic indicator of pump function that relates to the contractile characteristics of cardiac muscle. The ejection rate of change of power has ideal characteristics for this purpose. It is firmly based upon theories of fluid dynamics and its derivation is free of assumptions related to heart structure and function. It is measured as p dQ/dt + Q dp/dt, where p = pressure and Q = flow. When measured at peak tension, the ejection rate of change of power was (12.3 +/- 0.8) X 10(8) dynes cm sec-2 in 11 patients with abnormal ventricular performance (P less than 0.001). Studies in dogs showed no effect of preload or afterload. This suggests a relation to characteristics of muscle fibers, which was shown. If one assumes a thin wall sphere, the ejection rate of change of power at peak tension reduces to the following function of tension (T), fiber length (2 pi r), and rate of shortening (2 pi dr/dt): d(power)/dt = 8 pi T](dr/dt)2 + r d2r/dt2[. Thus, the contractile characteristics of muscle fibers (force, velocity and tension) are related in an uncomplicated fashion by a single and highly discriminating hemodynamic indicator of ventricular performance, the ejection rate of change of ventricular power measured at peak tension.</text>
+    </passage>
+  </document>
+</collection>

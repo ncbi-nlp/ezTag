@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :api_keys
   resources :models
   resources :lexicon_groups do
     resources :lexicons do
@@ -54,10 +55,30 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
+
   resources :users do
     collection do 
       post 'sendmail'
       post 'generate'
+    end
+    resources :collections do
+      collection do
+        get 'partial'
+        post 'load_samples'
+      end
+      resources :tasks do
+        collection do
+          get 'partial'
+        end
+      end
+      resources :documents
+      resources :entity_types
+      member do
+        get 'download'
+        post 'empty'
+        post 'done_all'
+        post 'delete_all_annotations'
+      end
     end
   end
   # devise_for :users, :controllers => { registrations: 'registrations' }

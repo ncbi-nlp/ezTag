@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE collection SYSTEM "BioC.dtd">
+<collection>
+  <source>PubMed</source>
+  <date>20171215</date>
+  <key>collection.key</key>
+  <document>
+    <id>1729995</id>
+    <infon key="curatable">false</infon>
+    <passage>
+      <infon key="type">title</infon>
+      <offset>0</offset>
+      <text>A model for faculty practice teaching clinics developed at the Oregon Health Sciences University.</text>
+    </passage>
+    <passage>
+      <infon key="type">abstract</infon>
+      <offset>98</offset>
+      <text>In 1988 the Oregon Health Sciences University established its first faculty practice teaching clinic wherein physicians in training were incorporated into a faculty private practice clinic; this pilot project proved very successful and has been subsequently adopted as the model for essentially all outpatient clinics (both medical and surgery) in the university system. The model encourages efficiency, overhead control, and appropriate staffing; it also compensates faculty members for their additional time spent teaching. The authors conclude this model may help other academic training centers adapt to the changing demands of medical education.</text>
+    </passage>
+  </document>
+</collection>

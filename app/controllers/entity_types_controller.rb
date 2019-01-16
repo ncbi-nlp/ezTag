@@ -6,7 +6,7 @@ class EntityTypesController < ApplicationController
   # GET /entity_types
   # GET /entity_types.json
   def index
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Entity Types"
     @entity_types = @collection.entity_types
@@ -19,7 +19,7 @@ class EntityTypesController < ApplicationController
 
   # GET /entity_types/new
   def new
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Entity Types", collection_entity_types_path(@collection)
     semantic_breadcrumb "new"
@@ -30,7 +30,7 @@ class EntityTypesController < ApplicationController
   # GET /entity_types/1/edit
   def edit
     @collection = @entity_type.collection
-    semantic_breadcrumb "Collections", :collections_path
+    breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection
     semantic_breadcrumb "Entity Types", collection_entity_types_path(@collection)
     semantic_breadcrumb "edit"
@@ -88,7 +88,8 @@ class EntityTypesController < ApplicationController
     end
 
     def set_collection
-      @collection = @current_user.collections.find(params[:collection_id])
+      @collection = Collection.find(params[:collection_id])
+      redirect_to :back, alert: 'Not authorized' unless @collection.available?(@current_user)
     end
 
 

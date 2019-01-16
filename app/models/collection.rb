@@ -9,7 +9,7 @@ class Collection < ApplicationRecord
   attr_accessor :model_url
 
   def available?(user)
-    self.user_id == user.id
+    self.user_id == user.id || user.super_admin?
   end
 
   def self.load_samples(user)

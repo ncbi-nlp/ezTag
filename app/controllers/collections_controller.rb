@@ -2,23 +2,29 @@ require 'zip'
 
 class CollectionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_user
   before_action :set_collection, only: [:show, :edit, :update, :destroy, :download, :empty, :delete_all_annotations, :done_all]
   before_action :set_top_menu
-  semantic_breadcrumb :index, :collections_path
+
   # GET /collections
   # GET /collections.json
   def index
-    logger.debug("CURRENT_USER = #{current_user}")
-    logger.debug("@CURRENT_USER = #{@current_user}")
-
-    @collections = @current_user.collections.all
+    breadcrumb_for_collections
+    @collections = @user.collections.all
+    if params[:name].present?
+      @collections = @collections.where("name = ?", params[:name])
+    end
+    respond_to do |format|
+      format.html
+      format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
+    end
   end
 
   def partial
-    @collections = @current_user.collections.all
+    @collections = @user.collections.all
     respond_to do |format|
       format.html {render layout: false}
-      format.json
+      format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
       format.xml {render xml: @document.xml}
     end
   end
@@ -35,7 +41,7 @@ class CollectionsController < ApplicationController
   end
 
   def load_samples
-    Collection.load_samples(@current_user)
+    Collection.load_samples(@user)
     respond_to do |format|
       format.html { redirect_to collections_url, notice: 'The sample collections were successfully created.' }
     end
@@ -52,7 +58,7 @@ class CollectionsController < ApplicationController
   # POST /collections
   # POST /collections.json
   def create
-    @collection = @current_user.collections.new(collection_params)
+    @collection = @user.collections.new(collection_params)
 
     respond_to do |format|
       if @collection.save
@@ -158,9 +164,17 @@ class CollectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
-      @collection = @current_user.collections.find(params[:id])
+      @collection = Collection.find(params[:id])
+      redirect_to :back, alert: 'Not authorized' unless @collection.available?(@current_user)
     end
 
+    def set_user
+      if params[:user_id].present? && @current_user.super_admin?
+        @user = User.find(params[:user_id]) 
+      else
+        @user = @current_user
+      end
+    end
     # Never trust parameters from the scary internet, only allow the white list through.
     def collection_params
       params.require(:collection).permit(:name, :note, :source, :cdate, :key)
