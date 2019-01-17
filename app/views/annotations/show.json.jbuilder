@@ -13,6 +13,8 @@ json.annotations @document.bioc_doc.all_annotations.each do |a|
     json.id a.id
     json.type entity[:type]
     json.concept entity[:id]
+    json.annotator entity[:annotator]
+    json.updated_at entity[:updated_at]
     json.text a.text
     json.note a.infons["note"]
     json.offset l.offset
@@ -37,6 +39,8 @@ unless @ret.nil?
     json.id @ret.id
     json.type entity[:type]
     json.concept entity[:id]
+    json.annotator entity[:annotator]
+    json.updated_at entity[:updated_at]
     json.text @ret.text
     json.offset @ret.locations[0].offset
     json.passage "#passage-#{p_idx - 1}"

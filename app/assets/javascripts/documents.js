@@ -34,27 +34,42 @@ var BioC = function(id, options) {
     $(".action-button").prop('disabled', true).addClass("disabled");
   }
   $(".add-new-entity").click(self.addNewEntity.bind(self));
+  $("#defaultTypeSelector select").val($("#defaultTypeSelector option:first").val());
   $("#defaultTypeSelector select").change(function(e) {
     var selected = $("#defaultTypeSelector select option:selected");
     console.log(selected);
-    localStorage && localStorage.setItem('defaultType_' + options.collectionId, selected.text());
+    if (selected.hasClass('type')) {
+      localStorage && localStorage.setItem('defaultType_' + options.collectionId, selected.text());
+    }
     if (selected.hasClass("new")) {
-      console.log("has class");
       self.addNewEntity();
     }
   });
   console.log('defaultType_' + options.collectionId);
   var defaultType = localStorage && localStorage.getItem('defaultType_' + options.collectionId);
   if (defaultType) {
-    var types = $.map($("#defaultTypeSelector select option"), function(item) {return $(item).text();});
+    var types = $.map($("#defaultTypeSelector select option.type"), function(item) {return $(item).text();});
     if (types.includes(defaultType)) {
       $("#defaultTypeSelector select").val(defaultType);  
     } else {
       localStorage && localStorage.removeItem('defaultType_' + options.collectionId);
+      $("#defaultTypeSelector select").val($("#defaultTypeSelector option:first").val());
     }
   }
   this.restoreScrollTop();
   $(window).scroll(_.debounce(this.storeScrollTop.bind(this), 100));
+  $("#annotationTableUpButton").click(function() {
+    $('.right-side.pane').animate({scrollTop: 0},
+       500, 
+       "easeOutQuint"
+    );
+  });
+  $("#annotationTableDownButton").click(function() {
+    $('.right-side.pane').animate({scrollTop: $('#annotationTable').height()},
+       500, 
+       "easeOutQuint"
+    );
+  });
 };
 
 BioC.prototype.addNewEntity = function() {
@@ -70,17 +85,16 @@ BioC.prototype.addNewEntity = function() {
     $s[0].selectedIndex =0;
     return;
   }
-  console.log(name);
   var same = _.filter($("#annotationModal select option"), function(e) {
     return $(e).text() == name
   });
-  console.log(same);
 
   if (same.length === 0) {
-    var $option = $("<option></option>").text(name).attr("value", name);
+    var $option = $("<option class='type'></option>").text(name).attr("value", name);
     $s.prepend($option);
     $s.val(name);
     $s.find("option.nothing").remove();
+    $s.change();
 
     $.ajax({
       url: $s.data('url'),
@@ -88,8 +102,6 @@ BioC.prototype.addNewEntity = function() {
       data: {entity_type: {name: name}}, 
       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
       success: function(data) {
-        console.log(data);
-
         $option = $("<option></option>").text(name).attr("value", name)
         $("#annotationModal select[name='type']").append($option);
         setTimeout(function(){
@@ -119,74 +131,251 @@ BioC.prototype.bindAnnotationSpan = function() {
       var selection = getSelected();
       if (selection && selection.rangeCount > 0) {
         var range = selection.getRangeAt(0);
-        console.log(range);
-        if (range.startContainer != range.endContainer) {
+
+        var result = self.findAnnotationRange(range);
+        if (result.error) {
+          toastr.error("You cannot work with multiple paragraphs. Please select a span in a paragraph.");
           clearSelection();
           return;
         }
-        var el = $(range.startContainer.parentElement || range.startContainer.parentNode)
-        if (el.hasClass("annotation")) {
-          clearSelection();
-          return;
-        }
-        if (!el.hasClass("phrase")) {
-          clearSelection();
-          return;
-        }
-        node = range.startContainer;
 
         var length = range.endOffset - range.startOffset;
-        if (length > 0) {
+
+        if (result.annotations.length == 0 && length > 0) {
+          if (result.text.length != length) {
+            console.log("Something wrong " + length + " !=" + result.text.length);
+            clearSelection();
+            return;
+          }
           // recommends = getRecommendText(range);
           var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
           var offset = elemOffset + range.startOffset;
-          var type = $("#defaultTypeSelector option:selected").text();
-          var text = $(range.startContainer).text().substr(range.startOffset, length);
-          if (!type) {
-            self.addNewEntity();
-            type = $("#defaultTypeSelector option:selected").text();
-            if (!type) {
-              toastr.error("Cannot save an annotation without assigning an entity type");
-              return;
-            }
+          var text = $(range.startContainer).text().substr(range.startOffset, length).trim();
+          if (result.text.length != length) {
+            console.log("Something wrong in text: " + text + " !=" + result.text);
+            clearSelection();
+            return;
           }
-          $.ajax({
-            url: $("#annotationModal form").attr("action") + ".json",
-            method: "POST",
-            data: {text: text, offset: offset, type: type}, 
-            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-            success: function(data) {
-              $("#main-document").load($("#main-document").data("url"), function() {
-                self.bindAnnotationSpan();
-                // toastr.success("Successfully added.");              
-              });
-              self.annotations = data.annotations;
-              self.entity_types = data.entity_types;
-              $("#annotationList").prepend(self.templates.view1({
-                id: data.annotation.id, offset: data.annotation.offset, 
-                text: data.annotation.text, passage: data.annotation.passage,
-                size: 1, type: data.annotation.type, concept: data.annotation.concept
-              }));
-              $("#annotationList tr:first-child").addClass("new");
-              self.bindAnnotationTr();
-              $(".annotation-tr:first-child .concept").click();
-            },
-            error: function(xhr, status, err) {
-              toastr.error(err);              
-            },
-            complete: function() {
-              $("#annotationModal .dimmer").removeClass("active");
-            }
-          });
-
+          self.addNewAnnotation(text, offset);
+          
           // self.showLocationSelector(recommends, range);
+        } else if (result.annotations.length > 0) {
+          
+          if (result.annotations.length == 1 && result.text.length == 0) {
+
+          } else if (result.annotations.length > 0) {
+            self.showAnnotationListModal(result.annotations, result.offset, result.text);
+          }
+          clearSelection();
         } else {
           console.log("????", length);
+          clearSelection();
         }
       }
     });
   }
 
+};
+BioC.prototype.addNewAnnotation = function(text, offset, type) {
+  var self = this;
+  if (!type) {
+    type = $("#defaultTypeSelector option:selected").text();
+  }
+  if (!type) {
+    self.addNewEntity();
+    type = $("#defaultTypeSelector option:selected").text();
+    if (!type) {
+      toastr.error("Cannot save an annotation without assigning an entity type");
+      return;
+    }
+  }
+  $.ajax({
+    url: $("#annotationModal form").attr("action") + ".json",
+    method: "POST",
+    data: {text: text, offset: offset, type: type}, 
+    beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+    success: function(data) {
+      self.reloadMainDocument();
+      self.annotations = data.annotations;
+      self.entity_types = data.entity_types;
+      $("#annotationList").prepend(self.templates.view1({
+        id: data.annotation.id, offset: data.annotation.offset, 
+        text: data.annotation.text, passage: data.annotation.passage,
+        size: 1, type: data.annotation.type, concept: data.annotation.concept
+      }));
+      $("#annotationList tr:first-child").addClass("new");
+      self.bindAnnotationTr();
+      $("#annotationList .annotation-tr:first-child .concept").click();
+    },
+    error: function(xhr, status, err) {
+      toastr.error(err);              
+    },
+    complete: function() {
+      $("#annotationModal .dimmer").removeClass("active");
+    }
+  });
+};
+
+BioC.prototype.findAnnotationRange = function(range) {
+  var annotations = [];
+  var ids;
+  var wholeText = "";
+  var $start = $(range.startContainer.parentElement);
+  var $end = $(range.endContainer.parentElement);
+  var startPassage = range.startContainer.parentElement.parentElement;
+  var endPassage = range.endContainer.parentElement.parentElement;
+  if (startPassage != endPassage) {
+    return {
+      error: 'Different Passage!'
+    };
+  }
+  var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
+  var offset = elemOffset + range.startOffset;
+
+  var $p = $start;
+  var startOffset, endOffset;
+  var text;
+  while($p.data('offset') <= $end.data('offset')) {
+    text = $p.text();
+    startOffset = 0;
+    endOffset = text.length;
+    if ($p.data('offset') == $start.data('offset')) {
+      startOffset = range.startOffset;
+    }
+    if ($p.data('offset') == $end.data('offset')) {
+      endOffset = range.endOffset;
+    }
+    text = text.substr(startOffset, endOffset - startOffset);
+    wholeText += text;
+
+    if ($p.hasClass('annotation')) {
+      ids = $p.data('ids');
+      if (ids.split) {
+        ids = ids.split(",");
+      } else {
+        ids = [ids];
+      }
+      _.each(ids, function(id) {
+        annotations.push(parseInt(id, 10));
+      });
+    }
+    $p = $p.next();
+  }
+  annotations = _.uniq(annotations).sort();
+  return {
+    offset: offset,
+    text: wholeText.trim(),
+    annotations: annotations,
+  };
+};
+
+BioC.prototype.updateAnnotationListModal = function(annotationIds) {
+  var self = this;
+
+  if (!annotationIds) {
+    var ids = $("#annotationListModal .content").data('ids');
+    if (ids && ids.split) {
+      annotationIds = ids.split(',').map(function(e) {return parseInt(e, 10);});
+    }
+  } else {
+    $("#annotationListModal .content").data('ids', annotationIds.join(","));
+  }
+
+  if (!annotationIds) {
+    return;
+  }
+
+  var annotations = _.filter(self.annotations, function(a) {
+    return annotationIds.includes(parseInt(a.id, 10)); 
+  });
+  annotations.sort(function(a, b) {
+    return a.offset - b.offset;
+  });
+  $("#annotationListModal .annotationListCount").text(annotations.length);
+
+  var bodyHtml = _.map(annotations, function(a) {
+    var item = Object.assign({}, a);
+    if (a.updated_at) {
+      item.updated_at = moment(a.updated_at).local().format("LL");
+    }
+    item.iconClass = (a.note) ?'comment': 'search';
+    return self.templates.annotationList(item);
+  });
+  $("#annotationListModal .annotationListTableBody").html(bodyHtml.join("\n"));
+  $("#annotationListModal .annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
+  $("#annotationListModal .annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
+
+  $("#annotationListModal .annotation-tr .icon.search, #annotationListModal .annotation-tr .icon.comment").unbind("click").click(function(e) {
+    var $e = $(e.currentTarget);
+    self.clickAnnotation($e.closest("tr"), {force: true});
+  });
+};
+
+BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
+  var self = this;
+
+  $("#annotationListModal .header").html(
+    "Range [" + offset + ":" + (offset + text.length) + "] (length: " + text.length + ")" + 
+    "<span class='annotation-text-span'>" + text + "</span>"
+  );
+  $("#annotationListModal input[type='checkbox']").prop('checked', false);
+  $("#annotationListModal thead input[type='checkbox']").change(function(e) {
+    var val = $(e.currentTarget).is(':checked');
+    $("#annotationListModal input[type='checkbox']").prop('checked', val);
+  });
+  $("#annotationListModal .ui.button.create-new").toggleClass('disabled', (text.length <= 0));
+  self.updateAnnotationListModal(annotationIds);
+  $("#annotationListModal").modal({
+    allowMultiple: true,
+    onApprove: function($e) {
+      if ($e.hasClass('create-new')) {
+        self.addNewAnnotation(text, offset);      
+      }
+    },
+    onDeny: function($e) {
+      if ($e.hasClass('delete-checked')) {
+        var $checked = $("#annotationListModal .annotationListTableBody input[type='checkbox']:checked");
+        if ($checked.length == 0) {
+          alert('Please select annotations which you want delete.');
+          return false;
+        }
+        if (confirm("Are you sure to delete " + $checked.length + " annotation(s)?")) {
+          var offsets = _.map($checked, function(item) {
+            var $tr = $(item).closest('tr');
+            return {id: $tr.data('id'), offset: $tr.data('offset')};
+          });
+          self.deleteCheckedAnnotation(offsets)
+        }
+        return false;
+      }
+    }
+  }).modal('show');
+};
+
+BioC.prototype.deleteCheckedAnnotation = function(offsets) {
+  var self = this;
+  var id = offsets[0].id;
+  console.log(offsets);
+  $.ajax({
+    url: $("#annotationModal form").attr("action") + "/" + encodeURIComponent(id) + ".json",
+    method: "DELETE",
+    data: {
+      deleteMode: 'batch', 
+      offsets: offsets
+    }, 
+    success: function(data) {
+      self.reloadMainDocument(function() {
+        toastr.success("Successfully deleted.");              
+      });
+      self.annotations = data.annotations;
+      self.entity_types = data.entity_types;
+      self.renderAnnotationTable();
+      self.refreshAnnotationListModal();
+    },
+    error: function(xhr, status, err) {
+      toastr.error(err);              
+    },
+  });
 };
 
 // BioC.prototype.showLocationSelector = function(list, range) {
@@ -443,18 +632,20 @@ BioC.prototype.renderAnnotationTable = function() {
 
 BioC.prototype.bindAnnotationTr = function() {
   var self = this;
-  $(".annotation-tr").unbind("mouseover mouseout")
+  $("#annotationTable .annotation-tr").unbind("mouseover mouseout")
     .mouseover(function(e) {
       var $e = $(e.currentTarget);
       var cls = ".AL_" + $e.data('id') + '_' + $e.data('offset');
-      $(cls).css("border-bottom", "4px solid #f44");
+      $(cls).addClass("focused-now");
+      // $(cls).css("border-bottom", "4px solid #f44");
     })
     .mouseout(function(e) {
       var $e = $(e.currentTarget);
       var cls = ".AL_" + $e.data('id') + '_' + $e.data('offset');
-      $(cls).css("border-bottom", "0");
+      $(cls).removeClass("focused-now");
+      // $(cls).css("border-bottom", "0");
     });
-  $(".annotation-tr .td-annotation-text").unbind('click')
+  $("#annotationTable .annotation-tr .td-annotation-text").unbind('click')
     .click(function(e) {
       var $e = $(e.currentTarget).parent();
       if ($e.data('passage')) {
@@ -462,13 +653,13 @@ BioC.prototype.bindAnnotationTr = function() {
       }
     })
 
-  $(".annotation-tr .icon.search, .annotation-tr .icon.comment").unbind("click").click(function(e) {
+  $("#annotationTable .annotation-tr .icon.search, .annotation-tr .icon.comment").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     self.clickAnnotation($e.closest("tr"));
   });
   if (!self.busy) {
-    $(".annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
-    $(".annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
+    $("#annotationTable .annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
+    $("#annotationTable .annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
   }
   $("#annotationTable").removeClass("selectable");
 };
@@ -535,16 +726,14 @@ BioC.prototype.updateEntityType = function($tr) {
       method: "PATCH",
       data: {mode: !isMention, concept: concept, type: newValue}, 
       success: function(data) {
-        $("#main-document").load($("#main-document").data("url"), function() {
-          self.bindAnnotationSpan();
-          // toastr.success("Successfully added.");              
-        });
+        self.reloadMainDocument();
         $tr.removeClass("new");
         $td.data('value', newValue);
         self.restoreTR();
         toastr.success("Successfully updated.");              
         self.annotations = data.annotations;
         self.entity_types = data.entity_types;
+        self.refreshAnnotationListModal();
       },
       error: function(xhr, status, err) {
         toastr.error(err);              
@@ -555,6 +744,13 @@ BioC.prototype.updateEntityType = function($tr) {
   } else {
     $tr.removeClass("new");
     self.restoreTR();
+  }
+};
+
+BioC.prototype.refreshAnnotationListModal = function() {
+  if ($("#annotationListModal").is(":visible")) {
+    this.updateAnnotationListModal();
+    this.renderAnnotationTable();
   }
 };
 
@@ -578,6 +774,7 @@ BioC.prototype.updateConcept = function($tr) {
         toastr.success("Successfully updated.");              
         self.annotations = data.annotations;
         self.entity_types = data.entity_types;
+        self.refreshAnnotationListModal();
       },
       error: function(xhr, status, err) {
         toastr.error(err);              
@@ -591,18 +788,8 @@ BioC.prototype.updateConcept = function($tr) {
   }
 };
 
-BioC.prototype.clickAnnotation = function(e) {
+BioC.prototype.showAnnotationModal = function(id) {
   var self = this;
-  var $e = $(e);
-  console.log("Clicked", $e);
-  var id = $e.data('id').toString();
-  if (!id) {
-    console.log("Sorry, No id");
-    return;
-  }
-  if ($e.data('passage')) {
-    this.scrollToPasssage($e.data('passage'));
-  }
   var all_a = _.filter(this.annotations, {id: id});
   var a = all_a[0];
   var offsets = _.map(all_a, function(a) {return a.offset});
@@ -635,7 +822,7 @@ BioC.prototype.clickAnnotation = function(e) {
   } else {
     $("#showMoreBtn").attr('href', '#').hide();
   }
-  $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
+  // $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
   $("#annotationModal input[name='annotate_all']").prop("checked", false);
   $("#annotationModal .dimmer").removeClass("active");
   if (this.busy) {
@@ -662,7 +849,18 @@ BioC.prototype.clickAnnotation = function(e) {
     }
   }).keyup();
   
-
+  var update_msgs = [];
+  if (a.annotator || a.updated_at) {
+    update_msgs.push("Last updated");
+    if (a.annotator) {
+      update_msgs.push("by <i class='annotator'>" + a.annotator + "</i>");
+    }
+    if (a.updated_at) {
+      // update_msgs.push("at <i class='updated_at'>" + a.updated_at + "</i>");
+      update_msgs.push("at <i class='updated_at'>" + moment(a.updated_at).local().format('LLL') + "</i>");
+    }
+  }
+  $("#annotationModal .update_log").html(update_msgs.join(" "));
   $("#annotationModal .delete-annotation")
     .dropdown({
       action: 'hide', 
@@ -674,8 +872,7 @@ BioC.prototype.clickAnnotation = function(e) {
           method: "DELETE",
           data: $("#annotationModal form").serialize(), 
           success: function(data) {
-            $("#main-document").load($("#main-document").data("url"), function() {
-              self.bindAnnotationSpan();
+            self.reloadMainDocument(function() {
               toastr.success("Successfully deleted.");              
               $("#annotationModal .dimmer").removeClass("active");
             });
@@ -683,6 +880,7 @@ BioC.prototype.clickAnnotation = function(e) {
             self.entity_types = data.entity_types;
             self.renderAnnotationTable();
             $("#annotationModal").modal("hide");
+            self.refreshAnnotationListModal();
           },
           error: function(xhr, status, err) {
             toastr.error(err);              
@@ -694,6 +892,7 @@ BioC.prototype.clickAnnotation = function(e) {
   $("#annotationModal .delete-annotation .item").removeClass("active selected");
   $("#annotationModal")
     .modal({
+      allowMultiple: true,
       onVisible: function() {
         setTimeout(function() {
           $("#annotationModal input[name='concept']").focus();
@@ -717,9 +916,8 @@ BioC.prototype.clickAnnotation = function(e) {
           success: function(data) {
             console.log("SUCCESS", old_type, new_type)
             if (old_type != new_type || needAnnotateAll) {
-              $("#main-document").load($("#main-document").data("url"), function() {
-                self.bindAnnotationSpan();
-                toastr.success("Successfully updated.");              
+              self.reloadMainDocument(function() {
+                toastr.success("Successfully updated.");   
               });
             } else {
               toastr.success("Successfully updated.");              
@@ -727,6 +925,7 @@ BioC.prototype.clickAnnotation = function(e) {
             self.annotations = data.annotations;
             self.entity_types = data.entity_types;
             self.renderAnnotationTable();
+            self.refreshAnnotationListModal();
           },
           error: function(xhr, status, err) {
             toastr.error(err);              
@@ -738,6 +937,37 @@ BioC.prototype.clickAnnotation = function(e) {
       }
     })
     .modal("show");
+};
+BioC.prototype.reloadMainDocument = function(done) {
+  var self = this;
+  $("#main-document").load($("#main-document").data("url"), function() {
+    self.bindAnnotationSpan();
+    if (done) {
+      done();
+    }           
+  });
+}
+BioC.prototype.clickAnnotation = function(e, option) {
+  var self = this;
+  var $e = $(e);
+  var force = option && option.force;
+  if ($("#annotationListModal").is(":visible") && !force) {
+    return;
+  }
+  console.log("Clicked", $e);
+  var id = $e.data('id').toString();
+  if (!id) {
+    console.log("Sorry, No id");
+    return;
+  }
+  if ($e.data('passage')) {
+    self.scrollToPasssage($e.data('passage'));
+  }
+  // var all_a = _.filter(self.annotations, {id: id});
+  // var a = all_a[0];
+  // var offsets = _.map(all_a, function(a) {return a.offset});
+  
+  self.showAnnotationModal(id);
 };
 
 function uniquePush(ret, item) {

@@ -229,7 +229,7 @@ class Collection < ApplicationRecord
     end
     etype =  @etype_map[name]
     if etype.nil?
-      t = self.entity_types.create({name: name, color: EntityType.random_color});
+      t = self.entity_types.create({name: name});
       @etype_map[name] = t
       etype = t
     end

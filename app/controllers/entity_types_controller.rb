@@ -39,9 +39,6 @@ class EntityTypesController < ApplicationController
   # POST /entity_types
   # POST /entity_types.json
   def create
-    if params[:entity_type][:color].nil?
-      params[:entity_type][:color] = EntityType.random_color
-    end
     @entity_type = EntityType.new(entity_type_params)
     @entity_type.collection_id = @collection.id
     respond_to do |format|

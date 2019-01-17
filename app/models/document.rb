@@ -75,7 +75,7 @@ class Document < ApplicationRecord
     "#{max + 1}"
   end
 
-  def annotate_all_by_text(text, entity_type, concept, case_sensitive, whole_word, note)
+  def annotate_all_by_text(annotator, text, entity_type, concept, case_sensitive, whole_word, note)
     exist_offsets = []
     currents_annotations = self.bioc_doc.all_annotations.each do |a|
       if a.text.upcase == text.upcase
@@ -107,6 +107,8 @@ class Document < ApplicationRecord
               a.infons["type"] = entity_type
               a.infons["identifier"] = concept
               a.infons["note"] = note if note.present?
+              a.infons["annotator"] = annotator if annotator.present?
+              a.infons["updated_at"] = Time.now.utc
               l = SimpleBioC::Location.new(a)
               l.offset = offset
               l.length = text.length
@@ -123,6 +125,8 @@ class Document < ApplicationRecord
             a.text = p.text[offset - p.offset, text.length]
             a.infons["type"] = entity_type
             a.infons["identifier"] = concept
+            a.infons["annotator"] = annotator if annotator.present?
+            a.infons["updated_at"] = Time.now.utc
             a.infons["note"] = note if note.present?
             l = SimpleBioC::Location.new(a)
             l.offset = offset
@@ -137,7 +141,7 @@ class Document < ApplicationRecord
     end
   end
 
-  def add_annotation(text, offset, entity_type, concept, note = "")
+  def add_annotation(annotator, text, offset, entity_type, concept, note = "")
     Document.transaction do 
       a = nil
       self.bioc_doc.passages.each do |p|
@@ -150,6 +154,8 @@ class Document < ApplicationRecord
               a.text = text
               a.infons["type"] = entity_type
               a.infons["identifier"] = concept
+              a.infons["annotator"] = annotator if annotator.present?
+              a.infons["updated_at"] = Time.now.utc
               a.infons["note"] = note if note.present?
               l = SimpleBioC::Location.new(a)
               l.offset = offset
@@ -165,6 +171,8 @@ class Document < ApplicationRecord
             a.text = text
             a.infons["type"] = entity_type
             a.infons["identifier"] = concept
+            a.infons["annotator"] = annotator if annotator.present?
+            a.infons["updated_at"] = Time.now.utc
             a.infons["note"] = note if note.present?
             l = SimpleBioC::Location.new(a)
             l.offset = offset
@@ -182,12 +190,14 @@ class Document < ApplicationRecord
 
   def delete_annotation(mode, id, offset, entity_type, concept)
     Document.transaction do 
+      logger.debug(id)
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
           delete_annotation_in_document(s, mode, id, offset, entity_type, concept)
         end
         delete_annotation_in_document(p, mode, id, offset, entity_type, concept)      
       end
+      logger.debug(self.bioc)
       self.save_xml(self.bioc)
     end
   end
@@ -205,27 +215,27 @@ class Document < ApplicationRecord
     return true
   end
 
-  def update_concept_in_document(node, old, entity_type, concept, note)
+  def update_concept_in_document(annotator, node, old, entity_type, concept, note)
     node.annotations.each do |a|
       entity = EntityUtil.get_annotation_entity(a)
       logger.debug("#{a.id.inspect} #{entity.inspect}")
       if entity[:type] == old[:type] && entity[:id] == old[:id]
         logger.debug("FOUND id")
-        EntityUtil.update_annotation_entity(a, entity_type, concept, note)
+        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
       end
     end
   end
 
-  def update_mention_in_document(node, id, entity_type, concept, note)
+  def update_mention_in_document(annotator, node, id, entity_type, concept, note)
     node.annotations.each do |a|
       logger.debug("#{a.id.inspect} ==? #{id.inspect}")
       if a.id == id
         logger.debug("FOUND id")
-        EntityUtil.update_annotation_entity(a, entity_type, concept, note)
+        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
       end
     end
   end
-  def update_concept(id, entity_type, concept, note)
+  def update_concept(annotator, id, entity_type, concept, note)
     old_a = nil
     self.bioc_doc.all_annotations.each do |a|
       old_a = a if a.id == id
@@ -235,21 +245,21 @@ class Document < ApplicationRecord
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_concept_in_document(s, old_entity, entity_type, concept, note)
+          update_concept_in_document(annotator, s, old_entity, entity_type, concept, note)
         end
-        update_concept_in_document(p, old_entity, entity_type, concept, note)
+        update_concept_in_document(annotator, p, old_entity, entity_type, concept, note)
       end
       self.save_xml(self.bioc)
     end
   end
 
-  def update_mention(id, entity_type, concept, note)
+  def update_mention(annotator, id, entity_type, concept, note)
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_mention_in_document(s, id, entity_type, concept, note)
+          update_mention_in_document(annotator, s, id, entity_type, concept, note)
         end
-        update_mention_in_document(p, id, entity_type, concept, note)
+        update_mention_in_document(annotator, p, id, entity_type, concept, note)
       end
       self.save_xml(self.bioc)
     end
@@ -499,8 +509,24 @@ class Document < ApplicationRecord
     end
   end
 
+  def id_found?(given_id, id)
+    if given_id.kind_of?(Array)
+      given_id.include?(id)
+    else
+      given_id.to_i == id
+    end
+  end
+
+  def offset_same?(given_id, given_offset, id, offset)
+    if given_offset.kind_of?(Array)
+      found = given_offset.select{|o| o[:id] == id && o[:offset] == offset}
+      found.present?
+    else
+      given_offset.to_i == offset
+    end
+  end
+
   def delete_annotation_in_document(node, mode, id, offset, entity_type, concept)
-    logger.debug("NODE offset #{node.offset} #{mode} #{node.annotations.size}")
     node.annotations.delete_if do |a|
       if mode == "concept" 
         e = EntityUtil.get_annotation_entity(a)
@@ -510,9 +536,9 @@ class Document < ApplicationRecord
           false
         end
       else
-        if a.id == id
+        if id_found?(id, a.id.to_i)
           a.locations.delete_if do |l|
-            l.offset.to_i == offset
+            offset_same?(id, offset, a.id.to_i, l.offset.to_i)
           end
           if a.locations.empty?
             true
@@ -524,6 +550,5 @@ class Document < ApplicationRecord
         end
       end
     end
-    logger.debug("END NODE")
   end
 end

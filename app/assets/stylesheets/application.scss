@@ -195,7 +195,12 @@ a {
     &.w600 {max-width: 300px; }
   }
 }
-
+#annotationModal .update_log {
+  color: #ddd;
+  i {
+    color: #ccc;
+  }
+}
 #annotationTable.ui.celled.table tr th, 
 #annotationTable.ui.celled.table tr td,
 #annotationTable.ui.inverted.table tr td,

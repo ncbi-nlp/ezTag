@@ -49,6 +49,12 @@
   }
 }
 
+#annotationListModal .annotation-tr {
+  .icon.search, .icon.comment {
+    &:hover { color: #3176b9; }
+  }
+}
+
 .collection-buttons {
   padding: 1em 0;
 }
@@ -79,6 +85,22 @@
     background-color: #888;
     color: #fff;
   }
+}
+#annotationListModal .header .annotation-text-span {
+  color: #2265a2;
+}
+#annotationListModal .annotation-text-span {
+  white-space: nowrap; 
+  overflow: hidden;
+  display: inline-block;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+#annotationListModal > div.content {
+  max-height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 #rangeSelectModal .text {
@@ -395,8 +417,39 @@ h1.front {
     }
   }
 }
+.scrollUpDownButton {
+  position: fixed;
+  bottom: 1em;
+  z-index: 1000;
+  opacity: 0.5;
+  font-size: 1.5em;
+  .icon {
+    color: #ff0;
+  }
+  &:hover {
+    opacity: 1;
+  }
+}
+#annotationTableUpButton {
+  right: 0;
+  bottom: 2.3em;
+}
+
+#annotationTableDownButton {
+  right: 0;
+  bottom: 1em;
+}
 
 .document {
+  .annotation {
+    // opacity: 0.5;
+    &.overlapped {
+      border-bottom: 3px solid #888;  
+    }
+    &.focused-now {
+      border-bottom: 4px solid #f44;
+    }
+  }
   span.annotation {
     &.G {
       background-color: #FFF64C;

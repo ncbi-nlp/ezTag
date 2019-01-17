@@ -2,7 +2,9 @@ class EntityUtil
   def self.get_annotation_entity(annotation)
     entity_type = annotation.infons["type"] || "" 
     concept = annotation.infons["identifier"] || ""
-    return {type: entity_type, id: concept}  
+    annotator = annotation.infons["annotator"] || ""
+    updated_at = annotation.infons["updated_at"] || ""
+    return {type: entity_type, id: concept, annotator: annotator, updated_at: updated_at}  
     # return {type: "", id: ""} if entity_type.nil?
 
     # c = annotation.infons[entity_type + "ID"]
@@ -16,9 +18,16 @@ class EntityUtil
     # {type: entity_type, id: ""}
   end
 
-  def self.update_annotation_entity(annotation, type, concept, note = "") 
-    annotation.infons["type"] = type unless type.nil?
-    annotation.infons["identifier"] = concept unless concept.nil?
+  def self.update_annotation_entity(annotator, annotation, type, concept, note = "") 
+    if (type != annotation.infons["type"] || 
+        concept != annotation.infons["identifier"] || 
+        note != annotation.infons["note"])
+      annotation.infons["annotator"] = annotator if annotator.present?
+      annotation.infons["updated_at"] = Time.now.utc.iso8601
+    end
+
+    annotation.infons["type"] = type if type.present?
+    annotation.infons["identifier"] = concept if concept.present?
     if note.present?
       annotation.infons["note"] = note 
     else

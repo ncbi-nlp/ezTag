@@ -20,7 +20,7 @@
         <% else %>
           <% @document.collection.entity_types.each do |e| %>
             <% next if e.name.blank? %>
-            <option value="<%= e.name %>"><%=e.name %></option>
+            <option value="<%= e.name %>" class='type'><%=e.name %></option>
           <% end %>
         <% end %>
         <option disabled class="divider">──────────</option>
@@ -35,9 +35,49 @@
       <thead id="annotationHead"></thead>
       <tbody id="annotationList"></tbody>
     </table>
+    <a id="annotationTableUpButton" class="scrollUpDownButton"><i class='icon arrow circle up'></i></a>
+    <a id="annotationTableDownButton" class="scrollUpDownButton"><i class='icon arrow circle down'></i></a>
   </div>
 </div>
 <%=render partial: "errors_modal" %>
+
+<div class="ui modal" id="annotationListModal">
+  <i class="close icon"></i>
+  <div class="header">
+    Range[1445:123]  "AASDFASFAS.... ASFASFASF"
+  </div>
+  <div class="content">
+    <span class='annotationListCount'></span> annotation(s) exist(s) in this range.
+    <table class="ui small celled selectable single line very compact unstackable table">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" tabindex='-1'>
+          </th>
+          <th>Type</th>
+          <th>Concept ID</th>
+          <th>Text</th>
+          <th>Offset</th>
+          <th>Annotator</th>
+          <th>Updated at</th>
+        </tr>
+      </thead>
+      <tbody class="annotationListTableBody">
+
+      </tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <div class="create-new ui blue button positive action-button hide-for-add"><i class="plus icon"></i> Create New Annotation</div>
+    <div class="ui button deny">Close</div>
+
+    <div class="delete-checked ui button red deny action-button hide-for-add" style="float:left">
+      <i class="remove icon"></i> Delete
+    </div>
+  </div>
+</div>
+
+
 <div class="ui basic modal" id="demoModal">
   <i class="close icon"></i>
   <div class="header">Quick Demo for Manual Annotation</div>
@@ -177,6 +217,7 @@
         </div>
       </div>
     <% end %>
+    <div class="update_log"></div>
   </div>
   <div class="actions">
     <div class="ui button cancel">Cancel</div>
@@ -191,7 +232,30 @@
     </div>
   </div>
 </div>
-
+<script type="text/template" id="annotationListViewTemplate1">
+  <tr data-id='{{id}}' data-offset='{{offset}}' class='annotation-tr'>
+    <td style='text-align:center;'>
+      <input type='checkbox'>
+    </td>
+    <td class="type">
+      <span class="type-text ellipsis w80">{{type}}</span>
+      <span class="type-edit"></span>
+    </td>
+    <td class="concept">
+      <span class="concept-text ellipsis w100">{{concept}}</span>
+      <span class="concept-edit">
+        <input type="text" name="concept" value="{{concept}}">
+      </span>
+    </td>
+    <td>
+      <i class="icon {{iconClass}}" title="edit"></i>
+      <span class='annotation-text-span' style='width: 300px;'>{{text}}</span>
+    </td>
+    <td>{{offset}}</td>
+    <td>{{annotator}}</td>
+    <td>{{updated_at}}</td>
+  </tr>
+</script>
 <script type="text/template" id="mentionHead">
   <tr>
     <th>Offset</th>
@@ -298,7 +362,7 @@
               end
               p_idx -= 1 if p_idx > 0
               %>
-              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>'},
+              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>', annotator: '<%=j a.infons["annotator"] || "" %>', updated_at: '<%=j a.infons["updated_at"] || "" %>'},
               <%
             end
           end 
@@ -310,7 +374,8 @@
         templates: {
           head: $("#conceptHead").html(),
           view1: Handlebars.compile($("#conceptViewTemplate1").html()),
-          view2: Handlebars.compile($("#conceptViewTemplate2").html())
+          view2: Handlebars.compile($("#conceptViewTemplate2").html()),
+          annotationList: Handlebars.compile($("#annotationListViewTemplate1").html()),
         }
       });
       $("#documentSpinner").removeClass("active");

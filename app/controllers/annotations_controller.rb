@@ -29,7 +29,7 @@ class AnnotationsController < ApplicationController
     @concept = params[:concept] || ""
     @type = params[:type] || ""
     @note = params[:note] || ""
-    @ret = @document.add_annotation(@text, @offset, @type, @concept, @note)
+    @ret = @document.add_annotation(@current_user.email, @text, @offset, @type, @concept, @note)
     @entity_types = EntityType.where(collection_id: @document.collection_id)
 
     respond_to do |format|
@@ -48,16 +48,16 @@ class AnnotationsController < ApplicationController
     @type.strip!
     if params[:mode] == "true" || params[:mode] == "1" || params[:mode] == "concept"
       logger.debug("update_concept")
-      @document.update_concept(params[:id], @type, @concept, @note)
+      @document.update_concept(@current_user.email, params[:id], @type, @concept, @note)
     else
       logger.debug("update_mention")
-      @document.update_mention(params[:id], @type, @concept, @note)
+      @document.update_mention(@current_user.email, params[:id], @type, @concept, @note)
     end
     if params[:annotate_all] == "all"
       @text = (params[:text] || "").strip
       @case_sensitive = (params[:case_sensitive] == "y")
       @whole_word = (params[:whole_word] == "y")
-      @document.annotate_all_by_text(@text, @type, @concept, @case_sensitive, @whole_word, @note)
+      @document.annotate_all_by_text(@current_user.email, @text, @type, @concept, @case_sensitive, @whole_word, @note)
     end
     @entity_types = EntityType.where(collection_id: @document.collection_id)
     respond_to do |format|
@@ -74,12 +74,23 @@ class AnnotationsController < ApplicationController
   # DELETE /annotations/1
   # DELETE /annotations/1.json
   def destroy
-    @id = params[:id]
-    @offset = (params[:offset] || "-1").to_i
     @mode = params[:deleteMode]
-    @document.delete_annotation(@mode, @id, @offset, params[:type], params[:concept])
+    if @mode == "batch"
+      ids = []
+      offsets = []
+      params[:offsets].each do |k, v|
+        id = v["id"].to_i
+        offset = v["offset"].to_i
+        ids << id
+        offsets << {id: id, offset: offset}
+      end 
+      @document.delete_annotation(@mode, ids, offsets, params[:type], params[:concept])
+    else
+      @id = params[:id]
+      @offset = (params[:offset] || "-1").to_i
+      @document.delete_annotation(@mode, @id, @offset, params[:type], params[:concept])
+    end
     @entity_types = EntityType.where(collection_id: @document.collection_id)
-
     # @annotation.destroy
     respond_to do |format|
       format.html { redirect_to @document, notice: 'The annotation was successfully deleted.' }

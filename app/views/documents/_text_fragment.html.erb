@@ -22,6 +22,7 @@ ranges.each_with_index do |s_pos, index|
   a_selected = nil
   ids = []
   last_size = 9999999
+  annotation_ids = []
   p.annotations.each do |a|
     next if a.locations.nil?
     a.locations.each do |l|
@@ -34,6 +35,7 @@ ranges.each_with_index do |s_pos, index|
           last_size = size
         end
         ids << "AL_#{a.id}_#{l.offset}"
+        annotation_ids << a.id
       end
     end
   end
@@ -41,7 +43,7 @@ ranges.each_with_index do |s_pos, index|
   entity_type = ""
   concept_id = ""
 
-  unless a_selected.nil?
+  if a_selected.present?
     entity = EntityUtil.get_annotation_entity(a_selected)
     cls_name = "A_#{entity[:type]}"
     atype = @document.collection.entity_type(entity[:type])
@@ -51,7 +53,10 @@ ranges.each_with_index do |s_pos, index|
     end
     cls << cls_name
   end
+  if annotation_ids.length > 1 
+    cls << 'overlapped';
+  end
   cls = cls.uniq
   cls << "annotation" unless cls.blank?
-
-  -%><span data-type="<%=j entity_type%>" data-concept="<%=j concept_id%>" data-id="<%=j a_selected.id unless a_selected.nil? %>" class="phrase <%= cls.join(" ") %> <%=ids.join(' ') %>" data-offset="<%=s_pos%>"><%=ptext[s_pos - p.offset, e_pos - s_pos]%></span><%-end -%>
+  annotation_ids = annotation_ids.uniq
+  -%><span data-ids="<%=annotation_ids.join(',')%>" data-type="<%=j entity_type%>" data-concept="<%=j concept_id%>" data-id="<%=j a_selected.id unless a_selected.nil? %>" class="phrase <%= cls.join(" ") %> <%=ids.join(' ') %>" data-offset="<%=s_pos%>"><%=ptext[s_pos - p.offset, e_pos - s_pos]%></span><%-end -%>

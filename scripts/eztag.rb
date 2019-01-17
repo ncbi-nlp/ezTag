@@ -81,8 +81,13 @@ class EzTag
     puts "Download <#{@uri}#{url}> to <#{fullpath}>"
     File.open(fullpath, "w") do |file|
       file.binmode
-      self.class.get(url, stream_body: true) do |fragment|
-        file.write(fragment)
+      begin
+        self.class.get(url, stream_body: true) do |fragment|
+          file.write(fragment)
+        end
+      rescue Exception => e
+        STDERR.puts "Error: #{e.message}"
+        exit
       end
     end
     @success += 1
@@ -114,13 +119,19 @@ class EzTag
     if !@options.force_upload
       did = File.basename(filename, ".xml")
       verbose_puts "  > Checking DID #{did} exist?..."
-      response = self.class.get("/collections/#{@options.collection_id}/documents", query: {did: did})
+      begin
+        response = self.class.get("/collections/#{@options.collection_id}/documents", query: {did: did})
+      rescue Exception => e
+        STDERR.puts "Error: #{e.message}"
+        exit
+      end
+
       if !response.to_a.empty?
         puts "Skip <#{filename}>"
         return
       end
     end
-    puts "Upload <#{fullpath}> to <#{@uri}/collections/#{@options.collection_id}/documents>"
+    puts "Upload <#{filename}> to <#{@uri}/collections/#{@options.collection_id}/documents>"
     RestClient.post("#{@uri}/collections/#{@options.collection_id}/documents",  
       {file: File.new(filename, 'rb')}, 
       headers = @headers
@@ -150,7 +161,13 @@ class EzTag
 
   def get_user
     verbose_puts "> HTTP Get /users?email=#{@options.email}" if @options.verbose
-    response = self.class.get('/users', {query: {email: @options.email}})
+    begin
+      response = self.class.get('/users', {query: {email: @options.email}})
+    rescue Exception => e
+      STDERR.puts "Error: #{e.message}"
+      exit
+    end
+
     verbose_puts "  --> Response #{response.code}" if @options.verbose
     if response.to_a.empty? 
       STDERR.puts "Error: email(#{@options.email}) does not exist or is not accessible to you"
@@ -166,7 +183,13 @@ class EzTag
 
   def get_collection
     verbose_puts "> HTTP Get /users/#{@options.user_id}/collections" if @options.verbose
-    response = self.class.get("/users/#{@options.user_id}/collections", {query: {name: @options.collection_name}})
+    begin
+      response = self.class.get("/users/#{@options.user_id}/collections", {query: {name: @options.collection_name}})
+    rescue Exception => e
+      STDERR.puts "Error: #{e.message}"
+      exit
+    end
+
     verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}" if @options.verbose
     if response.to_a.empty? 
       STDERR.puts "Error: collection(#{@options.collection_name}) does not exist or is not accessible to you"
@@ -186,7 +209,13 @@ class EzTag
   
   def get_documents
     verbose_puts "> HTTP Get /collections/#{@options.collection_id}/documents" if @options.verbose
-    response = self.class.get("/collections/#{@options.collection_id}/documents")
+    begin
+      response = self.class.get("/collections/#{@options.collection_id}/documents")
+    rescue Exception => e
+      STDERR.puts "Error: #{e.message}"
+      exit
+    end
+
     verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}" if @options.verbose
   
     @documents = response.to_a.map{|d| {did: d["did"], url: "/documents/#{d["id"]}.xml"}}
@@ -219,11 +248,11 @@ class EzTag
         @options.force_upload = v
       end
 
-      opts.on("-h", "--host=HOST", "Hostname for the server (default: eztag.bioqrator.org)") do |v|
+      opts.on("-H", "--host=HOST", "Hostname for the server (default: eztag.bioqrator.org)") do |v|
         @options.host = v
       end
 
-      opts.on("-p", "--port=PORT", Integer, "Port number for the server (default: 80)") do |v|
+      opts.on("-P", "--port=PORT", Integer, "Port number for the server (default: 80)") do |v|
         @options.port = v
       end
 
