@@ -313,7 +313,7 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
 
 BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
   var self = this;
-  var titleHelp = "Range [" + offset + ":" + (offset + text.length) + "] (length: " + text.length + ")";
+  var titleHelp = "Offset [" + offset + ":" + (offset + text.length) + "] (length: " + text.length + ")";
   var titleText = "<span class='annotation-text-span need-popup-title' data-position='bottom left' data-content='" + titleHelp + "'>" + text + "</span>";
   if (text.length > 0) {
     $("#annotationListModal .header").html(titleText);
