@@ -41,41 +41,6 @@
 </div>
 <%=render partial: "errors_modal" %>
 
-<div class="ui modal" id="annotationListModal">
-  <i class="close icon"></i>
-  <div class="header">
-    Range[1445:123]  "AASDFASFAS.... ASFASFASF"
-  </div>
-  <div class="content">
-    <span class='annotationListCount'></span> annotation(s) exist(s) in this range.
-    <table class="ui small celled selectable single line very compact unstackable table">
-      <thead>
-        <tr>
-          <th>
-            <input type="checkbox" tabindex='-1'>
-          </th>
-          <th>Type</th>
-          <th>Concept ID</th>
-          <th>Text</th>
-          <th>Offset</th>
-          <th>Annotator</th>
-          <th>Updated at</th>
-        </tr>
-      </thead>
-      <tbody class="annotationListTableBody">
-
-      </tbody>
-    </table>
-  </div>
-  <div class="actions">
-    <div class="create-new ui blue button positive action-button hide-for-add"><i class="plus icon"></i> Create New Annotation</div>
-    <div class="ui button deny">Close</div>
-
-    <div class="delete-checked ui button red deny action-button hide-for-add" style="float:left">
-      <i class="remove icon"></i> Delete
-    </div>
-  </div>
-</div>
 
 
 <div class="ui basic modal" id="demoModal">
@@ -232,23 +197,67 @@
     </div>
   </div>
 </div>
+
+<div class="ui modal" id="annotationListModal">
+  <i class="close icon"></i>
+  <div class="header">
+    Range[1445:123]  "AASDFASFAS.... ASFASFASF"
+  </div>
+  <div class="content">
+    <span class='annotationListCount'></span> annotation(s) exist(s) in this range.
+    <table class="ui small celled selectable single line very compact unstackable table">
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" tabindex='-1'>
+          </th>
+          <th>Type</th>
+          <th>Concept ID</th>
+          <th>Text</th>
+          <th>Offset</th>
+          <th>Annotator</th>
+          <th>Updated at</th>
+        </tr>
+      </thead>
+      <tbody class="annotationListTableBody">
+
+      </tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <div class="create-new ui blue button positive action-button hide-for-add"><i class="plus icon" tabindex="1"></i> Create New Annotation</div>
+    <div class="ui button deny">Close</div>
+
+    <div class="delete-checked ui button red deny action-button hide-for-add" style="float:left">
+      <i class="remove icon"></i> Delete
+    </div>
+  </div>
+</div>
+
+
 <script type="text/template" id="annotationListViewTemplate1">
   <tr data-id='{{id}}' data-offset='{{offset}}' class='annotation-tr'>
     <td style='text-align:center;'>
       <input type='checkbox'>
     </td>
     <td class="type">
-      <span class="type-text ellipsis w80">{{type}}</span>
-      <span class="type-edit"></span>
+      <div class='ui basic segment'>
+        <span class="type-text ellipsis w80">{{type}}</span>
+        <span class="type-edit"></span>
+        <div class='ui inverted dimmer'><div class='ui mini loader'></div></div>
+      </div>
     </td>
     <td class="concept">
-      <span class="concept-text ellipsis w100">{{concept}}</span>
-      <span class="concept-edit">
-        <input type="text" name="concept" value="{{concept}}">
-      </span>
+      <div class='ui basic segment'>
+        <span class="concept-text ellipsis w100">{{concept}}</span>
+        <span class="concept-edit">
+          <input type="text" name="concept" value="{{concept}}" tabindex='1'>
+        </span>
+        <div class='ui inverted dimmer'><div class='ui mini loader'></div></div>
+      </div>
     </td>
     <td>
-      <i class="icon {{iconClass}}" title="edit"></i>
+      <i class="icon show-popup {{iconClass}}" title="edit"></i>
       <span class='annotation-text-span' style='width: 300px;'>{{text}}</span>
     </td>
     <td>{{offset}}</td>
@@ -274,21 +283,27 @@
 <script type="text/template" id="conceptViewTemplate1">
   <tr data-id="{{id}}" data-passage="{{passage}}" data-offset="{{offset}}" class="concept annotation-tr">
     <td rowspan="{{size}}" class="type">
-      <span class="type-text ellipsis w80">{{type}}</span>
-      <span class="type-edit"></span>
+      <div class='ui basic segment'>
+        <span class="type-text ellipsis w80">{{type}}</span>
+        <span class="type-edit"></span>
+        <div class='ui dimmer'><div class='ui mini loader'></div></div>
+      </div>
     </td>
     <td rowspan="{{size}}" class="concept">
-      <span class="concept-text ellipsis w100">{{concept}}</span>
-      <span class="concept-edit">
-        <input type="text" name="concept" value="{{concept}}">
-      </span>
+      <div class='ui basic segment'>
+        <span class="concept-text ellipsis w100">{{concept}}</span>
+        <span class="concept-edit">
+          <input type="text" name="concept" value="{{concept}}">
+        </span>
+        <div class='ui dimmer'><div class='ui mini loader'></div></div>
+      </div>
     </td>
-    <td class='td-annotation-text'><i class="icon {{iconClass}}" title="edit"></i> {{{text}}}</td>
+    <td class='td-annotation-text'><i class="icon show-popup {{iconClass}}" title="edit"></i> {{{text}}}</td>
   </tr>
 </script>
 <script type="text/template" id="conceptViewTemplate2">
   <tr data-id="{{id}}" data-passage="{{passage}}" data-offset="{{offset}}" class="concept annotation-tr">
-    <td class='td-annotation-text'><i class="icon {{iconClass}}" title="edit"></i> {{{text}}}</td>
+    <td class='td-annotation-text'><i class="icon show-popup {{iconClass}}" title="edit"></i> {{{text}}}</td>
   </tr>
 </script>
 <script>

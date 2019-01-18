@@ -218,9 +218,7 @@ class Document < ApplicationRecord
   def update_concept_in_document(annotator, node, old, entity_type, concept, note)
     node.annotations.each do |a|
       entity = EntityUtil.get_annotation_entity(a)
-      logger.debug("#{a.id.inspect} #{entity.inspect}")
       if entity[:type] == old[:type] && entity[:id] == old[:id]
-        logger.debug("FOUND id")
         EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
       end
     end
@@ -228,9 +226,7 @@ class Document < ApplicationRecord
 
   def update_mention_in_document(annotator, node, id, entity_type, concept, note)
     node.annotations.each do |a|
-      logger.debug("#{a.id.inspect} ==? #{id.inspect}")
       if a.id == id
-        logger.debug("FOUND id")
         EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
       end
     end
@@ -536,9 +532,9 @@ class Document < ApplicationRecord
           false
         end
       else
-        if id_found?(id, a.id.to_i)
+        if id_found?(id, a.id)
           a.locations.delete_if do |l|
-            offset_same?(id, offset, a.id.to_i, l.offset.to_i)
+            offset_same?(id, offset, a.id, l.offset.to_i)
           end
           if a.locations.empty?
             true

@@ -134,7 +134,7 @@ class DocumentsController < ApplicationController
     
     logger.debug(params.inspect)
     if params[:file].present?
-      error, dids = @collection.upload_from_file(params[:file], batch_id)
+      error, dids = @collection.upload_from_file(params[:file], batch_id, params[:replace])
     elsif params[:pmid].present?
       error, dids = @collection.upload_from_pmids(params[:pmid], batch_id, params[:id_map])
     end

@@ -79,7 +79,7 @@ class AnnotationsController < ApplicationController
       ids = []
       offsets = []
       params[:offsets].each do |k, v|
-        id = v["id"].to_i
+        id = v["id"]
         offset = v["offset"].to_i
         ids << id
         offsets << {id: id, offset: offset}

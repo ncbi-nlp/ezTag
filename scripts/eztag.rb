@@ -28,7 +28,12 @@ class EzTag
     verbose_puts "Command : #{@command}" 
   end
 
-  def verify_path
+  def verify_path_download
+    if @path.nil? || @path.empty? || @path.size != 1
+      STDERR.puts "Error: You should specify a path"
+      exit
+    end
+    @path = @path[0]
     if @path.nil? || !File.exist?(@path)
       STDERR.puts "Error: path (#{@path}) does not exist"
       exit
@@ -37,6 +42,21 @@ class EzTag
     if !File.directory?(@path)
       STDERR.puts "Error: path (#{@path}) is not directory"
       exit
+    end
+    verbose_puts "Path : #{@path}" 
+  end
+
+  def verify_path_upload
+    if @path.nil? || @path.empty? 
+      STDERR.puts "Error: You should specify files or pathname"
+      exit
+    end
+    if @path.size == 1 && File.exist?(@path[0]) && File.directory?(@path[0])
+      pathname = @path[0]
+      @path = []
+      Dir[File.join(pathname, "*.xml")].each do |filename|
+        @path << filename
+      end
     end
     verbose_puts "Path : #{@path}" 
   end
@@ -98,10 +118,8 @@ class EzTag
     self.parse(args)
     verbose_puts "Option: #{@options.to_h}"
     @command = args[0]
-    @path = args[1]
-
+    @path = args[1..-1]
     verify_command
-    verify_path
     load_keyfile
 
     init_http_request
@@ -109,6 +127,7 @@ class EzTag
   end
 
   def download
+    verify_path_download
     documents = get_documents
     documents.each do |d|
       download_file(d[:did], d[:url])
@@ -116,8 +135,8 @@ class EzTag
   end
 
   def upload_file(filename)
+    did = File.basename(filename, ".xml")
     if !@options.force_upload
-      did = File.basename(filename, ".xml")
       verbose_puts "  > Checking DID #{did} exist?..."
       begin
         response = self.class.get("/collections/#{@options.collection_id}/documents", query: {did: did})
@@ -132,19 +151,21 @@ class EzTag
       end
     end
     puts "Upload <#{filename}> to <#{@uri}/collections/#{@options.collection_id}/documents>"
+    params = {file: File.new(filename, 'rb')}
+    params[:replace] = did if @options.replace
     RestClient.post("#{@uri}/collections/#{@options.collection_id}/documents",  
-      {file: File.new(filename, 'rb')}, 
-      headers = @headers
+      params, headers = @headers
     )
     @success += 1
   end
 
   def upload
-    verbose_puts "Searching directory <#{@path}> for upload..."
-    Dir[File.join(@path, "*.xml")].each do |filename|
+    verify_path_upload
+    verbose_puts @options.inspect
+    verbose_puts "Upload..."
+    @path.each do |filename|
       upload_file(filename)
     end
-
   end
 
   def run
@@ -228,9 +249,11 @@ class EzTag
     @options.port = 80
     @options.keyfile = "./apikey"
     @options.force_upload = false
+    @options.replace = false
+
     opt_parser = OptionParser.new do |opts|
 
-      opts.banner = "Usage: eztag.rb COMMAND [options] path"
+      opts.banner = "Usage: eztag.rb COMMAND [options] path (or files for upload)"
 
       opts.separator ""
       opts.separator "Commands:"
@@ -274,6 +297,10 @@ class EzTag
 
       opts.on('-C', '--col_id=COLLECTION_ID', Integer, "Collection ID") do |id|
         @options.collection_id = id
+      end
+
+      opts.on("-r", "--[no-]replace", "Remove documents with the same doucment id before uploading") do |v|
+        @options.replace = v
       end
 
       opts.separator ""

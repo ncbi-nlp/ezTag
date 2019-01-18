@@ -174,8 +174,8 @@ BioC.prototype.bindAnnotationSpan = function() {
       }
     });
   }
-
 };
+
 BioC.prototype.addNewAnnotation = function(text, offset, type) {
   var self = this;
   if (!type) {
@@ -224,11 +224,11 @@ BioC.prototype.findAnnotationRange = function(range) {
   var $end = $(range.endContainer.parentElement);
   var startPassage = range.startContainer.parentElement.parentElement;
   var endPassage = range.endContainer.parentElement.parentElement;
+  
   if (startPassage != endPassage) {
-    return {
-      error: 'Different Passage!'
-    };
+    return {error: 'Different Passage!'};
   }
+  
   var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
   var offset = elemOffset + range.startOffset;
 
@@ -251,12 +251,12 @@ BioC.prototype.findAnnotationRange = function(range) {
     if ($p.hasClass('annotation')) {
       ids = $p.data('ids');
       if (ids.split) {
-        ids = ids.split(",");
+        ids = ids.split(" ");
       } else {
         ids = [ids];
       }
       _.each(ids, function(id) {
-        annotations.push(parseInt(id, 10));
+        annotations.push("" + id);
       });
     }
     $p = $p.next();
@@ -275,10 +275,10 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
   if (!annotationIds) {
     var ids = $("#annotationListModal .content").data('ids');
     if (ids && ids.split) {
-      annotationIds = ids.split(',').map(function(e) {return parseInt(e, 10);});
+      annotationIds = ids.split(' ');
     }
   } else {
-    $("#annotationListModal .content").data('ids', annotationIds.join(","));
+    $("#annotationListModal .content").data('ids', annotationIds.join(" "));
   }
 
   if (!annotationIds) {
@@ -286,7 +286,7 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
   }
 
   var annotations = _.filter(self.annotations, function(a) {
-    return annotationIds.includes(parseInt(a.id, 10)); 
+    return annotationIds.includes(a.id); 
   });
   annotations.sort(function(a, b) {
     return a.offset - b.offset;
@@ -305,7 +305,7 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
   $("#annotationListModal .annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
   $("#annotationListModal .annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
 
-  $("#annotationListModal .annotation-tr .icon.search, #annotationListModal .annotation-tr .icon.comment").unbind("click").click(function(e) {
+  $("#annotationListModal .annotation-tr .icon.show-popup").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     self.clickAnnotation($e.closest("tr"), {force: true});
   });
@@ -350,6 +350,13 @@ BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
       }
     }
   }).modal('show');
+//   $("#annotationListModal thead input[type='checkbox']").blur();
+//   $("#annotationListModal input[type='text']:first").focus();
+//   setTimeout(function() {
+//     console.log("blue-------------");
+//     $("#annotationListModal thead input[type='checkbox']").blur();
+//     $("#annotationListModal input[type='text']:first").focus();
+//   }, 400);
 };
 
 BioC.prototype.deleteCheckedAnnotation = function(offsets) {
@@ -653,7 +660,7 @@ BioC.prototype.bindAnnotationTr = function() {
       }
     })
 
-  $("#annotationTable .annotation-tr .icon.search, .annotation-tr .icon.comment").unbind("click").click(function(e) {
+  $("#annotationTable .annotation-tr .icon.show-popup").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     self.clickAnnotation($e.closest("tr"));
   });
@@ -721,6 +728,7 @@ BioC.prototype.updateEntityType = function($tr) {
   var concept = $tr.find(".concept-text").text().trim();
   var isMention = (!concept);
   if (oldValue !== newValue) {
+    $tr.find('.type .dimmer').addClass('active');
     $.ajax({
       url: self.endpoints.annotations + "/" + $tr.data('id') + ".json",
       method: "PATCH",
@@ -739,6 +747,7 @@ BioC.prototype.updateEntityType = function($tr) {
         toastr.error(err);              
       },
       complete: function() {
+        $tr.find('.type .dimmer').removeClass('active');
       }
     });
   } else {
@@ -762,6 +771,7 @@ BioC.prototype.updateConcept = function($tr) {
   var newValue = $tr.find(".concept-edit input").val().trim();
   var isMention = (!oldValue);
   if (oldValue !== newValue) {
+    $tr.find('.concept .dimmer').addClass('active');
     $.ajax({
       url: self.endpoints.annotations + "/" + $tr.data('id') + ".json",
       method: "PATCH",
@@ -780,6 +790,7 @@ BioC.prototype.updateConcept = function($tr) {
         toastr.error(err);              
       },
       complete: function() {
+        $tr.find('.concept .dimmer').removeClass('active');
       }
     });
   } else {

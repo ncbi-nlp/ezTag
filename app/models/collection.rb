@@ -24,9 +24,12 @@ class Collection < ApplicationRecord
     end
   end
 
-  def upload_from_file(file, batch_id)
+  def upload_from_file(file, batch_id, replace_did = nil)
     begin
       Collection.transaction do 
+        if replace_did.present?
+          self.documents.where("did = ?", replace_did).destroy_all
+        end
         if file.respond_to?(:read)
           xml = file.read
         elsif file.respond_to?(:path)

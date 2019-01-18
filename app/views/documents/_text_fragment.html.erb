@@ -59,4 +59,4 @@ ranges.each_with_index do |s_pos, index|
   cls = cls.uniq
   cls << "annotation" unless cls.blank?
   annotation_ids = annotation_ids.uniq
-  -%><span data-ids="<%=annotation_ids.join(',')%>" data-type="<%=j entity_type%>" data-concept="<%=j concept_id%>" data-id="<%=j a_selected.id unless a_selected.nil? %>" class="phrase <%= cls.join(" ") %> <%=ids.join(' ') %>" data-offset="<%=s_pos%>"><%=ptext[s_pos - p.offset, e_pos - s_pos]%></span><%-end -%>
+  -%><span data-ids="<%=annotation_ids.join(' ')%>" data-type="<%=j entity_type%>" data-concept="<%=j concept_id%>" data-id="<%=j a_selected.id unless a_selected.nil? %>" class="phrase <%= cls.join(" ") %> <%=ids.join(' ') %>" data-offset="<%=s_pos%>"><%=ptext[s_pos - p.offset, e_pos - s_pos]%></span><%-end -%>
