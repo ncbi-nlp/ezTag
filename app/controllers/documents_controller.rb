@@ -98,7 +98,7 @@ class DocumentsController < ApplicationController
   def done
     @collection = @document.collection
     unless @collection.available?(@current_user)
-      render json: {}, status: 401
+      render json: {error: "You're not authorized"}, status: 401
       return
     end
     @document.done = params[:value]
@@ -109,7 +109,7 @@ class DocumentsController < ApplicationController
   def curatable
     @collection = @document.collection
     unless @collection.available?(@current_user)
-      render json: {}, status: 401
+      render json: {error: "You're not authorized"}, status: 401
       return
     end
     Document.transaction do 
@@ -129,7 +129,13 @@ class DocumentsController < ApplicationController
     end
 
     unless @collection.available?(@current_user)
-      redirect_to "/", error: "Cannot access the document"
+      if request.format.json?
+        render json: {error: "You're not authorized"}, status: 401
+        return
+      else
+        redirect_to "/", error: "Cannot access the document"
+        return
+      end
     end
     
     logger.debug(params.inspect)
