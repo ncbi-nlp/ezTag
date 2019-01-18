@@ -509,7 +509,7 @@ class Document < ApplicationRecord
     if given_id.kind_of?(Array)
       given_id.include?(id)
     else
-      given_id.to_i == id
+      given_id == id
     end
   end
 
