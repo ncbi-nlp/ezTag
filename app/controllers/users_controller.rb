@@ -99,6 +99,7 @@ class UsersController < ApplicationController
       if @current_user.session_str.present?
         @url = "#{request.protocol}#{request.host_with_port}/sessions/" + @current_user.session_str
       end
+      @user = @current_user
       render :show
     else
       redirect_to "/", alert: "Session does not exist: '#{params[:session_str]}'"
