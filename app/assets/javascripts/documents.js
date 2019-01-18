@@ -313,11 +313,13 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
 
 BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
   var self = this;
-
-  $("#annotationListModal .header").html(
-    "Range [" + offset + ":" + (offset + text.length) + "] (length: " + text.length + ")" + 
-    "<span class='annotation-text-span'>" + text + "</span>"
-  );
+  var titleHelp = "Range [" + offset + ":" + (offset + text.length) + "] (length: " + text.length + ")";
+  var titleText = "<span class='annotation-text-span need-popup-title' data-position='bottom left' data-content='" + titleHelp + "'>" + text + "</span>";
+  if (text.length > 0) {
+    $("#annotationListModal .header").html(titleText);
+  } else {
+    $("#annotationListModal .header").html("");
+  }  
   $("#annotationListModal input[type='checkbox']").prop('checked', false);
   $("#annotationListModal thead input[type='checkbox']").change(function(e) {
     var val = $(e.currentTarget).is(':checked');
@@ -350,6 +352,7 @@ BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
       }
     }
   }).modal('show');
+  $('.need-popup-title').popup();
 //   $("#annotationListModal thead input[type='checkbox']").blur();
 //   $("#annotationListModal input[type='text']:first").focus();
 //   setTimeout(function() {
