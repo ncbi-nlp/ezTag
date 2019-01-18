@@ -58,6 +58,10 @@ class EzTag
         @path << filename
       end
     end
+    if @path.size == 1 && !File.exist?(@path[0])
+      STDERR.puts "Error: path (#{@path}) is not directory"
+      exit
+    end
     verbose_puts "Path : #{@path}" 
   end
 
@@ -72,7 +76,7 @@ class EzTag
   end
 
   def init_http_request
-    @uri = "http://#{@options.host}:#{@options.port}"
+    @uri = "#{@options.protocol}://#{@options.host}:#{@options.port}"
     self.class.base_uri @uri
     self.class.headers 'Accept' => 'application/json'
     self.class.headers 'Content-Type' => 'application/json'
@@ -155,7 +159,11 @@ class EzTag
     params[:replace] = did if @options.replace
     RestClient.post("#{@uri}/collections/#{@options.collection_id}/documents",  
       params, headers = @headers
-    )
+    ) do |response, request, result|
+      if response.code >= 300
+        STDERR.puts  "   > Error: #{response.code} #{response.body}"
+      end
+    end
     @success += 1
   end
 
@@ -188,8 +196,12 @@ class EzTag
       STDERR.puts "Error: #{e.message}"
       exit
     end
-
     verbose_puts "  --> Response #{response.code}" if @options.verbose
+    if response.code == 401
+      STDERR.puts "Error: your apikey does not exist."
+      exit
+    end
+
     if response.to_a.empty? 
       STDERR.puts "Error: email(#{@options.email}) does not exist or is not accessible to you"
       exit
@@ -246,11 +258,11 @@ class EzTag
     @options = OpenStruct.new
     @options.verbose = false
     @options.host = "eztag.bioqrator.org"
-    @options.port = 80
+    @options.port = 443
     @options.keyfile = "./apikey"
     @options.force_upload = false
     @options.replace = false
-
+    @options.protocol = "https"
     opt_parser = OptionParser.new do |opts|
 
       opts.banner = "Usage: eztag.rb COMMAND [options] path (or files for upload)"
@@ -275,8 +287,12 @@ class EzTag
         @options.host = v
       end
 
-      opts.on("-P", "--port=PORT", Integer, "Port number for the server (default: 80)") do |v|
+      opts.on("-P", "--port=PORT", Integer, "Port number for the server (default: 443)") do |v|
         @options.port = v
+      end
+
+      opts.on("-p", "--protocol=protocol", "Protocol name: https or http (default: https)") do |v|
+        @options.protocol = v
       end
 
       opts.on("-k", "--keyfile=KEY_FILE_PATH", "API key file path (default: ./apikey)") do |v|
