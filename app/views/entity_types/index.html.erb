@@ -42,6 +42,7 @@
     </table>
   <% end %>
   <%= link_to 'New Entity Type', new_collection_entity_type_path(@collection), class: "ui button primary ajax-update-disbled-with-status #{'disabled' if @collection.busy?}" %>
+  <%= link_to 'Import Default Entity Type', import_default_color_collection_entity_types_path(@collection), class: "ui button secondary #{'disabled' if @collection.busy?}", method: :post, data: {confirm: 'Are you sure to make defaut entity types here?'} %>
 </div>
 <br>
 

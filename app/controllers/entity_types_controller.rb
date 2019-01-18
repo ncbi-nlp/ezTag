@@ -1,7 +1,7 @@
 class EntityTypesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_entity_type, only: [:show, :edit, :update, :destroy]
-  before_action :set_collection, only: [:new, :create, :index]
+  before_action :set_collection, only: [:new, :create, :index, :import_default_color]
 
   # GET /entity_types
   # GET /entity_types.json
@@ -51,6 +51,32 @@ class EntityTypesController < ApplicationController
       end
     end
   end
+
+  def import_default_color
+    EntityType.transaction do 
+      EntityType::DEFAULT_COLORMAP.each do |k, c|
+        found = false
+        @collection.entity_types.each do |e|
+          name = e.name.strip.downcase
+          logger.debug("CHECK NAME #{name} == #{k}")
+          if name == k
+            e.color = c
+            e.name = EntityType::DEFAULT_NAMEMAP[k]
+            e.save
+            found = true
+          end
+        end
+        if !found
+          @collection.entity_types.create!({name: EntityType::DEFAULT_NAMEMAP[k], color: c})
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to collection_entity_types_path(@collection), notice: 'The entity type was successfully imported.' }
+    end
+  end
+
 
   # PATCH/PUT /entity_types/1
   # PATCH/PUT /entity_types/1.json

@@ -42,7 +42,11 @@ Rails.application.routes.draw do
       end
     end
     resources :documents
-    resources :entity_types
+    resources :entity_types do
+      collection do
+        post 'import_default_color'
+      end
+    end
     member do
       get 'download'
       post 'empty'

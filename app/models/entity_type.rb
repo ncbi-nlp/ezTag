@@ -7,10 +7,24 @@ class EntityType < ApplicationRecord
   COLORS = %w(#CCFFFF #CCFFCC #FFFF99 #FFCCCC #66CCFF #99FF66 #FFCC00 #CCFF66 #FF66FF #FF9999 #99CC00 #00CC99 #00CCFF #9966FF #CCCC00 #FF9933)
 
   DEFAULT_COLORMAP = {
-    "chemical"  => "#CCFFFF",
-    "gene"      => "#FFFF99",
-    "disease"   => "#00CC99",
-    "protein"   => "#99FF66"
+    "chemical"  => "#FFEA00",
+    "other"     => "#C2D1E5",
+    "species"   => "#B2B6FF",
+    "gene"      => "#99FF66",
+    "stargene"  => "#00CCFF",
+    "generif"   => "#88B500",
+    "disease"   => "#FF9999",
+    "mutation"   => "#B9EDFF"
+  }
+  DEFAULT_NAMEMAP = {
+    "chemical"  => "Chemical",
+    "other"     => "Other",
+    "species"   => "Species",
+    "gene"      => "Gene",
+    "stargene"  => "StarGene",
+    "generif"   => "GeneRif",
+    "disease"   => "Disease",
+    "mutation"   => "Mutation"
   }
   def font_color
     a = ( self.color.match /(..?)(..?)(..?)/ )[1..3]
