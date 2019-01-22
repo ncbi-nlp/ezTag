@@ -18,10 +18,10 @@ class EntityUtil
     # {type: entity_type, id: ""}
   end
 
-  def self.update_annotation_entity(annotator, annotation, type, concept, note = "") 
-    if (type != annotation.infons["type"] || 
-        concept != annotation.infons["identifier"] || 
-        note != annotation.infons["note"])
+  def self.update_annotation_entity(annotator, annotation, type, concept, note = "", no_update_note = false) 
+    if ((type.present? && type != annotation.infons["type"]) || 
+        (concept.present? && concept != annotation.infons["identifier"]) || 
+        (note.present? && note != annotation.infons["note"]))
       annotation.infons["annotator"] = annotator if annotator.present?
       annotation.infons["updated_at"] = Time.now.utc.iso8601
     end
@@ -30,7 +30,7 @@ class EntityUtil
     annotation.infons["identifier"] = concept if concept.present?
     if note.present?
       annotation.infons["note"] = note 
-    else
+    elsif !no_update_note
       annotation.infons.delete('note')
     end
     # unless annotation.infons[type + "ID"].nil?

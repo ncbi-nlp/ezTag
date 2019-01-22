@@ -23,6 +23,11 @@ ranges.each_with_index do |s_pos, index|
   ids = []
   last_size = 9999999
   annotation_ids = []
+
+  a_types = []
+  a_concepts = []
+  a_texts = []
+
   p.annotations.each do |a|
     next if a.locations.nil?
     a.locations.each do |l|
@@ -36,6 +41,11 @@ ranges.each_with_index do |s_pos, index|
         end
         ids << "AL_#{a.id}_#{l.offset}"
         annotation_ids << a.id
+        entity = EntityUtil.get_annotation_entity(a)
+
+        a_concepts << entity[:id]
+        a_texts << a.text
+        a_types << entity[:type]
       end
     end
   end
@@ -56,6 +66,15 @@ ranges.each_with_index do |s_pos, index|
   if annotation_ids.length > 1 
     cls << 'overlapped';
   end
+
+  a_concepts = a_concepts.uniq
+  a_texts = a_texts.uniq
+  a_types = a_types.uniq
+
+  if a_concepts.size > 1 || a_texts.size > 1 || a_types.size > 1
+    cls << 'mismatched';
+  end
+
   cls = cls.uniq
   cls << "annotation" unless cls.blank?
   annotation_ids = annotation_ids.uniq

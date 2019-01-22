@@ -215,23 +215,23 @@ class Document < ApplicationRecord
     return true
   end
 
-  def update_concept_in_document(annotator, node, old, entity_type, concept, note)
+  def update_concept_in_document(annotator, node, old, entity_type, concept, note, no_update_note)
     node.annotations.each do |a|
       entity = EntityUtil.get_annotation_entity(a)
       if entity[:type] == old[:type] && entity[:id] == old[:id]
-        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
+        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note, no_update_note)
       end
     end
   end
 
-  def update_mention_in_document(annotator, node, id, entity_type, concept, note)
+  def update_mention_in_document(annotator, node, id, entity_type, concept, note, no_update_note)
     node.annotations.each do |a|
       if a.id == id
-        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note)
+        EntityUtil.update_annotation_entity(annotator, a, entity_type, concept, note, no_update_note)
       end
     end
   end
-  def update_concept(annotator, id, entity_type, concept, note)
+  def update_concept(annotator, id, entity_type, concept, note, no_update_note)
     old_a = nil
     self.bioc_doc.all_annotations.each do |a|
       old_a = a if a.id == id
@@ -241,21 +241,21 @@ class Document < ApplicationRecord
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_concept_in_document(annotator, s, old_entity, entity_type, concept, note)
+          update_concept_in_document(annotator, s, old_entity, entity_type, concept, note, no_update_note)
         end
-        update_concept_in_document(annotator, p, old_entity, entity_type, concept, note)
+        update_concept_in_document(annotator, p, old_entity, entity_type, concept, note, no_update_note)
       end
       self.save_xml(self.bioc)
     end
   end
 
-  def update_mention(annotator, id, entity_type, concept, note)
+  def update_mention(annotator, id, entity_type, concept, note, no_update_note)
     Document.transaction do 
       self.bioc_doc.passages.each do |p|
         p.sentences.each do |s|
-          update_mention_in_document(annotator, s, id, entity_type, concept, note)
+          update_mention_in_document(annotator, s, id, entity_type, concept, note, no_update_note)
         end
-        update_mention_in_document(annotator, p, id, entity_type, concept, note)
+        update_mention_in_document(annotator, p, id, entity_type, concept, note, no_update_note)
       end
       self.save_xml(self.bioc)
     end

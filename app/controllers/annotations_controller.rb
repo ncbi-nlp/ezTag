@@ -44,14 +44,15 @@ class AnnotationsController < ApplicationController
     @concept = params[:concept] || ""
     @type = params[:type] || ""
     @note = params[:note] || ""
+    @no_update_note = params[:no_update_note] 
     @concept.strip!
     @type.strip!
     if params[:mode] == "true" || params[:mode] == "1" || params[:mode] == "concept"
       logger.debug("update_concept")
-      @document.update_concept(@current_user.email, params[:id], @type, @concept, @note)
+      @document.update_concept(@current_user.email, params[:id], @type, @concept, @note, @no_update_note)
     else
       logger.debug("update_mention")
-      @document.update_mention(@current_user.email, params[:id], @type, @concept, @note)
+      @document.update_mention(@current_user.email, params[:id], @type, @concept, @note, @no_update_note)
     end
     if params[:annotate_all] == "all"
       @text = (params[:text] || "").strip

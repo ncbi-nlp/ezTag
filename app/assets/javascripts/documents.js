@@ -735,7 +735,7 @@ BioC.prototype.updateEntityType = function($tr) {
     $.ajax({
       url: self.endpoints.annotations + "/" + $tr.data('id') + ".json",
       method: "PATCH",
-      data: {mode: !isMention, concept: concept, type: newValue}, 
+      data: {mode: !isMention, concept: concept, type: newValue, no_update_note: true}, 
       success: function(data) {
         self.reloadMainDocument();
         $tr.removeClass("new");
@@ -778,7 +778,7 @@ BioC.prototype.updateConcept = function($tr) {
     $.ajax({
       url: self.endpoints.annotations + "/" + $tr.data('id') + ".json",
       method: "PATCH",
-      data: {mode: !isMention, concept: newValue, type: type}, 
+      data: {mode: !isMention, concept: newValue, type: type, no_update_note: true}, 
       success: function(data) {
         $tr.removeClass("new");
         self.restoreTR();
