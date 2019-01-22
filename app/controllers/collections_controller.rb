@@ -3,7 +3,8 @@ require 'zip'
 class CollectionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user
-  before_action :set_collection, only: [:show, :edit, :update, :destroy, :download, :empty, :delete_all_annotations, :done_all]
+  before_action :set_collection, only: [:show, :edit, :update, :destroy, :download, 
+                                :empty, :delete_all_annotations, :done_all, :reorder]
   before_action :set_top_menu
 
   # GET /collections
@@ -14,6 +15,7 @@ class CollectionsController < ApplicationController
     if params[:name].present?
       @collections = @collections.where("name = ?", params[:name])
     end
+    @collections = @collections.order("order_no DESC")
     respond_to do |format|
       format.html
       format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
@@ -21,7 +23,7 @@ class CollectionsController < ApplicationController
   end
 
   def partial
-    @collections = @user.collections.all
+    @collections = @user.collections.all.order("order_no DESC")
     respond_to do |format|
       format.html {render layout: false}
       format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
@@ -59,7 +61,7 @@ class CollectionsController < ApplicationController
   # POST /collections.json
   def create
     @collection = @user.collections.new(collection_params)
-
+    @collection.order_no = @user.collections.size
     respond_to do |format|
       if @collection.save
         format.html { redirect_to collection_documents_path(@collection), notice: 'The collection was successfully created.' }
@@ -126,6 +128,52 @@ class CollectionsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def reorder
+    @user = @collection.user
+
+    if params[:batch_id].present?
+      Collection.transaction do 
+        last_order_no = @collection.documents.where("order_no < 999999").maximum('order_no')
+        last_order_no = 0 if last_order_no.nil?
+        if params[:batch_id] == "999999"
+          no = last_order_no + 1
+          @collection.documents.where("order_no = 999999").order("batch_id ASC, batch_no DESC, id ASC").each do |d|
+            d.order_no = no
+            d.save!
+            no += 1
+          end
+        else
+          @collection.documents
+            .where("batch_id = ? and order_no = 999999", params[:batch_id])
+            .update_all("order_no = batch_no + #{last_order_no}")
+        end
+      end
+    else
+      src = @collection.order_no
+      if params[:dest] == "last"
+        dest = @user.collections.size
+      else
+        dest = params[:dest].to_i
+      end
+      Collection.transaction do 
+        if dest > @collection.order_no
+          @user.collections.where("order_no > ? and order_no <= ?", src, dest).update_all("order_no = order_no - 1")
+          @collection.order_no = dest
+          @collection.save!
+        elsif dest < @collection.order_no
+          @user.collections.where("order_no >= ? and order_no < ?", dest, src).update_all("order_no = order_no + 1")
+          @collection.order_no = dest
+          @collection.save!
+        end
+      end
+    end
+    respond_to do |format|
+      format.html { redirect_back fallback_location: collections_path, notice: 'The collection was successfully reordered.' }
+      format.json { head :no_content }
+    end      
+  end
+
 
   def empty
     @collection.documents.destroy_all

@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       post 'delete_all_annotations'
       post 'done'
       post 'curatable'
+      get 'reorder'
     end
     resources :annotations 
   end
@@ -52,6 +53,7 @@ Rails.application.routes.draw do
       post 'empty'
       post 'done_all'
       post 'delete_all_annotations'
+      get 'reorder'
     end
   end
   

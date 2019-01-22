@@ -1,7 +1,10 @@
 class DocumentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_collection, only: [:create, :new, :index]
-  before_action :set_document, only: [:show, :edit, :partial, :update, :destroy, :verify, :delete_all_annotations, :done, :curatable]
+  before_action :set_document, only: [:show, :edit, :partial, :update, 
+                  :destroy, :verify, :delete_all_annotations, 
+                  :reorder,
+                  :done, :curatable]
   before_action :set_top_menu
 
   # GET /documents
@@ -11,10 +14,10 @@ class DocumentsController < ApplicationController
     semantic_breadcrumb @collection.name
     @documents = @collection.documents
     @documents = @documents.where("did = ?", params[:did]) if params[:did].present?
-    if request.format.json?
-      @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC")
-    else
-      @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page(params[:page])
+    @documents = @documents.order("order_no DESC")
+    unless request.format.json?
+      # @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page(params[:page])
+      @documents = @documents.page(params[:page])
     end
   end
 
@@ -186,6 +189,31 @@ class DocumentsController < ApplicationController
       format.html { redirect_back fallback_location: collection_documents_path(@collection), notice: 'The document was successfully removed.' }
       format.json { head :no_content }
     end
+  end
+
+  def reorder
+    @collection = @document.collection
+    src = @document.order_no
+    if params[:dest] == "last"
+      dest = @collection.documents.size
+    else
+      dest = params[:dest].to_i
+    end
+    Document.transaction do 
+      if dest > @document.order_no
+        @collection.documents.where("order_no > ? and order_no <= ?", src, dest).update_all("order_no = order_no - 1")
+        @document.order_no = dest
+        @document.save!
+      elsif dest < @document.order_no
+        @collection.documents.where("order_no >= ? and order_no < ?", dest, src).update_all("order_no = order_no + 1")
+        @document.order_no = dest
+        @document.save!
+      end
+    end
+    respond_to do |format|
+      format.html { redirect_back fallback_location: collection_documents_path(@collection), notice: 'The document was successfully reordered.' }
+      format.json { head :no_content }
+    end      
   end
 
   private

@@ -233,11 +233,19 @@ a {
 @media only screen and (min-width: 768px) {
   .ui.selection.dropdown .menu {
       max-height: 18.7rem;
-  }  
+  } 
+
 }
 
 @media only screen and (min-width: 992px) {
   .ui.selection.dropdown .menu {
       max-height: 18.7rem;
+  }
+}
+
+/* Large Monitor */
+@media only screen and (max-width: 1199px) {
+  .large-screen-only {
+    display: none !important;
   }
 }

@@ -52,6 +52,7 @@ class Collection < ApplicationRecord
           doc = Document.new
           doc.batch_id = batch_id
           doc.batch_no = batch_no
+          doc.order_no = 999999
           doc.save_document(d, bioc, self)
           dids << doc.did
           batch_no += 1
@@ -97,6 +98,7 @@ class Collection < ApplicationRecord
         end
         doc.batch_id = batch_id
         doc.batch_no = id_map[did]
+        doc.order_no = 999999
         doc.save_document(d, bioc, self)
         dids << did
       end

@@ -63,9 +63,17 @@
             </td>
             <td><%= time_ago_in_words(document.updated_at) %> ago</td>
             <td class="center aligned">
-              <%= link_to document, class: "ui blue ajax-update-disbled-with-status button small #{'disabled' if @collection.busy?}" do %>
-                <i class="icon write"></i> Edit
+              <%= link_to document, class: "large-screen-only ui blue ajax-update-disbled-with-status button icon small #{'disabled' if @collection.busy?}" do %>
+                <i class="icon write"></i>
               <% end %>
+              <div class="large-screen-only ui icon small buttons ">
+                <%=link_to reorder_document_path(document, {dest: document.order_no + 1}), class: "ui icon small button #{'disabled' if document.order_no == document.collection.documents.size}" do %>
+                  <i class="icon caret up"></i>
+                <% end %>
+                <%=link_to reorder_document_path(document, {dest: document.order_no - 1}), class: "ui icon small button #{'disabled' if document.order_no == 1}" do %>
+                  <i class="icon caret down"></i>
+                <% end %>
+              </div> 
               <div class="ui top right pointing dropdown ajax-update-disbled-with-status button small icon <%='disabled' if @collection.busy? %>">
                 <i class="setting icon"></i>
                 <div class="menu">
@@ -75,6 +83,23 @@
                   <div class="item">
                     <%= link_to 'Delete Document', document, method: :delete, data: { confirm: 'Are you sure?' } %>
                   </div>
+                  <div class="divider"></div>
+                  <% if document.order_no < document.collection.documents.size %>
+                    <div class="item">
+                      <%= link_to 'Move to the Top', reorder_document_path(document, {dest: "last"}) %>
+                    </div>
+                    <div class="item">
+                      <%= link_to 'Move Up', reorder_document_path(document, {dest: document.order_no + 1}) %>
+                    </div>
+                  <% end %>
+                  <% if document.order_no > 1 %>
+                    <div class="item">
+                      <%= link_to 'Move Down', reorder_document_path(document, {dest: document.order_no - 1}) %>
+                    </div>
+                    <div class="item">
+                      <%= link_to 'Move to the Bottom', reorder_document_path(document, {dest: 1}) %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
             </td>

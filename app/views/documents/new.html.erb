@@ -159,8 +159,19 @@ function PMIDUploader(ids) {
         });
       } else {
         if (self.complete >= self.ids.length) {
-          $("#pmidUploadSpinner").removeClass("active");
-          toastr.success("Upload completed.");
+
+          $.ajax({
+            url: "<%=reorder_collection_path(@collection, format: :json) %>",
+            method: "GET",
+            data: {batch_id: self.batch_id},
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            success: function(data) {
+              $("#pmidUploadSpinner").removeClass("active");
+              toastr.success("Upload completed.");
+            },
+            error: function() {
+            },
+          });
         }
       }
     }
@@ -184,6 +195,18 @@ function PMIDUploader(ids) {
         $("#uploadSpinner").removeClass("active");
         console.log(obj);
         // location.reload();
+        $.ajax({
+          url: "<%=reorder_collection_path(@collection, format: :json) %>",
+          method: "GET",
+          data: {batch_id: 999999},
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          success: function(data) {
+            $("#pmidUploadSpinner").removeClass("active");
+            toastr.success("Upload completed.");
+          },
+          error: function() {
+          },
+        });
       },
       onError: function(files,status,errMsg,pd) {
         //files: list of files

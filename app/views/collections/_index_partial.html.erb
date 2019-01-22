@@ -23,6 +23,14 @@
       <%= link_to collection, class: "ui small button blue" do %>
         <i class='icon table'></i> Show
       <% end %>
+      <div class="ui icon small buttons large-screen-only">
+        <%=link_to reorder_collection_path(collection, {dest: collection.order_no + 1}), class: "ui icon small button #{'disabled' if collection.order_no == collection.user.collections.size}" do %>
+          <i class="icon caret up"></i>
+        <% end %>
+        <%=link_to reorder_collection_path(collection, {dest: collection.order_no - 1}), class: "ui icon small button #{'disabled' if collection.order_no == 1}" do %>
+          <i class="icon caret down"></i>
+        <% end %>
+      </div> 
       <div class="ui top right pointing dropdown button small icon">
         <i class="setting icon blue"></i>
         <div class="menu">
@@ -35,6 +43,24 @@
           <div class="item">
             <%= link_to 'Delete Collection', collection, method: :delete, data: { confirm: 'Are you sure?' } %>
           </div>
+
+          <div class="divider"></div>
+          <% if collection.order_no < collection.user.collections.size %>
+            <div class="item">
+              <%= link_to 'Move to the Top', reorder_collection_path(collection, {dest: "last"}) %>
+            </div>
+            <div class="item">
+              <%= link_to 'Move Up', reorder_collection_path(collection, {dest: collection.order_no + 1}) %>
+            </div>
+          <% end %>
+          <% if collection.order_no > 1 %>
+            <div class="item">
+              <%= link_to 'Move Down', reorder_collection_path(collection, {dest: collection.order_no - 1}) %>
+            </div>
+            <div class="item">
+              <%= link_to 'Move to the Bottom', reorder_collection_path(collection, {dest: 1}) %>
+            </div>
+          <% end %>
         </div>
       </div>
     </td>

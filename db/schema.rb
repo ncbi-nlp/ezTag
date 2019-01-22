@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190116051649) do
+ActiveRecord::Schema.define(version: 20190122183233) do
 
   create_table "api_keys", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.string   "key",            limit: 50
@@ -36,7 +36,9 @@ ActiveRecord::Schema.define(version: 20190116051649) do
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
     t.integer  "annotations_count",              default: 0
+    t.integer  "order_no"
     t.index ["key"], name: "index_collections_on_key", using: :btree
+    t.index ["user_id", "order_no"], name: "index_collections_on_user_id_and_order_no", using: :btree
     t.index ["user_id"], name: "index_collections_on_user_id", using: :btree
   end
 
@@ -56,6 +58,8 @@ ActiveRecord::Schema.define(version: 20190116051649) do
     t.integer  "batch_no",                             default: 0
     t.boolean  "done",                                 default: false
     t.boolean  "curatable",                            default: true
+    t.integer  "order_no"
+    t.index ["collection_id", "order_no"], name: "index_documents_on_collection_id_and_order_no", using: :btree
     t.index ["collection_id"], name: "index_documents_on_collection_id", using: :btree
     t.index ["did"], name: "index_documents_on_did", using: :btree
   end
