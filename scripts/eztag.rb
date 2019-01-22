@@ -189,14 +189,14 @@ class EzTag
   end
 
   def get_user
-    verbose_puts "> HTTP Get /users?email=#{@options.email}" if @options.verbose
+    verbose_puts "> HTTP Get /users?email=#{@options.email}"
     begin
       response = self.class.get('/users', {query: {email: @options.email}})
     rescue Exception => e
       STDERR.puts "Error: #{e.message}"
       exit
     end
-    verbose_puts "  --> Response #{response.code}" if @options.verbose
+    verbose_puts "  --> Response #{response.code}"
     if response.code == 401
       STDERR.puts "Error: your apikey does not exist."
       exit
@@ -215,7 +215,7 @@ class EzTag
   end
 
   def get_collection
-    verbose_puts "> HTTP Get /users/#{@options.user_id}/collections" if @options.verbose
+    verbose_puts "> HTTP Get /users/#{@options.user_id}/collections"
     begin
       response = self.class.get("/users/#{@options.user_id}/collections", {query: {name: @options.collection_name}})
     rescue Exception => e
@@ -223,25 +223,39 @@ class EzTag
       exit
     end
 
-    verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}" if @options.verbose
+    verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}"
     if response.to_a.empty? 
-      STDERR.puts "Error: collection(#{@options.collection_name}) does not exist or is not accessible to you"
-      exit
+      if @options.new_collection && @command == "upload" 
+        verbose_puts "  Try to create: HTTP POST /users/#{@options.user_id}/collections"
+        begin
+          response = self.class.post("/users/#{@options.user_id}/collections", {
+            body: {collection: {name: @options.collection_name }}.to_json
+          })
+        rescue Exception => e
+          STDERR.puts "Error: #{e.message}"
+          exit
+        end
+        verbose_puts "  --> Response #{response.code}: #{response.parsed_response.inspect}"
+        collection = response.parsed_response
+      else
+        STDERR.puts "Error: collection(#{@options.collection_name}) does not exist or is not accessible to you"
+        exit
+      end
     elsif response.to_a.size > 1 
       STDERR.puts "Error: there are multiple collections with the same name (#{@options.collection_name})"
       exit
-    end
-
-    collection = response.to_a[0]
-    if !@options.collection_id.nil? && collection["id"] != @options.collection_id
-      STDERR.puts "Error: collection's id(#{@options.collection_id}) and name(#{@options.collection_name}) do not match"
-      exit
+    else
+      collection = response.to_a[0]
+      if !@options.collection_id.nil? && collection["id"] != @options.collection_id
+        STDERR.puts "Error: collection's id(#{@options.collection_id}) and name(#{@options.collection_name}) do not match"
+        exit
+      end
     end
     @options.collection_id = collection["id"]
   end
   
   def get_documents
-    verbose_puts "> HTTP Get /collections/#{@options.collection_id}/documents" if @options.verbose
+    verbose_puts "> HTTP Get /collections/#{@options.collection_id}/documents"
     begin
       response = self.class.get("/collections/#{@options.collection_id}/documents")
     rescue Exception => e
@@ -249,7 +263,7 @@ class EzTag
       exit
     end
 
-    verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}" if @options.verbose
+    verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}"
   
     @documents = response.to_a.map{|d| {did: d["did"], url: "/documents/#{d["id"]}.xml"}}
   end
@@ -263,6 +277,7 @@ class EzTag
     @options.force_upload = false
     @options.replace = false
     @options.protocol = "https"
+    @options.new_collection = true
     opt_parser = OptionParser.new do |opts|
 
       opts.banner = "Usage: eztag.rb COMMAND [options] path (or files for upload)"
@@ -307,7 +322,7 @@ class EzTag
         @options.user_id = id
       end
 
-      opts.on('-c', '--col=COLLECTION_NAME', "Collection name") do |name|
+      opts.on('-c', '--col=COLLECTION_NAME', "Collection name (For uploading, create a new collection when the name does not exist)") do |name|
         @options.collection_name = name
       end
 
@@ -317,6 +332,10 @@ class EzTag
 
       opts.on("-r", "--[no-]replace", "Remove documents with the same doucment id before uploading") do |v|
         @options.replace = v
+      end
+
+      opts.on("--[no-]new-collection", "For uploading, create a new collection when it does not exist (default: true)") do |v|
+        @options.new_collection = v
       end
 
       opts.separator ""
