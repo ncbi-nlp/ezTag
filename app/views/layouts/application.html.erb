@@ -21,7 +21,7 @@
         <%= link_to "Collections", collections_path, class: "item #{'active' if @top_menu == 'collections'}" %>
         <%= link_to "Lexicons", lexicon_groups_path, class: "item #{'active' if @top_menu == 'lexicons'}" %>
         <%= link_to "Models", models_path, class: "item #{'active' if @top_menu == 'models'}" %>
-        <% if @current_user.super_admin? %>
+        <% if @current_user.present? && @current_user.super_admin? %>
           <div class="ui dropdown item ">
             Admin
             <i class="dropdown icon"></i>
