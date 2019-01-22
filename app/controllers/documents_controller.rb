@@ -11,7 +11,11 @@ class DocumentsController < ApplicationController
     semantic_breadcrumb @collection.name
     @documents = @collection.documents
     @documents = @documents.where("did = ?", params[:did]) if params[:did].present?
-    @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page params[:page]
+    if request.format.json?
+      @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC")
+    else
+      @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page(params[:page])
+    end
   end
 
   # GET /documents/1
