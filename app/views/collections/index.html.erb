@@ -21,9 +21,9 @@
   <table class="ui table table-bordered">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Articles</th>
-        <th>Annotations</th>
+        <th><%= sortable 'name'%></th>
+        <th><%= sortable 'documents_count', 'Articles'%></th>
+        <th><%= sortable 'annotations_count', 'Annotations'%></th>
         <th>Status</th>
         <th>Note</th>
         <th></th>
@@ -58,7 +58,7 @@
 
 <script>
   function updateViews2() {
-    $(".collection-list").load('<%= partial_user_collections_path(@user) %>', function() {
+    $(".collection-list").load('<%= partial_user_collections_path(@user, {sort: sort_column, direction: sort_direction}) %>', function() {
       $(".ui.dropdown").dropdown();
     });
   }

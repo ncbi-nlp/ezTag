@@ -6,6 +6,7 @@ class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy, :download, 
                                 :empty, :delete_all_annotations, :done_all, :reorder]
   before_action :set_top_menu
+  helper_method :sort_column, :sort_direction
 
   # GET /collections
   # GET /collections.json
@@ -15,7 +16,8 @@ class CollectionsController < ApplicationController
     if params[:name].present?
       @collections = @collections.where("name = ?", params[:name])
     end
-    @collections = @collections.order("order_no DESC")
+    @collections = @collections.order(sort_column + " " + sort_direction)
+
     respond_to do |format|
       format.html
       format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
@@ -23,7 +25,8 @@ class CollectionsController < ApplicationController
   end
 
   def partial
-    @collections = @user.collections.all.order("order_no DESC")
+    @collections = @user.collections.all
+    @collections = @collections.order(sort_column + " " + sort_direction)
     respond_to do |format|
       format.html {render layout: false}
       format.json {render json:@collections.as_json(only: [:id, :name, :documents_count])}
@@ -230,5 +233,13 @@ class CollectionsController < ApplicationController
 
     def set_top_menu
       @top_menu = 'collections'
+    end
+
+    def sort_column
+      Collection.column_names.include?(params[:sort]) ? params[:sort] : "id"
+    end
+
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
     end
 end

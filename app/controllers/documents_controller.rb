@@ -6,6 +6,7 @@ class DocumentsController < ApplicationController
                   :reorder,
                   :done, :curatable]
   before_action :set_top_menu
+  helper_method :sort_column, :sort_direction
 
   # GET /documents
   # GET /documents.json
@@ -14,7 +15,17 @@ class DocumentsController < ApplicationController
     semantic_breadcrumb @collection.name
     @documents = @collection.documents
     @documents = @documents.where("did = ?", params[:did]) if params[:did].present?
-    @documents = @documents.order("order_no DESC")
+    
+    if params[:term].present?
+      @documents = @documents.where("did like ? or title like ?", "%#{params[:term]}%", "%#{params[:term]}%")
+    end
+
+    if sort_column == "default"
+      @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC")
+    else    
+      @documents = @documents.order(sort_column + " " + sort_direction)
+    end
+    @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC")
     unless request.format.json?
       # @documents = @documents.order("batch_id DESC, batch_no ASC, id DESC").page(params[:page])
       @documents = @documents.page(params[:page])
@@ -231,5 +242,13 @@ class DocumentsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def document_params
       params.require(:document).permit(:collection_id, :did, :user_updated_at, :tool_updated_at, :annotations_count)
+    end
+
+    def sort_column
+      Document.column_names.include?(params[:sort]) ? params[:sort] : "default"
+    end
+
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ? params[:direction] : "desc"
     end
 end

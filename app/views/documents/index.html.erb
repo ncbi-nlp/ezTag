@@ -2,10 +2,20 @@
 <%= render partial: "/collections/collection_buttons" %> 
 <%= render partial: "/collections/collection_tab" %>
 <div class="ui bottom attached active tab segment">
-  <div class="page-info">
-    Total <b><%=@documents.total_count %></b> documents
+  <div class="ui  right aligned grid">
+    <div class="page-info left floated left aligned six wide column">
+      Total <b><%=@documents.total_count %></b> documents
+    </div>
+    <div class="ui search right floated right aligned six wide column">
+      <form>
+        <div class="ui icon input">
+          <input class="prompt" type="text" name="term" placeholder="Doc ID or Title" 
+              value="<%= params[:term]%>">
+          <i class="search icon"></i>
+        </div>
+      </form>
+    </div>
   </div>
-
   <% if @documents.empty? %>
     <div class="ui message info">
       This collection is empty. Please upload documents by clicking the Add Documents button below.
@@ -14,9 +24,9 @@
     <table class="ui table table-bordered celled">
       <thead>
         <tr>
-          <th>Doc ID</th>
-          <th>Title</th>
-          <th>Annotations</th>
+          <th><%= sortable 'did_no', 'Doc ID' %></th>
+          <th><%= sortable 'title'%></th>
+          <th><%= sortable 'annotations_count', 'Annotation'%></th>
           <!--<th>BioC Key</th>-->
           <th>
             <% 
@@ -41,7 +51,7 @@
             </div>
           </th>
           <th>Curatable</th>
-          <th>Last Update</th>
+          <th><%= sortable 'updated_at', 'Last Update' %></th>
           <th></th>
         </tr>
       </thead>
@@ -66,14 +76,6 @@
               <%= link_to document, class: "large-screen-only ui blue ajax-update-disbled-with-status button icon small #{'disabled' if @collection.busy?}" do %>
                 <i class="icon write"></i>
               <% end %>
-              <div class="large-screen-only ui icon small buttons ">
-                <%=link_to reorder_document_path(document, {dest: document.order_no + 1}), class: "ui icon small button #{'disabled' if document.order_no == document.collection.documents.size}" do %>
-                  <i class="icon caret up"></i>
-                <% end %>
-                <%=link_to reorder_document_path(document, {dest: document.order_no - 1}), class: "ui icon small button #{'disabled' if document.order_no == 1}" do %>
-                  <i class="icon caret down"></i>
-                <% end %>
-              </div> 
               <div class="ui top right pointing dropdown ajax-update-disbled-with-status button small icon <%='disabled' if @collection.busy? %>">
                 <i class="setting icon"></i>
                 <div class="menu">
@@ -83,23 +85,6 @@
                   <div class="item">
                     <%= link_to 'Delete Document', document, method: :delete, data: { confirm: 'Are you sure?' } %>
                   </div>
-                  <div class="divider"></div>
-                  <% if document.order_no < document.collection.documents.size %>
-                    <div class="item">
-                      <%= link_to 'Move to the Top', reorder_document_path(document, {dest: "last"}) %>
-                    </div>
-                    <div class="item">
-                      <%= link_to 'Move Up', reorder_document_path(document, {dest: document.order_no + 1}) %>
-                    </div>
-                  <% end %>
-                  <% if document.order_no > 1 %>
-                    <div class="item">
-                      <%= link_to 'Move Down', reorder_document_path(document, {dest: document.order_no - 1}) %>
-                    </div>
-                    <div class="item">
-                      <%= link_to 'Move to the Bottom', reorder_document_path(document, {dest: 1}) %>
-                    </div>
-                  <% end %>
                 </div>
               </div>
             </td>
