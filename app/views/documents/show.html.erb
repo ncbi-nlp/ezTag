@@ -1,5 +1,5 @@
 <%= render partial: "buttons" %>
-<div class="ui dimmer" id="documentSpinner">
+<div class="ui inverted dimmer" id="documentSpinner">
   <div class="ui text loader">Loading</div>
 </div>
 <%= render partial: "doc_info" %>
@@ -393,7 +393,6 @@
           annotationList: Handlebars.compile($("#annotationListViewTemplate1").html()),
         }
       });
-      $("#documentSpinner").removeClass("active");
     });
   <% end %>
 </script>

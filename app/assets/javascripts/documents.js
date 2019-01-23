@@ -70,6 +70,7 @@ var BioC = function(id, options) {
        "easeOutQuint"
     );
   });
+  $("#documentSpinner").removeClass("active");
 };
 
 BioC.prototype.addNewEntity = function() {
@@ -189,6 +190,7 @@ BioC.prototype.addNewAnnotation = function(text, offset, type) {
       return;
     }
   }
+  $(".document-loader").addClass("active");
   $.ajax({
     url: $("#annotationModal form").attr("action") + ".json",
     method: "POST",
@@ -198,20 +200,24 @@ BioC.prototype.addNewAnnotation = function(text, offset, type) {
       self.reloadMainDocument();
       self.annotations = data.annotations;
       self.entity_types = data.entity_types;
-      $("#annotationList").prepend(self.templates.view1({
-        id: data.annotation.id, offset: data.annotation.offset, 
-        text: data.annotation.text, passage: data.annotation.passage,
-        size: 1, type: data.annotation.type, concept: data.annotation.concept
-      }));
-      $("#annotationList tr:first-child").addClass("new");
-      self.bindAnnotationTr();
-      $("#annotationList .annotation-tr:first-child .concept").click();
+      if (data.annotation) {
+        $("#annotationList").prepend(self.templates.view1({
+          id: data.annotation.id, offset: data.annotation.offset, 
+          text: data.annotation.text, passage: data.annotation.passage,
+          size: 1, type: data.annotation.type, concept: data.annotation.concept
+        }));     
+        $("#annotationList tr:first-child").addClass("new");
+        self.bindAnnotationTr();
+        $("#annotationList .annotation-tr:first-child .concept").click();
+      } else {
+        toastr.error("Unable to create an annotation. Maybe texts are located in sentences."); 
+      }
     },
     error: function(xhr, status, err) {
+      $(".document-loader").removeClass("active");
       toastr.error(err);              
     },
     complete: function() {
-      $("#annotationModal .dimmer").removeClass("active");
     }
   });
 };
@@ -954,8 +960,10 @@ BioC.prototype.showAnnotationModal = function(id) {
 };
 BioC.prototype.reloadMainDocument = function(done) {
   var self = this;
+  $(".document-loader").addClass("active");
   $("#main-document").load($("#main-document").data("url"), function() {
     self.bindAnnotationSpan();
+    $(".document-loader").removeClass("active");
     if (done) {
       done();
     }           
