@@ -140,7 +140,10 @@
         <label>Concept ID 
         </label>
         <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
-        <a id="showMoreBtn" target='_blank'><i class="fa fa-external-link"></i> Show More</a>
+        <a id="showMoreBtn" target='_blank'>
+          <span class='name'>Show More</span>
+          <i class="fa fa-external-link-alt"></i> 
+        </a>
       </div>
       <div class="field">
         <label>Note
@@ -212,7 +215,7 @@
             <input type="checkbox" tabindex='-1'>
           </th>
           <th>Type</th>
-          <th>Concept ID</th>
+          <th class='concept-id-head'>Concept ID</th>
           <th>Text</th>
           <th>Offset</th>
           <th>Annotator</th>
@@ -236,7 +239,7 @@
 
 
 <script type="text/template" id="annotationListViewTemplate1">
-  <tr data-id='{{id}}' data-offset='{{offset}}' class='annotation-tr'>
+  <tr data-id='{{id}}' data-offset='{{offset}}' class='annotation-tr' data-mode='mention'>
     <td style='text-align:center;'>
       <input type='checkbox'>
     </td>
@@ -249,7 +252,7 @@
     </td>
     <td class="concept">
       <div class='ui basic segment'>
-        <span class="concept-text ellipsis w100">{{concept}}</span>
+        <span class="concept-text for-id ellipsis w100" title='{{conceptName}}'>{{concept}}</span>
         <span class="concept-edit">
           <input type="text" name="concept" value="{{concept}}" tabindex='1'>
         </span>
@@ -269,14 +272,14 @@
   <tr>
     <th>Offset</th>
     <th>Type</th>
-    <th>Concept ID</th>
+    <th class='concept-id-head'>Concept ID</th>
     <th>Text</th>
   </tr>
 </script>
 <script type="text/template" id="conceptHead">
   <tr>
     <th>Type</th>
-    <th>Concept ID  <span style='color: #aaa'>&dtrif;</span> </th>
+    <th class='concept-id-head'>Concept ID  <span style='color: #aaa'>&dtrif;</span> </th>
     <th>Text</th>
   </tr>
 </script>
@@ -291,7 +294,7 @@
     </td>
     <td rowspan="{{size}}" class="concept">
       <div class='ui basic segment'>
-        <span class="concept-text ellipsis w100">{{concept}}</span>
+        <span class="concept-text for-id ellipsis w100 for-{{conceptId}}" title='{{conceptName}}'>{{concept}}</span>
         <span class="concept-edit">
           <input type="text" name="concept" value="{{concept}}">
         </span>
@@ -357,10 +360,10 @@
         var $e = $(e.currentTarget);
         console.log($e.data('ids'));
       });
-      
       var doc = new BioC('<%=@document.id%>', {
         root: '<%=root_path%>',
         busy: <%=@collection.busy? || @document.done %>,
+        conceptNameCache: new ConceptNameCache(),
         collectionId: '<%=@collection.id%>', 
         annotations: [
           <% 

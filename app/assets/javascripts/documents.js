@@ -15,7 +15,7 @@ var BioC = function(id, options) {
   this.id = id;
   this.url = options.root + "documents/" + id;
   this.busy = options.busy;
-
+  this.conceptNameCache = options.conceptNameCache;
   this.renderAnnotationTable();
   this.initModal();
   $(".refresh-annotation-table").click(function(e) {
@@ -71,6 +71,10 @@ var BioC = function(id, options) {
     );
   });
   $("#documentSpinner").removeClass("active");
+  $(".concept-id-head").click(function(e) {
+    var $e = $(e.currentTarget);
+    $e.closest('table').toggleClass('show-concept-name');
+  })
 };
 
 BioC.prototype.addNewEntity = function() {
@@ -301,6 +305,7 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
 
   var bodyHtml = _.map(annotations, function(a) {
     var item = Object.assign({}, a);
+    item.conceptName = self.conceptNameCache.get(a.concept);
     if (a.updated_at) {
       item.updated_at = moment(a.updated_at).local().format("LL");
     }
@@ -598,6 +603,7 @@ BioC.prototype.renderAnnotationTable = function() {
     return a.offset - b.offset;
     // return a.text.localeCompare(b.text);
   });
+  self.conceptNameCache.init();
   $("#annotationHead").html(self.templates.head);
   var html, text;
   html = [];
@@ -611,7 +617,10 @@ BioC.prototype.renderAnnotationTable = function() {
         if (j == 0) {
           html.push(self.templates.view1({
             id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage,
-            size: text.length, type: last.type, concept: last.concept, iconClass: (text[j].note ?'comment': 'search')
+            size: text.length, type: last.type, 
+            concept: last.concept, conceptName: self.conceptNameCache.get(last.concept),
+            conceptId: self.conceptNameCache.escape(last.concept),
+            iconClass: (text[j].note ?'comment': 'search')
           }));
         } else {
           html.push(self.templates.view2({
@@ -634,7 +643,10 @@ BioC.prototype.renderAnnotationTable = function() {
     if (j == 0) {
       html.push(self.templates.view1({
         id: text[j].id, offset: text[j].offset, text: text[j].text, passage: text[j].passage,
-        size: text.length, type: last.type, concept: last.concept, iconClass: (text[j].note ?'comment': 'search')
+        size: text.length, type: last.type, 
+        concept: last.concept, conceptName: self.conceptNameCache.get(last.concept),
+        conceptId: self.conceptNameCache.escape(last.concept),
+        iconClass: (text[j].note ?'comment': 'search')
       }));
     } else {
       html.push(self.templates.view2({
@@ -644,6 +656,8 @@ BioC.prototype.renderAnnotationTable = function() {
   }
   $("#annotationList").html(html.join("\n"));
   self.bindAnnotationTr();
+  self.conceptNameCache.fetchAll();
+  // $(".need-popup").popup();
 };
 
 BioC.prototype.bindAnnotationTr = function() {
@@ -716,7 +730,7 @@ BioC.prototype.clickConcept = function(e) {
   e.stopPropagation();
   var $e = $(e.currentTarget);
   var $tr = $e.closest("tr");
-  var oldValue = $tr.find(".concept-text").text().trim();
+  var oldValue = $tr.find(".concept-text.for-id").text().trim();
   this.restoreTR();
   $tr.addClass("editable");  
   $tr.find(".concept-edit input").val(oldValue).focus();
@@ -734,8 +748,8 @@ BioC.prototype.updateEntityType = function($tr) {
   var $td = $tr.find("td.type");
   var newValue = $td.find("select").val();
   var oldValue = $td.data("value");
-  var concept = $tr.find(".concept-text").text().trim();
-  var isMention = (!concept);
+  var concept = $tr.find(".concept-text.for-id").text().trim();
+  var isMention = ($tr.data('mode') == 'mention') || (!concept);
   if (oldValue !== newValue) {
     $tr.find('.type .dimmer').addClass('active');
     $.ajax({
@@ -776,9 +790,9 @@ BioC.prototype.updateConcept = function($tr) {
   console.log("UPDATE concept")
   var self = this;
   var type = $tr.find(".type").text().trim();
-  var oldValue = $tr.find(".concept-text").text().trim();
+  var oldValue = $tr.find(".concept-text.for-id").text().trim();
   var newValue = $tr.find(".concept-edit input").val().trim();
-  var isMention = (!oldValue);
+  var isMention = ($tr.data('mode') == 'mention') || (!oldValue);
   if (oldValue !== newValue) {
     $tr.find('.concept .dimmer').addClass('active');
     $.ajax({
@@ -788,8 +802,13 @@ BioC.prototype.updateConcept = function($tr) {
       success: function(data) {
         $tr.removeClass("new");
         self.restoreTR();
-        $tr.find(".concept-text").text(newValue);
+        $tr.find(".concept-text.for-id").text(newValue)
+            .removeClass('for-' + self.conceptNameCache.escape(oldValue))
+            .addClass('for-' + self.conceptNameCache.escape(newValue));
         $tr.find(".concept-edit input").val(newValue);
+        self.conceptNameCache.get(newValue, function(ret, name) {
+          $tr.find(".concept-text").prop('title', name);
+        });
         toastr.success("Successfully updated.");              
         self.annotations = data.annotations;
         self.entity_types = data.entity_types;
@@ -830,6 +849,15 @@ BioC.prototype.showAnnotationModal = function(id) {
   $("#annotationModal select[name='type']").dropdown("set selected", a.type);
   $("#annotationModal input[name='concept']").val(a.concept);
   $("#annotationModal input[name='note']").val(a.note);
+
+  self.conceptNameCache.get(a.concept, function(ret, name) {
+    if (name) {
+      $("#showMoreBtn .name").text(name);
+    } else {
+      $("#showMoreBtn .name").text("Show More");
+    }
+  });
+
   if (a.concept.match(/^MESH:/i)) {
     var parts = a.concept.split(":");
     $("#showMoreBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
@@ -927,6 +955,9 @@ BioC.prototype.showAnnotationModal = function(id) {
         var needAnnotateAll = ($(".btn-update-text").text() != "Update");
         if (old_concept == new_concept && old_note == new_note && old_type == new_type && !needAnnotateAll) {
           return;
+        }
+        if (old_concept != new_concept) {
+          self.conceptNameCache.get(new_concept, function() {}); // prefetch
         }
         $("#annotationModal .dimmer").addClass("active");
         $.ajax({
