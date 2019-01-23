@@ -444,13 +444,13 @@ h1.front {
   .annotation {
     // opacity: 0.5;
     &.overlapped {
-      border-bottom: 3px solid #888;  
+      border-bottom: 3px solid #999;  
     }
     &.overlapped.mismatched {
-      border-bottom: 3px solid #f44;  
+      border-bottom: 3px solid #ffce00;  
     }
     &.focused-now {
-      border-bottom: 3px solid #44ffe1 !important;
+      border-bottom: 3px solid #f44 !important;
     }
   }
   span.annotation {
