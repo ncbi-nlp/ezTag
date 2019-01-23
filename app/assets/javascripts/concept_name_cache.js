@@ -32,8 +32,8 @@ ConceptNameCache.prototype.get = function(id, cb) {
   }
 };
 ConceptNameCache.prototype.postFound = function(id, name) {
-  console.log('change title [' + '.context-text.for-' + this.escape(id) + "]" + name);
-  $('.context-text.for-' + this.escape(id)).prop('title', name); 
+  console.log('change title [' + '.concept-text.for-' + this.escape(id) + "]" + name);
+  $('.concept-text.for-' + this.escape(id)).prop('title', name); 
 };
 
 ConceptNameCache.prototype.fetchAll = function() {
