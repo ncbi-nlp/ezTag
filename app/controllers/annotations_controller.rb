@@ -109,10 +109,10 @@ class AnnotationsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_document
       @document = Document.find(params[:document_id])
-      unless @collection.available?(@current_user)
+      unless @document.collection.available?(@current_user)
         respond_to do |format|
           format.html { redirect_to collections_path, error: "Cannot access the document"}
-          render json: {msg: 'Cannot access document'}, status: 401 }
+          render json: {msg: 'Cannot access document'}, status: 401 
         end    
         return
       end
