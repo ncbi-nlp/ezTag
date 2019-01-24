@@ -307,7 +307,8 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
     var item = Object.assign({}, a);
     item.conceptName = self.conceptNameCache.get(a.concept);
     if (a.updated_at) {
-      item.updated_at = moment(a.updated_at).local().format("LL");
+      item.updated_at = moment(a.updated_at).local().format("LLL");
+      item.yymmdd = moment(a.updated_at).local().format('YYYY-MM-DD');
     }
     item.iconClass = (a.note) ?'comment': 'search';
     return self.templates.annotationList(item);
@@ -800,6 +801,7 @@ BioC.prototype.updateConcept = function($tr) {
       method: "PATCH",
       data: {mode: !isMention, concept: newValue, type: type, no_update_note: true}, 
       success: function(data) {
+        self.reloadMainDocument();
         $tr.removeClass("new");
         self.restoreTR();
         $tr.find(".concept-text.for-id").text(newValue)
@@ -857,19 +859,34 @@ BioC.prototype.showAnnotationModal = function(id) {
       $("#showMoreBtn .name").text("Show More");
     }
   });
+  var links = self.conceptNameCache.extractID(a.concept);
 
-  if (a.concept.match(/^MESH:/i)) {
-    var parts = a.concept.split(":");
-    $("#showMoreBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + parts[1]);
+  $("#showMoreBtn").data("type", links.type)
+  $("#showMoreBtn").data("id", links.id.join(","));
+  if (links.type == "MESH") {
+    $("#showMoreBtn").attr('href', 'https://meshb.nlm.nih.gov/record/ui?ui=' + links.id[0]);
     $("#showMoreBtn").show();
   }
-  else if (a.concept.match(/^GENE:/i)) {
-    var parts = a.concept.split(":");
-    $("#showMoreBtn").attr('href', 'https://www.ncbi.nlm.nih.gov/gene/' + parts[1]);
+  else if (links.type == "GENE") {
+    $("#showMoreBtn").attr('href', 'https://www.ncbi.nlm.nih.gov/gene/' + links.id.join(","));
     $("#showMoreBtn").show();
   } else {
     $("#showMoreBtn").attr('href', '#').hide();
   }
+  
+  $("#annotationModal #showMoreBtn").unbind("click").click(function(e) {
+    var $e = $(e.currentTarget);
+    var type = $e.data("type");
+    var ids = $e.data("id").split(",");
+    if (type == "MESH" && ids.length > 1) {
+      e.preventDefault();
+      _.each(ids, function(id) {
+        window.open('https://meshb.nlm.nih.gov/record/ui?ui=' + id);      
+      })
+      return false;
+    }
+    return true;
+  });
   // $("#annotationModal input[name='mode']").prop("checked", $e.hasClass("concept"));
   $("#annotationModal input[name='annotate_all']").prop("checked", false);
   $("#annotationModal .dimmer").removeClass("active");
