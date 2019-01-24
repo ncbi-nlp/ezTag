@@ -380,7 +380,16 @@
               end
               p_idx -= 1 if p_idx > 0
               %>
-              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>', annotator: '<%=j a.infons["annotator"] || "" %>', updated_at: '<%=j a.infons["updated_at"] || "" %>'},
+              <%
+                if @current_user && @current_user.super_admin?
+                  annotator = a.infons["annotator"]
+                elsif @current_user && @current_user.email && @current_user.email == a.infons["annotator"]
+                  annotator = "You"
+                else
+                  annotator = "Other"
+                end
+              %>
+              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>', annotator: '<%=j annotator || "" %>', updated_at: '<%=j a.infons["updated_at"] || "" %>'},
               <%
             end
           end 

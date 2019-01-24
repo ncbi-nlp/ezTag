@@ -13,7 +13,15 @@ json.annotations @document.bioc_doc.all_annotations.each do |a|
     json.id a.id
     json.type entity[:type]
     json.concept entity[:id]
-    json.annotator entity[:annotator]
+    if @current_user && @current_user.super_admin? 
+      json.annotator entity[:annotator]
+    else
+      if @current_user && @current_user.email && @current_user.email == entity[:annotator]
+        json.annotator "You"
+      else
+        json.annotator "Other"
+      end
+    end
     json.updated_at entity[:updated_at]
     json.text a.text
     json.note a.infons["note"]
