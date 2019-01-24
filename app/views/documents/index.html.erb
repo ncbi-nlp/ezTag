@@ -18,7 +18,11 @@
   </div>
   <% if @documents.empty? %>
     <div class="ui message info">
-      This collection is empty. Please upload documents by clicking the Add Documents button below.
+      <% if params[:term].present? %>
+        No results matching '<%= params[:term] %>'
+      <% else %>
+        This collection is empty. Please upload documents by clicking the Add Documents button below.
+      <% end %>
     </div>
   <% else %>
     <table class="ui table table-bordered celled">
