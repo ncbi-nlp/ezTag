@@ -18,7 +18,7 @@ class EzTag
   end
 
   def verify_command
-    if @command.nil? || !%w(u d upload download csv c).include?(@command.downcase)
+    if @command.nil? || !%w(u d upload download csv c pmcid).include?(@command.downcase)
       STDERR.puts "Error: unknown command '#{@command}'"
       exit
     else
@@ -223,6 +223,21 @@ class EzTag
     end
   end
 
+  def correct_pmc_id
+    documents = get_documents
+    documents.each do |d|
+      url = "/documents/#{d[:id]}/correct_pmc_id"
+      puts "Try to fix pmc_id from <#{@uri}#{url}>"
+      begin
+        response = self.class.get(url)
+      rescue Exception => e
+        STDERR.puts "Error: #{e.message}"
+        exit
+      end
+      @success += 1
+    end
+  end
+
   def run
     if @command == "download"
       self.download
@@ -230,9 +245,11 @@ class EzTag
       self.upload
     elsif @command == "csv"
       self.list_annotations_csv
+    elsif @command == "pmcid"
+      self.correct_pmc_id
     end
 
-    puts "Total #{@success} files have been transfered"
+    puts "Total #{@success} files have been transfered or processed"
   end
 
   def get_user

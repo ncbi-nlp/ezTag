@@ -493,7 +493,23 @@ class Document < ApplicationRecord
       end
     end
   end
+  
+  def correct_pmc_id
+    doc = self.bioc_doc
+    found = correct_pmc_id_in_infons(doc)
+    doc.passages.each do |p|
+      next if found
+      found = correct_pmc_id_in_infons(p)
+      p.sentences.each do |s|
+        next if found
+        found = correct_pmc_id_in_infons(s)
+      end unless found
+    end unless found
+    
+    self.save_xml(self.bioc) if found
 
+    return found
+  end
 
   private
   def get_first_text_from_bioc(doc)
@@ -546,5 +562,17 @@ class Document < ApplicationRecord
         end
       end
     end
+  end
+
+  def correct_pmc_id_in_infons(node)
+    value = node.infons["article-id_pmc"]
+    if value.present?
+      reg = value.match(/^PMC(\d+)/i)
+      if reg.present?
+        node.infons["article-id_pmc"] = reg[1]
+        return true
+      end
+    end
+    false
   end
 end

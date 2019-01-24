@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       post 'done'
       post 'curatable'
       get 'reorder'
+      get 'correct_pmc_id'
     end
     resources :annotations 
   end

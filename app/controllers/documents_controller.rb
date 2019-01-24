@@ -3,7 +3,7 @@ class DocumentsController < ApplicationController
   before_action :set_collection, only: [:create, :new, :index]
   before_action :set_document, only: [:show, :edit, :partial, :update, 
                   :destroy, :verify, :delete_all_annotations, 
-                  :reorder,
+                  :reorder, :correct_pmc_id,
                   :done, :curatable]
   before_action :set_top_menu
   helper_method :sort_column, :sort_direction
@@ -225,6 +225,11 @@ class DocumentsController < ApplicationController
       format.html { redirect_back fallback_location: collection_documents_path(@collection), notice: 'The document was successfully reordered.' }
       format.json { head :no_content }
     end      
+  end
+
+  def correct_pmc_id
+    ret = @document.correct_pmc_id
+    render json: {result: ret}
   end
 
   private
