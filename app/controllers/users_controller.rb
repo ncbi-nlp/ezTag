@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   def show
     # semantic_breadcrumb :Account
     if !@current_user.super_admin? && @user.id != @current_user.id
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
 
     if @user.session_str.present?
@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   # GET /users/new
   def new
     if !@current_user.super_admin?
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
     @user = User.new
     # redirect_to @current_user
@@ -55,7 +55,7 @@ class UsersController < ApplicationController
 
   def create
     if !@current_user.super_admin?
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
     
     @user = User.new(user_params)
@@ -74,7 +74,7 @@ class UsersController < ApplicationController
   # GET /users/1/edit
   def edit
     if !@current_user.super_admin? && @user.id != @current_user.id
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
 
     unless @user.valid_email?
@@ -132,11 +132,11 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     if !@current_user.super_admin? && @user.id != @current_user.id
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
 
     if params[:user][:password] != params[:user][:password_confirmation]
-      return redirect_to :back, alert: "Password confirmation doesn't match Password"
+      return redirect_back fallback_location: root_path, alert: "Password confirmation doesn't match Password"
     end
 
     params[:user].delete(:name) if params[:user][:name].blank?
@@ -159,7 +159,7 @@ class UsersController < ApplicationController
   # DELETE /users/1.json
   def destroy
     if !@current_user.super_admin? && @user.id != @current_user.id
-      return redirect_to :back, alert: 'Not authorized.'
+      return redirect_back fallback_location: root_path, alert: 'Not authorized.'
     end
 
     @user.destroy

@@ -28,7 +28,7 @@ class TasksController < ApplicationController
   # GET /tasks/new
   def new
     if @collection.busy?
-      return redirect_to :back, alert: "Cannot create a new task because the collection is busy"
+      return redirect_back fallback_location: collection_tasks_path(@collection), alert: "Cannot create a new task because the collection is busy"
     end
     breadcrumb_for_collections(@collection)
     semantic_breadcrumb @collection.name, @collection

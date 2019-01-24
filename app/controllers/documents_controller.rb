@@ -231,9 +231,23 @@ class DocumentsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_document
       @document = Document.find(params[:id])
+      unless @document.collection.available?(@current_user)
+        respond_to do |format|
+          format.html { redirect_back fallback_location: collections_path, error: "Cannot access the document"}
+          format.json { render json: {msg: 'Cannot access document'}, status: 401 }
+        end    
+        return false
+      end
     end
     def set_collection
       @collection = Collection.find(params[:collection_id])
+      unless @collection.available?(@current_user)
+        respond_to do |format|
+          format.html { redirect_back fallback_location: collections_path, error: "Cannot access the document"}
+          format.json { render json: {msg: 'Cannot access document'}, status: 401 }
+        end    
+        return false
+      end
     end
     def set_top_menu
       @top_menu = 'collections'
