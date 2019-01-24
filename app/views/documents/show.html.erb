@@ -252,7 +252,7 @@
     </td>
     <td class="concept">
       <div class='ui basic segment'>
-        <span class="concept-text for-id ellipsis w100" title='{{conceptName}}'>{{concept}}</span>
+        <span class="concept-text for-id" title='{{conceptName}}'>{{concept}}</span>
         <span class="concept-edit">
           <input type="text" name="concept" value="{{concept}}" tabindex='1'>
         </span>
@@ -264,8 +264,8 @@
       <span class='annotation-text-span' style='width: 300px;'>{{text}}</span>
     </td>
     <td>{{offset}}</td>
-    <td>{{annotator}}</td>
-    <td>{{updated_at}}</td>
+    <td class='ellipsis w80' title='{{annotator}}'>{{annotator}}</td>
+    <td class='ellipsis w80' title='{{updated_at}}'>{{yymmdd}}</td>
   </tr>
 </script>
 <script type="text/template" id="mentionHead">
