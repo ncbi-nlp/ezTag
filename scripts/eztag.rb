@@ -5,6 +5,7 @@ require 'optparse'
 require 'ostruct'
 require 'httparty'
 require 'rest-client'
+require 'csv'
 require 'pp'
 
 class EzTag
@@ -17,13 +18,14 @@ class EzTag
   end
 
   def verify_command
-    if @command.nil? || !%w(u d upload download).include?(@command.downcase)
+    if @command.nil? || !%w(u d upload download csv c).include?(@command.downcase)
       STDERR.puts "Error: unknown command '#{@command}'"
       exit
     else
       @command = @command.downcase
       @command = "upload" if @command == "u"
       @command = "download" if @command == "d"
+      @command = "csv" if @command == "c"
     end
     verbose_puts "Command : #{@command}" 
   end
@@ -43,6 +45,25 @@ class EzTag
       STDERR.puts "Error: path (#{@path}) is not directory"
       exit
     end
+    verbose_puts "Path : #{@path}" 
+  end
+
+  def verify_path_csv
+    if @path.nil? || @path.empty? || @path.size != 1
+      STDERR.puts "Error: You should specify a path for the output file"
+      exit
+    end
+    @path = @path[0]
+
+    if File.directory?(@path)
+      @path = File.join(@path, "#{@options.collection_name || @options.collection_id}.csv")
+    end
+
+    if @path.nil? || File.exist?(@path)
+      STDERR.puts "Error: the file(#{@path}) already exists"
+      exit
+    end
+
     verbose_puts "Path : #{@path}" 
   end
 
@@ -117,6 +138,20 @@ class EzTag
     @success += 1
   end
 
+  def download_csv(id)
+    url = "/documents/#{id}/annotations"
+    puts "List annotations from <#{@uri}#{url}>"
+    response = []
+    begin
+      response = self.class.get(url)
+    rescue Exception => e
+      STDERR.puts "Error: #{e.message}"
+      exit
+    end
+    @success += 1
+    return response.to_a
+  end
+
   def initialize(args)
     @success = 0
     self.parse(args)
@@ -135,6 +170,18 @@ class EzTag
     documents = get_documents
     documents.each do |d|
       download_file(d[:did], d[:url])
+    end
+  end
+
+  def list_annotations_csv
+    verify_path_csv
+    documents = get_documents
+    CSV.open(@path, "w") do |csv|
+      documents.each do |d|
+        download_csv(d[:id]).each do |line|
+          csv << line
+        end
+      end
     end
   end
 
@@ -179,10 +226,10 @@ class EzTag
   def run
     if @command == "download"
       self.download
-    end
-
-    if @command == "upload"
+    elsif @command == "upload"
       self.upload
+    elsif @command == "csv"
+      self.list_annotations_csv
     end
 
     puts "Total #{@success} files have been transfered"
@@ -265,7 +312,7 @@ class EzTag
 
     verbose_puts "  --> Response #{response.code}: #{response.to_a.inspect}"
   
-    @documents = response.to_a.map{|d| {did: d["did"], url: "/documents/#{d["id"]}.xml"}}
+    @documents = response.to_a.map{|d| {id: d["id"], did: d["did"], url: "/documents/#{d["id"]}.xml"}}
   end
 
   def parse(args)
@@ -280,12 +327,13 @@ class EzTag
     @options.new_collection = true
     opt_parser = OptionParser.new do |opts|
 
-      opts.banner = "Usage: eztag.rb COMMAND [options] path (or files for upload)"
+      opts.banner = "Usage: eztag.rb COMMAND [options] {path} (or files for upload)"
 
       opts.separator ""
       opts.separator "Commands:"
       opts.separator "   u / upload      Upload BioC files in the path to user's collection"
       opts.separator "   d / download    Download documents in user's collection into the path"
+      opts.separator "   c / csv         List all annotations in user's collection (to a csv file)"
       opts.separator ""
       opts.separator "Options:"
 
@@ -346,7 +394,6 @@ class EzTag
         puts opts
         exit
       end
-
         # Another typical switch to print the version.
       opts.on_tail("--version", "Show version") do
         puts ::Version.join('.')

@@ -1,9 +1,15 @@
 class AnnotationsController < ApplicationController
   before_action :set_document
+  before_action :authenticate_user!
 
   # GET /annotations
   # GET /annotations.json
   def index
+    @results = @document.bioc_doc.all_annotations.map do |a|
+      e = EntityUtil.get_annotation_entity(a)
+      [@document.did, e[:type], e[:id], a.text, e[:annotator]]
+    end
+    render :json => @results
   end
 
   # GET /annotations/1
@@ -103,6 +109,13 @@ class AnnotationsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_document
       @document = Document.find(params[:document_id])
+      unless @collection.available?(@current_user)
+        respond_to do |format|
+          format.html { redirect_to collections_path, error: "Cannot access the document"}
+          render json: {msg: 'Cannot access document'}, status: 401 }
+        end    
+        return
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
