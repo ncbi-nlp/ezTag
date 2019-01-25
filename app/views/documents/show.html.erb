@@ -139,12 +139,13 @@
       <div class="field">
         <label>Concept ID 
         </label>
-        <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
-        <a id="showMoreBtn" target='_blank'>
-          <span class='name'>Show More</span>
-          <i class="fa fa-external-link-alt"></i> 
-        </a>
-        <br>
+        <div style="position: relative;">
+          <input type="text" name="concept" <%="disabled" if @collection.busy? %>>
+          <a id="showMoreBtn" target='_blank'>
+            <span class='name'>Show More</span>
+            <i class="fa fa-external-link-alt"></i> 
+          </a>
+        </div>
         <div class='concept-name'></div>
       </div>
       <div class="field">
