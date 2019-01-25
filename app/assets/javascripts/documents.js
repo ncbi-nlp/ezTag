@@ -131,54 +131,55 @@ BioC.prototype.bindAnnotationSpan = function() {
     self.clickAnnotation(e.currentTarget);
   });
 
-  if (!this.busy) {
-    $(".passage").mouseup(function (e) {   
-      var selection = getSelected();
-      if (selection && selection.rangeCount > 0) {
-        var range = selection.getRangeAt(0);
+  $(".passage").mouseup(function (e) {   
+    var selection = getSelected();
+    if (selection && selection.rangeCount > 0) {
+      var range = selection.getRangeAt(0);
 
-        var result = self.findAnnotationRange(range);
-        if (result.error) {
-          toastr.error("You cannot work with multiple paragraphs. Please select a span in a paragraph.");
+      var result = self.findAnnotationRange(range);
+      if (result.error) {
+        toastr.error("You cannot work with multiple paragraphs. Please select a span in a paragraph.");
+        clearSelection();
+        return;
+      }
+
+      var length = range.endOffset - range.startOffset;
+
+      if (result.annotations.length == 0 && length > 0) {
+        if (result.text.length != length) {
+          console.log("Something wrong " + length + " !=" + result.text.length);
           clearSelection();
           return;
         }
-
-        var length = range.endOffset - range.startOffset;
-
-        if (result.annotations.length == 0 && length > 0) {
-          if (result.text.length != length) {
-            console.log("Something wrong " + length + " !=" + result.text.length);
-            clearSelection();
-            return;
-          }
-          // recommends = getRecommendText(range);
-          var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
-          var offset = elemOffset + range.startOffset;
-          var text = $(range.startContainer).text().substr(range.startOffset, length).trim();
-          if (result.text.length != length) {
-            console.log("Something wrong in text: " + text + " !=" + result.text);
-            clearSelection();
-            return;
-          }
-          self.addNewAnnotation(text, offset);
-          
-          // self.showLocationSelector(recommends, range);
-        } else if (result.annotations.length > 0) {
-          
-          if (result.annotations.length == 1 && result.text.length == 0) {
-
-          } else if (result.annotations.length > 0) {
-            self.showAnnotationListModal(result.annotations, result.offset, result.text);
-          }
+        // recommends = getRecommendText(range);
+        var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
+        var offset = elemOffset + range.startOffset;
+        var text = $(range.startContainer).text().substr(range.startOffset, length).trim();
+        if (result.text.length != length) {
+          console.log("Something wrong in text: " + text + " !=" + result.text);
           clearSelection();
-        } else {
-          console.log("????", length);
-          clearSelection();
+          return;
         }
+        if (!self.busy) {
+          self.addNewAnnotation(text, offset);
+        } else {
+          clearSelection();
+        }   
+        // self.showLocationSelector(recommends, range);
+      } else if (result.annotations.length > 0) {
+        
+        if (result.annotations.length == 1 && result.text.length == 0) {
+
+        } else if (result.annotations.length > 0) {
+          self.showAnnotationListModal(result.annotations, result.offset, result.text);
+        }
+        clearSelection();
+      } else {
+        console.log("????", length);
+        clearSelection();
       }
-    });
-  }
+    }
+  });
 };
 
 BioC.prototype.addNewAnnotation = function(text, offset, type) {
@@ -315,9 +316,10 @@ BioC.prototype.updateAnnotationListModal = function(annotationIds) {
     return self.templates.annotationList(item);
   });
   $("#annotationListModal .annotationListTableBody").html(bodyHtml.join("\n"));
-  $("#annotationListModal .annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
-  $("#annotationListModal .annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
-
+  if (!self.busy) {
+    $("#annotationListModal .annotation-tr .concept").unbind("click").click(self.clickConcept.bind(self));
+    $("#annotationListModal .annotation-tr .type-text").unbind("click").click(self.clickEntityType.bind(self));
+  }
   $("#annotationListModal .annotation-tr .icon.show-popup").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     self.clickAnnotation($e.closest("tr"), {force: true});
@@ -338,7 +340,7 @@ BioC.prototype.showAnnotationListModal = function(annotationIds, offset, text) {
     var val = $(e.currentTarget).is(':checked');
     $("#annotationListModal input[type='checkbox']").prop('checked', val);
   });
-  $("#annotationListModal .ui.button.create-new").toggleClass('disabled', (text.length <= 0));
+  $("#annotationListModal .ui.button.create-new").toggleClass('disabled', (text.length <= 0 || self.busy));
   self.updateAnnotationListModal(annotationIds);
   $("#annotationListModal").modal({
     allowMultiple: true,
