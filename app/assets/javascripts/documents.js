@@ -811,6 +811,7 @@ BioC.prototype.updateConcept = function($tr) {
             .removeClass('for-' + self.conceptNameCache.escape(oldValue))
             .addClass('for-' + self.conceptNameCache.escape(newValue));
         $tr.find(".concept-edit input").val(newValue);
+        $tr.find(".concept-text").prop('title', newValue);
         self.conceptNameCache.get(newValue, function(ret, name) {
           $tr.find(".concept-text").prop('title', name);
         });
