@@ -7,7 +7,7 @@ ConceptNameCache.prototype.init = function() {
 };
 
 ConceptNameCache.prototype.escape = function(id) {
-  return id.replace(/[:\s,;]/, "-");
+  return id.replace(/[:\s,;\|]/, "-");
 };
 
 ConceptNameCache.prototype.get = function(id, cb) {
@@ -123,7 +123,7 @@ ConceptNameCache.prototype.extractID = function(str) {
   } else if (str.match(/^GENE:/i)) {
     ret.type = "GENE";
   }
-  ret.id = _.map(_.compact(str.split(/[,\s;]/)), function(id) {
+  ret.id = _.map(_.compact(str.split(/[,\s;\|]/)), function(id) {
     console.log("ID=", id);
     id = self.__stripIdType(ret.type, id);
     var m = id.match(/^([^-]+)/);
