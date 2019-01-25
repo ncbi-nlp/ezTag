@@ -208,7 +208,8 @@ BioC.prototype.addNewAnnotation = function(text, offset, type) {
         $("#annotationList").prepend(self.templates.view1({
           id: data.annotation.id, offset: data.annotation.offset, 
           text: data.annotation.text, passage: data.annotation.passage,
-          size: 1, type: data.annotation.type, concept: data.annotation.concept
+          size: 1, type: data.annotation.type, concept: data.annotation.concept,
+          iconClass: 'search'
         }));     
         $("#annotationList tr:first-child").addClass("new");
         self.bindAnnotationTr();
