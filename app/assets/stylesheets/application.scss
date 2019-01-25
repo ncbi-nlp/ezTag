@@ -59,7 +59,6 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: inline-block;
   &.w80 {max-width: 80px; }
   &.w100 {max-width: 100px; }
   &.w150 {max-width: 150px; }
