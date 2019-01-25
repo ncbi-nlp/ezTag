@@ -59,6 +59,7 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: inline-block;
   &.w80 {max-width: 80px; }
   &.w100 {max-width: 100px; }
   &.w150 {max-width: 150px; }
@@ -202,6 +203,12 @@ a {
     color: #ccc;
   }
 }
+#annotationModal .concept-name {
+  width: 100%;
+  text-align: right;
+  color: #17519e;
+}
+
 #annotationTable.ui.celled.table tr th, 
 #annotationTable.ui.celled.table tr td,
 #annotationTable.ui.inverted.table tr td,
@@ -225,6 +232,7 @@ a {
   right: 1em;
   margin-top: -2em;
 }
+
 .ui.buttons .disabled.button, .ui.disabled.button, .ui.button:disabled, .ui.disabled.button:hover, .ui.disabled.active.button {
   background-color: #666;
   color: white;

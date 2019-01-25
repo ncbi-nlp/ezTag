@@ -854,9 +854,9 @@ BioC.prototype.showAnnotationModal = function(id) {
 
   self.conceptNameCache.get(a.concept, function(ret, name) {
     if (name) {
-      $("#showMoreBtn .name").text(name);
+      $("#annotationModal .concept-name").text(name);
     } else {
-      $("#showMoreBtn .name").text("Show More");
+      $("#annotationModal .concept-name").text("");
     }
   });
   var links = self.conceptNameCache.extractID(a.concept);
@@ -873,7 +873,7 @@ BioC.prototype.showAnnotationModal = function(id) {
   } else {
     $("#showMoreBtn").attr('href', '#').hide();
   }
-  
+
   $("#annotationModal #showMoreBtn").unbind("click").click(function(e) {
     var $e = $(e.currentTarget);
     var type = $e.data("type");

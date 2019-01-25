@@ -144,6 +144,8 @@
           <span class='name'>Show More</span>
           <i class="fa fa-external-link-alt"></i> 
         </a>
+        <br>
+        <div class='concept-name'></div>
       </div>
       <div class="field">
         <label>Note
@@ -250,9 +252,9 @@
         <div class='ui inverted dimmer'><div class='ui mini loader'></div></div>
       </div>
     </td>
-    <td class="concept">
+    <td class="concept w300">
       <div class='ui basic segment'>
-        <span class="concept-text for-id" title='{{conceptName}}'>{{concept}}</span>
+        <span class="concept-text for-id ellipsis" title='{{conceptName}}'>{{concept}}</span>
         <span class="concept-edit">
           <input type="text" name="concept" value="{{concept}}" tabindex='1'>
         </span>
@@ -261,7 +263,7 @@
     </td>
     <td>
       <i class="icon show-popup {{iconClass}}" title="edit"></i>
-      <span class='annotation-text-span' style='width: 300px;'>{{text}}</span>
+      <span class='annotation-text-span w300'>{{text}}</span>
     </td>
     <td>{{offset}}</td>
     <td class='ellipsis w80' title='{{annotator}}'>{{annotator}}</td>

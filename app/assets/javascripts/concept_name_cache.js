@@ -7,7 +7,7 @@ ConceptNameCache.prototype.init = function() {
 };
 
 ConceptNameCache.prototype.escape = function(id) {
-  return id.replace(/[:\s,]/, "-");
+  return id.replace(/[:\s,;]/, "-");
 };
 
 ConceptNameCache.prototype.get = function(id, cb) {
@@ -34,7 +34,7 @@ ConceptNameCache.prototype.get = function(id, cb) {
   var names = _.map(e.id, function(id) {
     return self._get(e.type + ":" + id, cb2);
   });
-  return names.join(',');
+  return names.join(', ');
 };
 
 
@@ -106,13 +106,9 @@ ConceptNameCache.prototype.getFetchTypeAndURL = function(id) {
 };
 
 ConceptNameCache.prototype.__stripIdType = function(type, str) {
-  var r = new RegExp('^' + type + ':(.+)', 'i');
-  var m = str.match(r);
-  if (m) {
-    return m[1];
-  } else {
-    return str;
-  }
+  var r = new RegExp('^' + type + ':', 'i');
+  var m = str.replace(r, '');
+  return m;
 };
 
 ConceptNameCache.prototype.extractID = function(str) {
@@ -127,11 +123,13 @@ ConceptNameCache.prototype.extractID = function(str) {
   } else if (str.match(/^GENE:/i)) {
     ret.type = "GENE";
   }
-  ret.id = _.map(_.compact(str.split(/[,\s]/)), function(id) {
+  ret.id = _.map(_.compact(str.split(/[,\s;]/)), function(id) {
     console.log("ID=", id);
     id = self.__stripIdType(ret.type, id);
-    return id.match(/^([^-]+)/)[1];
+    var m = id.match(/^([^-]+)/);
+    return m && m[1];
   });
+  ret.id = _.compact(ret.id);
   return ret;
 };
 
