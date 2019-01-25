@@ -1015,6 +1015,7 @@ BioC.prototype.reloadMainDocument = function(done) {
   $(".document-loader").addClass("active");
   $("#main-document").load($("#main-document").data("url"), function() {
     self.bindAnnotationSpan();
+    self.bindInfonBtns(); 
     $(".document-loader").removeClass("active");
     if (done) {
       done();
@@ -1250,15 +1251,7 @@ BioC.prototype.restoreScrollTop = function() {
     }
   }
 }
-
-BioC.prototype.initModal = function() {
-  $(".doc-info-btn").click(function() {
-    $(".modal.doc-info").modal({
-      blurring: true
-    })
-    .modal('show');
-  });
-
+BioC.prototype.bindInfonBtns = function() {
   $(".infon-btn").click(function(e) {
     var id = $(e.currentTarget).data("id");
     e.preventDefault();
@@ -1268,5 +1261,13 @@ BioC.prototype.initModal = function() {
     .modal('show');
     return false;
   });
- 
+}
+BioC.prototype.initModal = function() {
+  $(".doc-info-btn").click(function() {
+    $(".modal.doc-info").modal({
+      blurring: true
+    })
+    .modal('show');
+  });
+  this.bindInfonBtns(); 
 };
