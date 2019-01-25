@@ -85,6 +85,9 @@ Common options:
 # Download all documents in a collection into a directory
 ./eztag.rb d -u user1@abc.com -c A ./output
 
+# Download 'done' documents only in a collection into a directory
+./eztag.rb d -u user1@abc.com -c A --done-only ./output
+
 # ------------------------------------------------------------------------
 
 # List all annotations in a collection into as a csv file

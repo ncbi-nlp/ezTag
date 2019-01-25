@@ -321,7 +321,7 @@ class EzTag
   def get_documents
     verbose_puts "> HTTP Get /collections/#{@options.collection_id}/documents"
     begin
-      response = self.class.get("/collections/#{@options.collection_id}/documents")
+      response = self.class.get("/collections/#{@options.collection_id}/documents", query: @options.search_options)
     rescue Exception => e
       STDERR.puts "Error: #{e.message}"
       exit
@@ -340,6 +340,7 @@ class EzTag
     @options.keyfile = "./apikey"
     @options.force_upload = false
     @options.replace = false
+    @options.search_options = {}
     @options.protocol = "https"
     @options.new_collection = true
     opt_parser = OptionParser.new do |opts|
@@ -403,6 +404,14 @@ class EzTag
         @options.new_collection = v
       end
 
+      opts.on("--[no-]done-only", "Search option for documents (done only)") do |v|
+        @options.search_options[:done] = v
+      end
+
+      opts.on("--[no-]curatable-only", "Search option for documents (curatable only)") do |v|
+        @options.search_options[:curatable] = v
+      end
+
       opts.separator ""
       opts.separator "Common options:"
       # No argument, shows at tail.  This will print an options summary.
@@ -418,7 +427,12 @@ class EzTag
       end
     end
     args << '-h' if args.empty?
-    opt_parser.parse!(args)
+    begin
+      opt_parser.parse!(args)
+    rescue Exception => e
+      STDERR.puts "Error: #{e.message}"
+      exit
+    end
     @options
   end
 

@@ -15,6 +15,8 @@ class DocumentsController < ApplicationController
     semantic_breadcrumb @collection.name
     @documents = @collection.documents
     @documents = @documents.where("did = ?", params[:did]) if params[:did].present?
+    @documents = @documents.where("done = ?", params[:done] == "true") if params[:done].present?
+    @documents = @documents.where("curatable = ?", params[:curatable] == "true") if params[:curatable].present?
     
     if params[:term].present?
       @documents = @documents.where("did like ? or title like ?", "%#{params[:term]}%", "%#{params[:term]}%")
