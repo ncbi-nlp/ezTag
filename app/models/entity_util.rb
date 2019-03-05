@@ -4,7 +4,7 @@ class EntityUtil
     concept = annotation.infons["identifier"] || ""
     annotator = annotation.infons["annotator"] || ""
     updated_at = annotation.infons["updated_at"] || ""
-    return {type: entity_type, id: concept, annotator: annotator, updated_at: updated_at}  
+    return {type: entity_type, id: concept, annotator: annotator, updated_at: updated_at }  
     # return {type: "", id: ""} if entity_type.nil?
 
     # c = annotation.infons[entity_type + "ID"]

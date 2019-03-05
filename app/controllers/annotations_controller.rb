@@ -5,11 +5,11 @@ class AnnotationsController < ApplicationController
   # GET /annotations
   # GET /annotations.json
   def index
-    @results = [["DocID", "Type", "Concept", "Text", "Annotator", "Offset", "Length", "UpdatedAt"]]
+    @results = []
     @document.bioc_doc.all_annotations.each do |a|
       e = EntityUtil.get_annotation_entity(a)
       a.locations.each do |l|
-        @results << [@document.did, e[:type], e[:id], a.text, e[:annotator], l.offset, l.length, e[:updated_at]]
+        @results << {did: @document.did, offset: l.offset, text: a.text, length: l.length, infons: a.infons }
       end
     end
     render :json => @results

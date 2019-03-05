@@ -176,9 +176,18 @@ class EzTag
   def list_annotations_csv
     verify_path_csv
     documents = get_documents
+    extra_infons = @options.extra_infons.split(',')
+
     CSV.open(@path, "w") do |csv|
+      header = ["did", "type", "concept", "text", "annotator", "offset", "length", "updated_at"]
+      csv << header + extra_infons
       documents.each do |d|
-        download_csv(d[:id]).each do |line|
+        download_csv(d[:id]).each do |a|
+          infons = a["infons"] || {}
+          line = [a["did"], infons["type"], infons["identifier"], a["text"], infons["annotator"], a["offset"], a["length"], infons["updated_at"]]
+          extra_infons.each do |name|
+            line << infons[name] || ""
+          end
           csv << line
         end
       end
@@ -342,6 +351,7 @@ class EzTag
     @options.replace = false
     @options.search_options = {}
     @options.protocol = "https"
+    @options.extra_infons = ""
     @options.new_collection = true
     opt_parser = OptionParser.new do |opts|
 
@@ -410,6 +420,10 @@ class EzTag
 
       opts.on("--[no-]curatable-only", "Search option for documents (curatable only)") do |v|
         @options.search_options[:curatable] = v
+      end
+
+      opts.on("--extra_infons=extra_infons", "Extra infons for downloading csv (ex: : seen_by,annotator)") do |v|
+        @options.extra_infons = v
       end
 
       opts.separator ""
