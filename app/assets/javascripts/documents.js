@@ -930,9 +930,6 @@ BioC.prototype.showAnnotationModal = function(id) {
     }
   }
 
-  if (a.seen_by) {
-    update_msgs.push(" / Seen by <i class='annotator'>" + a.seen_by + "</i>");
-  }
   $("#annotationModal .update_log").html(update_msgs.join(" "));
   $("#annotationModal .delete-annotation")
     .dropdown({

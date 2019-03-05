@@ -422,7 +422,7 @@ class EzTag
         @options.search_options[:curatable] = v
       end
 
-      opts.on("--extra_infons=extra_infons", "Extra infons for downloading csv (ex: : seen_by,annotator)") do |v|
+      opts.on("--extra_infons=extra_infons", "Extra infons for downloading csv (ex: updated_at,annotator)") do |v|
         @options.extra_infons = v
       end
 
