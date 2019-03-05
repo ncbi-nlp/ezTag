@@ -22,6 +22,7 @@ json.annotations @document.bioc_doc.all_annotations.each do |a|
         json.annotator "Other"
       end
     end
+    json.seen_by entity[:seen_by]
     json.updated_at entity[:updated_at]
     json.text a.text
     json.note a.infons["note"]
@@ -48,6 +49,7 @@ unless @ret.nil?
     json.type entity[:type]
     json.concept entity[:id]
     json.annotator entity[:annotator]
+    json.seen_by entity[:seen_by]
     json.updated_at entity[:updated_at]
     json.text @ret.text
     json.offset @ret.locations[0].offset

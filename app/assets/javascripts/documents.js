@@ -929,6 +929,10 @@ BioC.prototype.showAnnotationModal = function(id) {
       update_msgs.push("at <i class='updated_at'>" + moment(a.updated_at).local().format('LLL') + "</i>");
     }
   }
+
+  if (a.seen_by) {
+    update_msgs.push(" / Seen by <i class='annotator'>" + a.seen_by + "</i>");
+  }
   $("#annotationModal .update_log").html(update_msgs.join(" "));
   $("#annotationModal .delete-annotation")
     .dropdown({
@@ -974,9 +978,9 @@ BioC.prototype.showAnnotationModal = function(id) {
         var new_note = $("#annotationModal input[name='note']").val();
         var mode = $("#annotationModal input[name='mode']").val();
         var needAnnotateAll = ($(".btn-update-text").text() != "Update");
-        if (old_concept == new_concept && old_note == new_note && old_type == new_type && !needAnnotateAll) {
-          return;
-        }
+        // if (old_concept == new_concept && old_note == new_note && old_type == new_type && !needAnnotateAll) {
+        //   return;
+        // }
         if (old_concept != new_concept) {
           self.conceptNameCache.get(new_concept, function() {}); // prefetch
         }

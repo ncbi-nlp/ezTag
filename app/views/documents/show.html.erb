@@ -392,7 +392,7 @@
                   annotator = "Other"
                 end
               %>
-              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>', annotator: '<%=j annotator || "" %>', updated_at: '<%=j a.infons["updated_at"] || "" %>'},
+              {id: '<%=a.id%>', type: '<%=j entity[:type]%>', concept: '<%=j entity[:id]%>', text: '<%=j a.text%>', offset: <%=l.offset %>, passage: "#passage-<%= p_idx%>", note: '<%=j a.infons["note"] || "" %>', annotator: '<%=j annotator || "" %>', updated_at: '<%=j a.infons["updated_at"] || "" %>', seen_by: '<%=j a.infons["seen_by"] || "" %>'},
               <%
             end
           end 
