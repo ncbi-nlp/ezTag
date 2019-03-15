@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 20190122183233) do
 
-  create_table "api_keys", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "api_keys", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.string   "key",            limit: 50
     t.integer  "user_id"
     t.datetime "last_access_at"
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["user_id"], name: "index_api_keys_on_user_id", using: :btree
   end
 
-  create_table "collections", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "collections", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.integer  "user_id"
     t.string   "name"
     t.integer  "documents_count",                default: 0, null: false
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["user_id"], name: "index_collections_on_user_id", using: :btree
   end
 
-  create_table "documents", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "documents", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.integer  "collection_id"
     t.string   "did"
     t.datetime "user_updated_at"
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["did"], name: "index_documents_on_did", using: :btree
   end
 
-  create_table "entity_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "entity_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.integer  "collection_id"
     t.string   "name"
     t.string   "color"
@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["collection_id"], name: "index_entity_types_on_collection_id", using: :btree
   end
 
-  create_table "lexicon_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "lexicon_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.string   "name"
     t.integer  "user_id"
     t.datetime "created_at",                             null: false
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["user_id"], name: "index_lexicon_groups_on_user_id", using: :btree
   end
 
-  create_table "lexicons", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "lexicons", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.string   "ltype"
     t.string   "lexicon_id"
     t.text     "name",             limit: 65535
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["lexicon_id"], name: "index_lexicons_on_lexicon_id", using: :btree
   end
 
-  create_table "models", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "models", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.string   "url"
     t.integer  "user_id"
     t.string   "name"
@@ -104,7 +104,7 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["user_id"], name: "index_models_on_user_id", using: :btree
   end
 
-  create_table "tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "tasks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.integer  "user_id"
     t.integer  "collection_id"
     t.string   "tagger"
@@ -126,12 +126,12 @@ ActiveRecord::Schema.define(version: 20190122183233) do
     t.index ["user_id"], name: "index_tasks_on_user_id", using: :btree
   end
 
-  create_table "upload_batches", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "upload_batches", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.string   "session_str"
     t.string   "ip"
     t.datetime "created_at",                             null: false
