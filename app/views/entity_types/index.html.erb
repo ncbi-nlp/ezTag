@@ -49,7 +49,7 @@
 <%= content_for :defer_js do -%>
 $(function() {
   $('table').tablesort();
-  setInterval(updateCollectionStatus, 10000);
+  setInterval(updateCollectionStatus, 100000);
   $(".jscolor").change(function(e) {
     var $e = $(e.currentTarget);
     var $tr = $e.closest("tr");
