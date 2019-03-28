@@ -130,6 +130,9 @@
     padding: 1em;
     // padding-bottom: 200px;
     box-sizing: border-box;
+    &.main {
+      padding: 1em 0;
+    }
   }
   .left-side {
     & > h4 {
@@ -352,7 +355,7 @@
   }
 }
 .ui.basic.segment.passage {
-  padding: 2em 0 1em;
+  padding: 2em 1em 1em;
   .ui.label.mini.passage-sub-info {
     color: #aaa;
     background: #f1f1f1;
@@ -361,6 +364,8 @@
     border-bottom-right-radius: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    margin-left: 1em;
+    margin-right: 1em;
   }
 }
 .passage div.text {
