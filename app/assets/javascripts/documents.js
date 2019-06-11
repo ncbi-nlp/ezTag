@@ -144,24 +144,20 @@ BioC.prototype.bindAnnotationSpan = function() {
       }
 
       var length = range.endOffset - range.startOffset;
+      var text = result.text.trim();
 
-      if (result.annotations.length == 0 && length > 0) {
+      if (result.annotations.length == 0 && length > 0 && text.length > 0) {
         if (result.text.length != length) {
           console.log("Something wrong " + length + " !=" + result.text.length);
           clearSelection();
           return;
         }
         // recommends = getRecommendText(range);
-        var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
-        var offset = elemOffset + range.startOffset;
-        var text = $(range.startContainer).text().substr(range.startOffset, length).trim();
-        if (result.text.length != length) {
-          console.log("Something wrong in text: " + text + " !=" + result.text);
-          clearSelection();
-          return;
-        }
-        if (!self.busy) {
-          self.addNewAnnotation(text, offset);
+        // var elemOffset = parseInt($(range.startContainer.parentElement).data('offset'), 10);
+        // var offset = elemOffset + range.startOffset;
+        
+        if (!self.busy ) {
+          self.addNewAnnotation(text, result.offset);
         } else {
           clearSelection();
         }   
@@ -196,6 +192,11 @@ BioC.prototype.addNewAnnotation = function(text, offset, type) {
     }
   }
   $(".document-loader").addClass("active");
+  if (text.trim().length == 0) {
+    console.log("????", length);
+    clearSelection();
+    return;
+  }
   $.ajax({
     url: $("#annotationModal form").attr("action") + ".json",
     method: "POST",
@@ -276,7 +277,7 @@ BioC.prototype.findAnnotationRange = function(range) {
   annotations = _.uniq(annotations).sort();
   return {
     offset: offset,
-    text: wholeText.trim(),
+    text: wholeText,
     annotations: annotations,
   };
 };
