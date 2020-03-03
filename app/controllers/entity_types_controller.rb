@@ -114,8 +114,8 @@ class EntityTypesController < ApplicationController
       @collection = Collection.find(params[:collection_id])
       unless @collection.available?(@current_user)
         respond_to do |format|
-          format.html { redirect_back fallback_location: collections_path, error: "Cannot access the document"}
-          format.json { render json: {msg: 'Cannot access document'}, status: 401 }
+          format.html { redirect_back fallback_location: collections_path, error: "Cannot access the project"}
+          format.json { render json: {msg: 'Cannot access project'}, status: 401 }
         end    
         return false
       end

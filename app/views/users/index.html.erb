@@ -22,7 +22,7 @@
             <i class="icon user secret"></i>
           <% end %>
           <% if user.valid_email? %>
-            <%= user.email %>
+            <%=link_to user.email, user %>
           <% elsif user.email.present? %>
             <span style='color:silver;'>N/A</span>
           <% end %>  
