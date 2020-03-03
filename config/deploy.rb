@@ -5,7 +5,7 @@ set :application, 'eztag'
 set :repo_url, 'git@github.com:ncbi-nlp/ezTag.git'
 
 set :rbenv_type, :user # or :system, depends on your rbenv setup
-set :rbenv_ruby, '2.4.9'
+set :rbenv_ruby, '2.4.2'
 
 # in case you want to set ruby version from the file:
 # set :rbenv_ruby, File.read('.ruby-version').strip
