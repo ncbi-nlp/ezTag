@@ -13,17 +13,28 @@
 !/log/.keep
 !/tmp/.keep
 
-# Ignore Byebug command history file.
+# Ignore uploaded files in development
+/storage/*
+!/storage/.keep
+
+/node_modules
+/yarn-error.log
+
+/public/assets
 .byebug_history
 
-.DS_Store
-# TODO Comment out these rules if you are OK with secrets being uploaded to the repo
-config/initializers/secret_token.rb
-config/secrets.yml
-config/database.yml
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+
+.capistrano/vendor/assets/bower_components
+
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
 
 ## Environment normalisation:
-/.bundle
 /vendor/bundle
 
 # these should all be checked in to normalise the environment:
@@ -39,10 +50,11 @@ bower.json
 # Ignore pow environment settings
 .powenv
 
-.capistrano/vendor/assets/bower_components
+# TODO Comment out these rules if you are OK with secrets being uploaded to the repo
+config/initializers/secret_token.rb
+config/secrets.yml
+config/database.yml
 
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+# Ignore Byebug command history file.
+.byebug_history
+.DS_Store
